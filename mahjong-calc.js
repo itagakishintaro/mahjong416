@@ -15,7 +15,7 @@ let MahjongCalc = class MahjongCalc extends LitElement {
         return html `
       <h1>点数計算</h1>
 
-      <md-outlined-select required id="gameType" class="width-25" @change="${this._changeGame}">
+      <md-outlined-select required id="gameType" class="width-50" @change="${this._changeGame}">
           <md-select-option selected value="四麻">
             <div slot="headline">四麻</div>
           </md-select-option>
@@ -33,7 +33,7 @@ let MahjongCalc = class MahjongCalc extends LitElement {
           <div>
             <md-outlined-text-field
               id="initialPoint"
-              class="width-25"
+              class="width-50"
               label="初期点"
               value="25000"
               type="number"
@@ -41,7 +41,7 @@ let MahjongCalc = class MahjongCalc extends LitElement {
             ></md-outlined-text-field>
             <md-outlined-text-field
               id="oka"
-              class="width-25"
+              class="width-50"
               label="オカ"
               value="30000"
               type="number"
@@ -51,7 +51,7 @@ let MahjongCalc = class MahjongCalc extends LitElement {
           <div>
             <md-outlined-text-field
               id="firstUma"
-              class="width-25"
+              class="width-50"
               label="1着"
               value="50"
               type="number"
@@ -59,7 +59,7 @@ let MahjongCalc = class MahjongCalc extends LitElement {
             ></md-outlined-text-field>
             <md-outlined-text-field
               id="secondUma"
-              class="width-25"
+              class="width-50"
               label="2着"
               value="10"
               type="number"
@@ -67,7 +67,7 @@ let MahjongCalc = class MahjongCalc extends LitElement {
             ></md-outlined-text-field>
             <md-outlined-text-field
               id="thirdUma"
-              class="width-25"
+              class="width-50"
               label="3着"
               value="-10"
               type="number"
@@ -75,7 +75,7 @@ let MahjongCalc = class MahjongCalc extends LitElement {
             ></md-outlined-text-field>
             <md-outlined-text-field
               id="fourthUma"
-              class="width-25"
+              class="width-50"
               label="4着"
               value="-30"
               type="number"
@@ -88,34 +88,34 @@ let MahjongCalc = class MahjongCalc extends LitElement {
         <h2>結果</h2>
         <div>
           <label for="firstResult">1位</label>
-          <md-outlined-text-field id="firstResult" type="number" @blur="${this._calcFirstScore}">
+          <md-outlined-text-field id="firstResult" class="width-50" type="number" @blur="${this._calcFirstScore}">
           </md-outlined-text-field>
           <span>→</span>
-          <md-outlined-text-field id="firstScore" type="number" disabled>
+          <md-outlined-text-field id="firstScore" class="width-50" type="number" disabled>
           </md-outlined-text-field>
         </div>
         <div>
           <label for="secondResult">2位</label>
-          <md-outlined-text-field id="secondResult" type="number" @blur="${this._calcSecondScore}">
+          <md-outlined-text-field id="secondResult" class="width-50" type="number" @blur="${this._calcSecondScore}">
           </md-outlined-text-field>
           <span>→</span>
-          <md-outlined-text-field id="secondScore" disabled>
+          <md-outlined-text-field id="secondScore" class="width-50" disabled>
           </md-outlined-text-field>
         </div>
         <div>
           <label for="thirdResult">3位</label>
-          <md-outlined-text-field id="thirdResult" type="number" @blur="${this._calcThirdScore}">
+          <md-outlined-text-field id="thirdResult" class="width-50" type="number" @blur="${this._calcThirdScore}">
           </md-outlined-text-field>
           <span>→</span>
-          <md-outlined-text-field id="thirdScore" disabled>
+          <md-outlined-text-field id="thirdScore" class="width-50" disabled>
           </md-outlined-text-field>
         </div>
         <div>
           <label for="fourthResult">4位</label>
-          <md-outlined-text-field id="fourthResult" type="number" @blur="${this._calcFourthScore}">
+          <md-outlined-text-field id="fourthResult" class="width-50" type="number" @blur="${this._calcFourthScore}">
           </md-outlined-text-field>
           <span>→</span>
-          <md-outlined-text-field id="fourthScore" disabled>
+          <md-outlined-text-field id="fourthScore" class="width-50" disabled>
           </md-outlined-text-field>
         </div>
       </div>
@@ -183,8 +183,8 @@ let MahjongCalc = class MahjongCalc extends LitElement {
 };
 MahjongCalc.styles = [
     css `
-        .width-25 {
-          width: calc(25% - 4px);
+        .width-50 {
+          width: calc(50% - 3em);
           margin-bottom: 1em;
         }
         .results {
