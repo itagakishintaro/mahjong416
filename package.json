@@ -41,6 +41,8 @@
   "author": "Google LLC",
   "license": "BSD-3-Clause",
   "dependencies": {
+    "@material/web": "^1.2.0",
+    "@patternfly/elements": "^2.4.0",
     "lit": "^3.0.0"
   },
   "devDependencies": {

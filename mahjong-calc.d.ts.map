@@ -1,0 +1,1 @@
+{"version":3,"file":"mahjong-calc.d.ts","sourceRoot":"","sources":["src/mahjong-calc.ts"],"names":[],"mappings":"AAAA;;;;GAIG;AAEH,OAAO,EAAC,UAAU,EAAY,MAAM,KAAK,CAAC;AAE1C,OAAO,gDAAgD,CAAC;AACxD,OAAO,mDAAmD,CAAC;AAE3D;;;;;;GAMG;AACH,qBACa,WAAY,SAAQ,UAAU;IACvC,OAAgB,MAAM,4BAOpB;IAEK,MAAM;CAgEhB;AAED,OAAO,CAAC,MAAM,CAAC;IACb,UAAU,qBAAqB;QAC7B,cAAc,EAAE,WAAW,CAAC;KAC7B;CACF"}
