@@ -1,18 +1,8 @@
-/**
- * @license
- * Copyright 2019 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
- */
 import { LitElement } from 'lit';
 import '@material/web/textfield/outlined-text-field.js';
+import '@material/web/select/outlined-select.js';
+import '@material/web/select/select-option.js';
 import '@patternfly/elements/pf-accordion/pf-accordion.js';
-/**
- * An example element.
- *
- * @fires count-changed - Indicates when the count changes
- * @slot - This element has a slot
- * @csspart button - The button
- */
 export declare class MahjongCalc extends LitElement {
     static styles: import("lit").CSSResult[];
     render(): import("lit-html").TemplateResult<1>;
@@ -20,6 +10,8 @@ export declare class MahjongCalc extends LitElement {
     private _calcSecondScore;
     private _calcThirdScore;
     private _calcFourthScore;
+    private _changeGame;
+    private _changeSettings;
 }
 declare global {
     interface HTMLElementTagNameMap {

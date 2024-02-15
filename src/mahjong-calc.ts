@@ -1,21 +1,11 @@
-/**
- * @license
- * Copyright 2019 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
- */
-
 import {LitElement, html, css} from 'lit';
 import {customElement} from 'lit/decorators.js';
 import '@material/web/textfield/outlined-text-field.js';
+import '@material/web/select/outlined-select.js';
+import '@material/web/select/select-option.js';
 import '@patternfly/elements/pf-accordion/pf-accordion.js';
 
-/**
- * An example element.
- *
- * @fires count-changed - Indicates when the count changes
- * @slot - This element has a slot
- * @csspart button - The button
- */
+
 @customElement('mahjong-calc')
 export class MahjongCalc extends LitElement {
     static override styles = [
@@ -34,11 +24,22 @@ export class MahjongCalc extends LitElement {
   override render() {
     return html`
       <h1>点数計算</h1>
+
+      <md-outlined-select required id="gameType" class="width-25" @change="${this._changeGame}">
+          <md-select-option selected value="四麻">
+            <div slot="headline">四麻</div>
+          </md-select-option>
+          <md-select-option value="三麻">
+            <div slot="headline">三麻</div>
+          </md-select-option>
+        </md-outlined-select>
+
       <pf-accordion>
         <pf-accordion-header>
           <h2>設定</h2>
         </pf-accordion-header>
         <pf-accordion-panel>
+
           <div>
             <md-outlined-text-field
               id="initialPoint"
@@ -166,6 +167,36 @@ export class MahjongCalc extends LitElement {
     const fourthScore = this.shadowRoot?.getElementById('fourthScore') as HTMLInputElement;
     fourthScore.value = String(score);
   }
+
+  private _changeGame() {
+    const game = this.shadowRoot?.getElementById('gameType') as HTMLSelectElement;
+    if (game.value === '三麻') {
+      this._changeSettings('35000', '40000', '15', '0', '-15', '0', true);
+    } else {
+      this._changeSettings('25000', '30000', '50', '10', '-10', '-30', false);
+    }
+
+  }
+
+  private _changeSettings(initialPoint: string, oka: string, firstUma: string, secondUma: string, thirdUma: string, fourthUma: string, existsFourth: boolean) {
+    const initialPointElement = this.shadowRoot?.getElementById('initialPoint') as HTMLInputElement;
+    initialPointElement.value = initialPoint;
+    const okaElement = this.shadowRoot?.getElementById('oka') as HTMLInputElement;
+    okaElement.value = oka;
+    const firstUmaElement = this.shadowRoot?.getElementById('firstUma') as HTMLInputElement;
+    firstUmaElement.value = firstUma;
+    const secondUmaElement = this.shadowRoot?.getElementById('secondUma') as HTMLInputElement;
+    secondUmaElement.value = secondUma;
+    const thirdUmaElement = this.shadowRoot?.getElementById('thirdUma') as HTMLInputElement;
+    thirdUmaElement.value = thirdUma;
+    const fourthUmaElement = this.shadowRoot?.getElementById('fourthUma') as HTMLInputElement;
+    fourthUmaElement.value = fourthUma;
+    fourthUmaElement.disabled = existsFourth;
+    const fourthResult = this.shadowRoot?.getElementById('fourthResult') as HTMLInputElement;
+    fourthResult.value = '';
+    fourthResult.disabled = existsFourth;
+  }
+
 
 }
 

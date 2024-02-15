@@ -1,8 +1,3 @@
-/**
- * @license
- * Copyright 2019 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
- */
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -12,23 +7,29 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { LitElement, html, css } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import '@material/web/textfield/outlined-text-field.js';
+import '@material/web/select/outlined-select.js';
+import '@material/web/select/select-option.js';
 import '@patternfly/elements/pf-accordion/pf-accordion.js';
-/**
- * An example element.
- *
- * @fires count-changed - Indicates when the count changes
- * @slot - This element has a slot
- * @csspart button - The button
- */
 let MahjongCalc = class MahjongCalc extends LitElement {
     render() {
         return html `
       <h1>点数計算</h1>
+
+      <md-outlined-select required id="gameType" class="width-25" @change="${this._changeGame}">
+          <md-select-option selected value="四麻">
+            <div slot="headline">四麻</div>
+          </md-select-option>
+          <md-select-option value="三麻">
+            <div slot="headline">三麻</div>
+          </md-select-option>
+        </md-outlined-select>
+
       <pf-accordion>
         <pf-accordion-header>
           <h2>設定</h2>
         </pf-accordion-header>
         <pf-accordion-panel>
+
           <div>
             <md-outlined-text-field
               id="initialPoint"
@@ -151,6 +152,33 @@ let MahjongCalc = class MahjongCalc extends LitElement {
         const score = (Number(fourthResult?.value) - Number(oka?.value)) / 1000 + Number(fourthUma?.value);
         const fourthScore = this.shadowRoot?.getElementById('fourthScore');
         fourthScore.value = String(score);
+    }
+    _changeGame() {
+        const game = this.shadowRoot?.getElementById('gameType');
+        if (game.value === '三麻') {
+            this._changeSettings('35000', '40000', '15', '0', '-15', '0', true);
+        }
+        else {
+            this._changeSettings('25000', '30000', '50', '10', '-10', '-30', false);
+        }
+    }
+    _changeSettings(initialPoint, oka, firstUma, secondUma, thirdUma, fourthUma, existsFourth) {
+        const initialPointElement = this.shadowRoot?.getElementById('initialPoint');
+        initialPointElement.value = initialPoint;
+        const okaElement = this.shadowRoot?.getElementById('oka');
+        okaElement.value = oka;
+        const firstUmaElement = this.shadowRoot?.getElementById('firstUma');
+        firstUmaElement.value = firstUma;
+        const secondUmaElement = this.shadowRoot?.getElementById('secondUma');
+        secondUmaElement.value = secondUma;
+        const thirdUmaElement = this.shadowRoot?.getElementById('thirdUma');
+        thirdUmaElement.value = thirdUma;
+        const fourthUmaElement = this.shadowRoot?.getElementById('fourthUma');
+        fourthUmaElement.value = fourthUma;
+        fourthUmaElement.disabled = existsFourth;
+        const fourthResult = this.shadowRoot?.getElementById('fourthResult');
+        fourthResult.value = '';
+        fourthResult.disabled = existsFourth;
     }
 };
 MahjongCalc.styles = [
