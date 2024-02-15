@@ -16,6 +16,10 @@ import '@patternfly/elements/pf-accordion/pf-accordion.js';
 export declare class MahjongCalc extends LitElement {
     static styles: import("lit").CSSResult[];
     render(): import("lit-html").TemplateResult<1>;
+    private _calcFirstScore;
+    private _calcSecondScore;
+    private _calcThirdScore;
+    private _calcFourthScore;
 }
 declare global {
     interface HTMLElementTagNameMap {

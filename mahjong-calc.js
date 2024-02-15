@@ -49,7 +49,7 @@ let MahjongCalc = class MahjongCalc extends LitElement {
           </div>
           <div>
             <md-outlined-text-field
-              id="first"
+              id="firstUma"
               class="width-25"
               label="1着"
               value="50"
@@ -57,7 +57,7 @@ let MahjongCalc = class MahjongCalc extends LitElement {
               required
             ></md-outlined-text-field>
             <md-outlined-text-field
-              id="second"
+              id="secondUma"
               class="width-25"
               label="2着"
               value="10"
@@ -65,7 +65,7 @@ let MahjongCalc = class MahjongCalc extends LitElement {
               required
             ></md-outlined-text-field>
             <md-outlined-text-field
-              id="third"
+              id="thirdUma"
               class="width-25"
               label="3着"
               value="-10"
@@ -73,7 +73,7 @@ let MahjongCalc = class MahjongCalc extends LitElement {
               required
             ></md-outlined-text-field>
             <md-outlined-text-field
-              id="fourth"
+              id="fourthUma"
               class="width-25"
               label="4着"
               value="-30"
@@ -83,7 +83,74 @@ let MahjongCalc = class MahjongCalc extends LitElement {
           </div>
         </pf-accordion-panel>
       </pf-accordion>
+      <div class="results">
+        <h2>結果</h2>
+        <div>
+          <label for="firstResult">1位</label>
+          <md-outlined-text-field id="firstResult" type="number" @blur="${this._calcFirstScore}">
+          </md-outlined-text-field>
+          <span>→</span>
+          <md-outlined-text-field id="firstScore" type="number" disabled>
+          </md-outlined-text-field>
+        </div>
+        <div>
+          <label for="secondResult">2位</label>
+          <md-outlined-text-field id="secondResult" type="number" @blur="${this._calcSecondScore}">
+          </md-outlined-text-field>
+          <span>→</span>
+          <md-outlined-text-field id="secondScore" disabled>
+          </md-outlined-text-field>
+        </div>
+        <div>
+          <label for="thirdResult">3位</label>
+          <md-outlined-text-field id="thirdResult" type="number" @blur="${this._calcThirdScore}">
+          </md-outlined-text-field>
+          <span>→</span>
+          <md-outlined-text-field id="thirdScore" disabled>
+          </md-outlined-text-field>
+        </div>
+        <div>
+          <label for="fourthResult">4位</label>
+          <md-outlined-text-field id="fourthResult" type="number" @blur="${this._calcFourthScore}">
+          </md-outlined-text-field>
+          <span>→</span>
+          <md-outlined-text-field id="fourthScore" disabled>
+          </md-outlined-text-field>
+        </div>
+      </div>
     `;
+    }
+    _calcFirstScore() {
+        const oka = this.shadowRoot?.getElementById('oka');
+        const firstUma = this.shadowRoot?.getElementById('firstUma');
+        const firstResult = this.shadowRoot?.getElementById('firstResult');
+        const score = (Number(firstResult?.value) - Number(oka?.value)) / 1000 + Number(firstUma?.value);
+        const firstScore = this.shadowRoot?.getElementById('firstScore');
+        firstScore.value = String(score);
+    }
+    _calcSecondScore() {
+        const oka = this.shadowRoot?.getElementById('oka');
+        const secondUma = this.shadowRoot?.getElementById('secondUma');
+        const secondResult = this.shadowRoot?.getElementById('secondResult');
+        const score = (Number(secondResult?.value) - Number(oka?.value)) / 1000 + Number(secondUma?.value);
+        const secondScore = this.shadowRoot?.getElementById('secondScore');
+        secondScore.value = String(score);
+    }
+    _calcThirdScore() {
+        const oka = this.shadowRoot?.getElementById('oka');
+        const thirdUma = this.shadowRoot?.getElementById('thirdUma');
+        const thirdResult = this.shadowRoot?.getElementById('thirdResult');
+        const score = (Number(thirdResult?.value) - Number(oka?.value)) / 1000 + Number(thirdUma?.value);
+        const thirdScore = this.shadowRoot?.getElementById('thirdScore');
+        thirdScore.value = String(score);
+    }
+    _calcFourthScore() {
+        const oka = this.shadowRoot?.getElementById('oka');
+        const fourthUma = this.shadowRoot?.getElementById('fourthUma');
+        const fourthResult = this.shadowRoot?.getElementById('fourthResult');
+        const score = (Number(fourthResult?.value) - Number(oka?.value)) / 1000 + Number(fourthUma?.value);
+        const fourthScore = this.shadowRoot?.getElementById('fourthScore');
+        fourthScore.value = String(score);
     }
 };
 MahjongCalc.styles = [
@@ -91,6 +158,10 @@ MahjongCalc.styles = [
         .width-25 {
           width: calc(25% - 4px);
           margin-bottom: 1em;
+        }
+        .results {
+          margin-top: 2em;
+          margin-left: 1em;
         }
       `,
 ];
