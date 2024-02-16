@@ -9,6 +9,7 @@ import { customElement } from 'lit/decorators.js';
 import '@material/web/textfield/outlined-text-field.js';
 import '@material/web/select/outlined-select.js';
 import '@material/web/select/select-option.js';
+import '@material/web/button/filled-tonal-button.js';
 import '@patternfly/elements/pf-accordion/pf-accordion.js';
 let MahjongCalc = class MahjongCalc extends LitElement {
     render() {
@@ -118,6 +119,8 @@ let MahjongCalc = class MahjongCalc extends LitElement {
           <md-outlined-text-field id="fourthScore" class="width-50" disabled>
           </md-outlined-text-field>
         </div>
+
+        <md-filled-tonal-button @click="${this._resetResults}">リセット</md-filled-tonal-button>
       </div>
     `;
     }
@@ -161,6 +164,7 @@ let MahjongCalc = class MahjongCalc extends LitElement {
         else {
             this._changeSettings('25000', '30000', '50', '10', '-10', '-30', false);
         }
+        this._resetResults();
     }
     _changeSettings(initialPoint, oka, firstUma, secondUma, thirdUma, fourthUma, existsFourth) {
         const initialPointElement = this.shadowRoot?.getElementById('initialPoint');
@@ -180,6 +184,24 @@ let MahjongCalc = class MahjongCalc extends LitElement {
         fourthResult.value = '';
         fourthResult.disabled = existsFourth;
     }
+    _resetResults() {
+        const firstResult = this.shadowRoot?.getElementById('firstResult');
+        firstResult.value = '';
+        const secondResult = this.shadowRoot?.getElementById('secondResult');
+        secondResult.value = '';
+        const thirdResult = this.shadowRoot?.getElementById('thirdResult');
+        thirdResult.value = '';
+        const fourthResult = this.shadowRoot?.getElementById('fourthResult');
+        fourthResult.value = '';
+        const firstScore = this.shadowRoot?.getElementById('firstScore');
+        firstScore.value = '';
+        const secondScore = this.shadowRoot?.getElementById('secondScore');
+        secondScore.value = '';
+        const thirdScore = this.shadowRoot?.getElementById('thirdScore');
+        thirdScore.value = '';
+        const fourthScore = this.shadowRoot?.getElementById('fourthScore');
+        fourthScore.value = '';
+    }
 };
 MahjongCalc.styles = [
     css `
@@ -191,6 +213,11 @@ MahjongCalc.styles = [
           margin-top: 2em;
           margin-left: 1em;
         }
+        md-outlined-text-field {
+          --md-outlined-field-disabled-content-opacity: 1;
+        }
+        
+
       `,
 ];
 MahjongCalc = __decorate([

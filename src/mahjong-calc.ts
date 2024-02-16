@@ -3,6 +3,7 @@ import {customElement} from 'lit/decorators.js';
 import '@material/web/textfield/outlined-text-field.js';
 import '@material/web/select/outlined-select.js';
 import '@material/web/select/select-option.js';
+import '@material/web/button/filled-tonal-button.js'
 import '@patternfly/elements/pf-accordion/pf-accordion.js';
 
 
@@ -18,6 +19,11 @@ export class MahjongCalc extends LitElement {
           margin-top: 2em;
           margin-left: 1em;
         }
+        md-outlined-text-field {
+          --md-outlined-field-disabled-content-opacity: 1;
+        }
+        
+
       `,
     ];
 
@@ -128,6 +134,8 @@ export class MahjongCalc extends LitElement {
           <md-outlined-text-field id="fourthScore" class="width-50" disabled>
           </md-outlined-text-field>
         </div>
+
+        <md-filled-tonal-button @click="${this._resetResults}">リセット</md-filled-tonal-button>
       </div>
     `;
   }
@@ -175,7 +183,7 @@ export class MahjongCalc extends LitElement {
     } else {
       this._changeSettings('25000', '30000', '50', '10', '-10', '-30', false);
     }
-
+    this._resetResults();
   }
 
   private _changeSettings(initialPoint: string, oka: string, firstUma: string, secondUma: string, thirdUma: string, fourthUma: string, existsFourth: boolean) {
@@ -197,6 +205,25 @@ export class MahjongCalc extends LitElement {
     fourthResult.disabled = existsFourth;
   }
 
+  private _resetResults() {
+    const firstResult = this.shadowRoot?.getElementById('firstResult') as HTMLInputElement;
+    firstResult.value = '';
+    const secondResult = this.shadowRoot?.getElementById('secondResult') as HTMLInputElement;
+    secondResult.value = '';
+    const thirdResult = this.shadowRoot?.getElementById('thirdResult') as HTMLInputElement;
+    thirdResult.value = '';
+    const fourthResult = this.shadowRoot?.getElementById('fourthResult') as HTMLInputElement;
+    fourthResult.value = '';
+
+    const firstScore = this.shadowRoot?.getElementById('firstScore') as HTMLInputElement;
+    firstScore.value = '';
+    const secondScore = this.shadowRoot?.getElementById('secondScore') as HTMLInputElement;
+    secondScore.value = '';
+    const thirdScore = this.shadowRoot?.getElementById('thirdScore') as HTMLInputElement;
+    thirdScore.value = '';
+    const fourthScore = this.shadowRoot?.getElementById('fourthScore') as HTMLInputElement;
+    fourthScore.value = '';
+  }
 
 }
 
