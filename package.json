@@ -42,8 +42,10 @@
   "author": "Google LLC",
   "license": "BSD-3-Clause",
   "dependencies": {
+    "@firebase/app": "^0.10.8",
     "@material/web": "^1.2.0",
     "@patternfly/elements": "^2.4.0",
+    "firebase": "^10.12.5",
     "lit": "^3.0.0"
   },
   "devDependencies": {
