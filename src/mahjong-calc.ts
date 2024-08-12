@@ -7,9 +7,10 @@ import '@material/web/select/outlined-select.js';
 import '@material/web/select/select-option.js';
 import '@material/web/button/filled-tonal-button.js';
 import '@material/web/button/filled-button.js';
+import '@material/web/progress/circular-progress.js';
 import '@patternfly/elements/pf-accordion/pf-accordion.js';
 import {db} from './firestore';
-import {collection, addDoc} from 'firebase/firestore';
+import {collection, addDoc} from 'firebase/firestore/lite';
 
 @customElement('mahjong-calc')
 export class MahjongCalc extends LitElement {
@@ -37,12 +38,7 @@ export class MahjongCalc extends LitElement {
     return html`
       <h1>点数計算</h1>
 
-      <md-outlined-select
-        required
-        id="gameType"
-        class="width-50"
-        @change="${this._changeGame}"
-      >
+      <md-outlined-select required id="gameType" @change="${this._changeGame}">
         <md-select-option selected value="四麻">
           <div slot="headline">四麻</div>
         </md-select-option>
@@ -112,24 +108,29 @@ export class MahjongCalc extends LitElement {
       </pf-accordion>
       <div class="results">
         <h2>結果</h2>
-        <div>
-        <md-filled-text-field
-            id="date"
-            label="日付"
-            class="width-50"
-            type="date"
-            value="${new Date().toISOString().split('T')[0]}"
-          >
-          </md-filled-text-field>
-          <md-filled-text-field
-            id="order"
-            label="順序キー"
-            class="width-50"
-            type="text"
-            value="${new Date().getTime()}"
-          >
-          </md-filled-text-field>
-        </div>
+        <pf-accordion>
+          <pf-accordion-header>
+            <h2>日付、順序キー</h2>
+          </pf-accordion-header>
+          <pf-accordion-panel>
+            <md-filled-text-field
+              id="date"
+              label="日付"
+              class="width-50"
+              type="date"
+              value="${new Date().toISOString().split('T')[0]}"
+            >
+            </md-filled-text-field>
+            <md-filled-text-field
+              id="order"
+              label="順序キー"
+              class="width-50"
+              type="text"
+              value="${new Date().getTime()}"
+            >
+            </md-filled-text-field>
+          </pf-accordion-panel>
+        </pf-accordion>
         <div>
           <md-outlined-text-field
             id="firstPlayer"
@@ -241,6 +242,11 @@ export class MahjongCalc extends LitElement {
         <md-filled-button @click="${this._uploadResults}"
           >登録</md-filled-button
         >
+        <md-circular-progress
+          indeterminate
+          id="progress"
+          style="display: none"
+        ></md-circular-progress>
       </div>
     `;
   }
@@ -293,25 +299,40 @@ export class MahjongCalc extends LitElement {
   @query('#fourthPoint')
   _fourthPoint!: HTMLInputElement;
 
+  @query('#progress')
+  _progress!: HTMLElement;
+
   private _calcFirstPoint() {
+    if (this._firstScore.value === '') {
+      return;
+    }
     this._firstPoint.value = String(
       (Number(this._firstScore.value) - Number(this._oka.value)) / 1000 +
         Number(this._firstUma.value)
     );
   }
   private _calcSecondPoint() {
+    if (this._secondScore.value === '') {
+      return;
+    }
     this._secondPoint.value = String(
       (Number(this._secondScore.value) - Number(this._oka.value)) / 1000 +
         Number(this._secondUma.value)
     );
   }
   private _calcThirdPoint() {
+    if (this._thirdScore.value === '') {
+      return;
+    }
     this._thirdPoint.value = String(
       (Number(this._thirdScore.value) - Number(this._oka.value)) / 1000 +
         Number(this._thirdUma.value)
     );
   }
   private _calcFourthPoint() {
+    if (this._fourthScore.value === '') {
+      return;
+    }
     this._fourthPoint.value = String(
       (Number(this._fourthScore.value) - Number(this._oka.value)) / 1000 +
         Number(this._fourthUma.value)
@@ -334,7 +355,7 @@ export class MahjongCalc extends LitElement {
     secondUma: string,
     thirdUma: string,
     fourthUma: string,
-    existsFourth: boolean
+    noFourth: boolean
   ) {
     (
       this.shadowRoot?.getElementById('initialPoint') as HTMLInputElement
@@ -344,31 +365,22 @@ export class MahjongCalc extends LitElement {
     this._secondUma.value = secondUma;
     this._thirdUma.value = thirdUma;
     this._fourthUma.value = fourthUma;
-    if (!existsFourth) {
-      this._clearForth();
+    if (!noFourth) {
+      this._clearFourth();
     }
+    this._toggleFourth(noFourth);
   }
 
-  private _clearForth() {
+  private _clearFourth() {
     this._fourthPlayer.value = '';
     this._fourthScore.value = '';
     this._fourthPoint.value = '';
-    const fourthUmaElement = this.shadowRoot?.getElementById(
-      'fourthUma'
-    ) as HTMLInputElement;
-    const fourthPlayerElement = this.shadowRoot?.getElementById(
-      'fourthPlayer'
-    ) as HTMLInputElement;
-    const fourthScoreElement = this.shadowRoot?.getElementById(
-      'fourthScore'
-    ) as HTMLInputElement;
-    const fourthPointElement = this.shadowRoot?.getElementById(
-      'fourthPoint'
-    ) as HTMLInputElement;
-    fourthUmaElement.disabled = true;
-    fourthPlayerElement.disabled = true;
-    fourthScoreElement.disabled = true;
-    fourthPointElement.disabled = true;
+  }
+
+  private _toggleFourth(noFourth: boolean) {
+    this._fourthUma.disabled = noFourth;
+    this._fourthPlayer.disabled = noFourth;
+    this._fourthScore.disabled = noFourth;
   }
 
   private _resetResults() {
@@ -387,7 +399,9 @@ export class MahjongCalc extends LitElement {
   }
 
   private async _uploadResults() {
+    this._progress.style.display = 'block';
     let players: string[];
+    let results: Result[];
     if (this._gameType.value === '四麻') {
       players = [
         this._firstPlayer.value,
@@ -395,12 +409,58 @@ export class MahjongCalc extends LitElement {
         this._thirdPlayer.value,
         this._fourthPlayer.value,
       ].sort();
+      results = [
+        {
+          rank: 1,
+          player: this._firstPlayer.value,
+          score: Number(this._firstScore.value),
+          point: Number(this._firstPoint.value),
+        },
+        {
+          rank: 2,
+          player: this._secondPlayer.value,
+          score: Number(this._secondScore.value),
+          point: Number(this._secondPoint.value),
+        },
+        {
+          rank: 3,
+          player: this._thirdPlayer.value,
+          score: Number(this._thirdScore.value),
+          point: Number(this._thirdPoint.value),
+        },
+        {
+          rank: 4,
+          player: this._fourthPlayer.value,
+          score: Number(this._fourthScore.value),
+          point: Number(this._fourthPoint.value),
+        },
+      ];
     } else {
       players = [
         this._firstPlayer.value,
         this._secondPlayer.value,
         this._thirdPlayer.value,
       ].sort();
+      results = [
+        {
+          rank: 1,
+          player: this._firstPlayer.value,
+          score: Number(this._firstScore.value),
+          point: Number(this._firstPoint.value),
+        },
+        {
+          rank: 2,
+          player: this._secondPlayer.value,
+          score: Number(this._secondScore.value),
+          point: Number(this._secondPoint.value),
+        },
+        {
+          rank: 3,
+          player: this._thirdPlayer.value,
+          score: Number(this._thirdScore.value),
+          point: Number(this._thirdPoint.value),
+        },
+      ];
     }
     const data = {
       gameInfo: {
@@ -409,34 +469,15 @@ export class MahjongCalc extends LitElement {
         gameType: this._gameType.value,
         players: players,
       },
-      results: [
-        {
-          rank: 1,
-          player: this._firstPlayer.value,
-          point: this._firstPoint.value,
-        },
-        {
-          rank: 2,
-          player: this._secondPlayer.value,
-          point: this._secondPoint.value,
-        },
-        {
-          rank: 3,
-          player: this._thirdPlayer.value,
-          point: this._thirdPoint.value,
-        },
-        {
-          rank: 4,
-          player: this._fourthPlayer.value,
-          point: this._fourthPoint.value,
-        },
-      ],
+      results: results,
     };
     try {
       const docRef = await addDoc(collection(db, 'results'), data);
       console.log('Document written with ID: ', docRef.id);
     } catch (e) {
       console.error('Error adding document: ', e);
+    } finally {
+      this._progress.style.display = 'none';
     }
   }
 }

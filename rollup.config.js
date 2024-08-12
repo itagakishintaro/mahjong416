@@ -10,9 +10,15 @@ import resolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
 
 export default {
-  input: 'mahjong-calc.js',
+  input: {
+    menu: 'mahjong-menu.js',
+    calc: 'mahjong-calc.js',
+    stats: 'mahjong-stats.js',
+    individual: 'mahjong-individual.js',
+  },
   output: {
-    file: './public/mahjong-calc.js',
+    dir: './public',
+    entryFileNames: 'mahjong-[name].js',
     format: 'esm',
   },
   onwarn(warning) {

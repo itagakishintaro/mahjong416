@@ -5,6 +5,7 @@ import '@material/web/select/outlined-select.js';
 import '@material/web/select/select-option.js';
 import '@material/web/button/filled-tonal-button.js';
 import '@material/web/button/filled-button.js';
+import '@material/web/progress/circular-progress.js';
 import '@patternfly/elements/pf-accordion/pf-accordion.js';
 export declare class MahjongCalc extends LitElement {
     static styles: import("lit").CSSResult[];
@@ -30,13 +31,15 @@ export declare class MahjongCalc extends LitElement {
     _secondPoint: HTMLInputElement;
     _thirdPoint: HTMLInputElement;
     _fourthPoint: HTMLInputElement;
+    _progress: HTMLElement;
     private _calcFirstPoint;
     private _calcSecondPoint;
     private _calcThirdPoint;
     private _calcFourthPoint;
     private _changeGame;
     private _changeSettings;
-    private _clearForth;
+    private _clearFourth;
+    private _toggleFourth;
     private _resetResults;
     private _uploadResults;
 }
