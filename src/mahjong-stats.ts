@@ -64,8 +64,8 @@ export class MahjongStats extends LitElement {
       <table>
         <tr>
           <th>順位</th>
-          <th>得点</th>
-          <th>平均</th>
+          <th>プレイヤー</th>
+          <th>総合ポイント</th>
         </tr>
         ${map(this.totalPoints, (p) => {
           return html`
@@ -81,8 +81,8 @@ export class MahjongStats extends LitElement {
       <table>
         <tr>
           <th>順位</th>
-          <th>得点</th>
-          <th>平均</th>
+          <th>プレイヤー</th>
+          <th>最高ポイント</th>
         </tr>
         ${map(this.maxPoints, (p) => {
           return html`
@@ -94,12 +94,12 @@ export class MahjongStats extends LitElement {
           `;
         })}
       </table>
-      <h2>ラスト回避率</h2>
+      <h2>ラス回避率</h2>
       <table>
         <tr>
           <th>順位</th>
-          <th>得点</th>
-          <th>平均</th>
+          <th>プレイヤー</th>
+          <th>ラス回避率</th>
         </tr>
         ${map(this.avoidLast, (p) => {
           return html`
