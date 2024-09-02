@@ -30,8 +30,8 @@ import{i as t,n as e,e as s,t as a,h as i,k as r}from"./select-option-2c22287d.j
       <table>
         <tr>
           <th>順位</th>
-          <th>プレイヤー</th>
-          <th>総合ポイント</th>
+          <th>得点</th>
+          <th>平均</th>
         </tr>
         ${o(this.totalPoints,(t=>r`
             <tr>
@@ -45,8 +45,8 @@ import{i as t,n as e,e as s,t as a,h as i,k as r}from"./select-option-2c22287d.j
       <table>
         <tr>
           <th>順位</th>
-          <th>プレイヤー</th>
-          <th>最高ポイント</th>
+          <th>得点</th>
+          <th>平均</th>
         </tr>
         ${o(this.maxPoints,(t=>r`
             <tr>
@@ -56,12 +56,12 @@ import{i as t,n as e,e as s,t as a,h as i,k as r}from"./select-option-2c22287d.j
             </tr>
           `))}
       </table>
-      <h2>ラス回避率</h2>
+      <h2>ラスト回避率</h2>
       <table>
         <tr>
           <th>順位</th>
-          <th>プレイヤー</th>
-          <th>ラス回避率</th>
+          <th>得点</th>
+          <th>平均</th>
         </tr>
         ${o(this.avoidLast,(t=>r`
             <tr>
