@@ -18,6 +18,7 @@ let MahjongMenu = class MahjongMenu extends LitElement {
         return html `
       <md-tabs @change="${this._changed}">
         <md-primary-tab>点数計算</md-primary-tab>
+        <md-primary-tab>今日の成績</md-primary-tab>
         <md-primary-tab>総合成績</md-primary-tab>
         <md-primary-tab>個人成績</md-primary-tab>
       </md-tabs>
@@ -35,9 +36,13 @@ let MahjongMenu = class MahjongMenu extends LitElement {
         }
         if (index === 1) {
             this.shadowRoot.querySelector('main').innerHTML =
-                '<mahjong-stats></mahjong-stats>';
+                '<mahjong-today></mahjong-today>';
         }
         if (index === 2) {
+            this.shadowRoot.querySelector('main').innerHTML =
+                '<mahjong-stats></mahjong-stats>';
+        }
+        if (index === 3) {
             this.shadowRoot.querySelector('main').innerHTML =
                 '<mahjong-individual></mahjong-individual>';
         }

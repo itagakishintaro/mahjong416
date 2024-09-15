@@ -13,6 +13,7 @@ export default {
   input: {
     menu: 'mahjong-menu.js',
     calc: 'mahjong-calc.js',
+    today: 'mahjong-today.js',
     stats: 'mahjong-stats.js',
     individual: 'mahjong-individual.js',
   },

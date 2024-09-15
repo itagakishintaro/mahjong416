@@ -93,23 +93,23 @@ export class MahjongIndividual extends LitElement {
       </md-outlined-select>
 
       <h2>基本情報</h2>
-        <dt>総ゲーム数</dt>
-        <dd>${this.playerData.totalGames}</dd>
-        <dt>1位率</dt>
-        <dd>${(this.playerData.firstRate * 100).toFixed(2)}%</dd>
-        <dt>2位率</dt>
-        <dd>${(this.playerData.secondRate * 100).toFixed(2)}%</dd>
-        <dt>3位率</dt>
-        <dd>${(this.playerData.thirdRate * 100).toFixed(2)}%</dd>
-        ${this.getFourthRate()}
-        <dt>平均順位</dt>
-        <dd>${this.playerData.averageRank.toFixed(2)}</dd>
-        <dt>総合ポイント</dt>
-        <dd>${this.playerData.totalPoints}</dd>
-        <dt>最高得点</dt>
-        <dd>${this.playerData.maxPoint}</dd>
-        <dt>平均得点</dt>
-        <dd>${this.playerData.averagePoint.toFixed(2)}</dd>
+      <dt>総ゲーム数</dt>
+      <dd>${this.playerData.totalGames}</dd>
+      <dt>1位率</dt>
+      <dd>${(this.playerData.firstRate * 100).toFixed(2)}%</dd>
+      <dt>2位率</dt>
+      <dd>${(this.playerData.secondRate * 100).toFixed(2)}%</dd>
+      <dt>3位率</dt>
+      <dd>${(this.playerData.thirdRate * 100).toFixed(2)}%</dd>
+      ${this.getFourthRate()}
+      <dt>平均順位</dt>
+      <dd>${this.playerData.averageRank.toFixed(2)}</dd>
+      <dt>総合ポイント</dt>
+      <dd>${Math.round(this.playerData.totalPoints * 10) / 10}</dd>
+      <dt>最高得点</dt>
+      <dd>${this.playerData.maxPoint}</dd>
+      <dt>平均得点</dt>
+      <dd>${this.playerData.averagePoint.toFixed(2)}</dd>
     `;
   }
 
@@ -218,7 +218,8 @@ export class MahjongIndividual extends LitElement {
 
   private getFourthRate() {
     if (this._gameType?.value === '四麻') {
-      return html`<dt>4位率</dt><dd>${(this.playerData.fourthRate * 100).toFixed(2)}%</dd>`;
+      return html`<dt>4位率</dt>
+        <dd>${(this.playerData.fourthRate * 100).toFixed(2)}%</dd>`;
     }
     return;
   }

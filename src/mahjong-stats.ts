@@ -23,6 +23,28 @@ export class MahjongStats extends LitElement {
       md-outlined-select {
         min-width: calc(50% - 1rem);
       }
+      table {
+        margin-top: 2em;
+        border-collapse: collapse;
+        border-spacing: 0;
+        width: 100%;
+      }
+
+      table tr {
+        border-bottom: solid 1px #eee;
+        cursor: pointer;
+      }
+
+      table tr:hover {
+        background-color: #d4f0fd;
+      }
+
+      table th,
+      table td {
+        text-align: center;
+        width: 25%;
+        padding: 1em 0;
+      }
     `,
   ];
   override render() {
@@ -72,7 +94,7 @@ export class MahjongStats extends LitElement {
             <tr>
               <td>${p.index}</td>
               <td>${p.player}</td>
-              <td>${p.point}</td>
+              <td>${Math.round(p.point * 10) / 10}</td>
             </tr>
           `;
         })}
