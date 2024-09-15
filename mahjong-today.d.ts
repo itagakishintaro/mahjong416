@@ -16,6 +16,7 @@ export declare class MahjongToday extends LitElement {
     _gameType: HTMLSelectElement;
     _date: HTMLSelectElement;
     constructor();
+    private startup;
     private _changeGame;
     private _changeDate;
     private _loadData;

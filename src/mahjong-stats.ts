@@ -24,7 +24,6 @@ export class MahjongStats extends LitElement {
         min-width: calc(50% - 1rem);
       }
       table {
-        margin-top: 2em;
         border-collapse: collapse;
         border-spacing: 0;
         width: 100%;
@@ -43,7 +42,7 @@ export class MahjongStats extends LitElement {
       table td {
         text-align: center;
         width: 25%;
-        padding: 1em 0;
+        padding: .5em 0;
       }
     `,
   ];

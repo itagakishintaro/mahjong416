@@ -33,12 +33,7 @@ let MahjongToday = class MahjongToday extends LitElement {
       </md-outlined-select>
 
       <md-outlined-select required id="date" @change="${this._changeDate}">
-        <md-select-option selected value="${new Date().toISOString().split('T')[0]}">${new Date().toISOString().split('T')[0]}</md-select-option>
         ${map(this.distinctDates, (date) => {
-            const today = new Date().toISOString().split('T')[0];
-            if (date === today) {
-                return '';
-            }
             return html `<md-select-option
             value="${date}"
             >${date}</md-select-option>
@@ -98,20 +93,31 @@ let MahjongToday = class MahjongToday extends LitElement {
         this.distinctDates = [];
         this.todaysResults = [];
         this.playerPoints = new Map();
-        this._loadData();
+        this.startup();
     }
-    _changeGame() {
-        this._loadData();
+    async startup() {
+        await this._loadData();
+        this._date.displayText = this.distinctDates[0];
+    }
+    async _changeGame() {
+        await this._loadData(true);
     }
     _changeDate() {
         this._loadData();
     }
-    async _loadData() {
+    async _loadData(changeGame = false) {
+        this.todaysResults = [];
         const querySnapshot = await getDocs(collection(db, 'results'));
         const docs = querySnapshot.docs;
-        this.todaysResults = [];
+        this._setDistinctDates(docs);
         const gameType = this._gameType.value || '四麻';
-        const targetDate = this._date.value || new Date().toISOString().split('T')[0];
+        const targetDate = changeGame ? this.distinctDates[0] : this._date.value || this.distinctDates[0];
+        this._date.value || this.distinctDates[0];
+        this._date.value = targetDate;
+        this._date.selectedIndex = this.distinctDates.indexOf(targetDate);
+        if (changeGame) {
+            this._date.displayText = targetDate;
+        }
         docs.sort((a, b) => {
             return a.data().gameInfo.order < b.data().gameInfo.order ? -1 : 1;
         });
@@ -126,7 +132,6 @@ let MahjongToday = class MahjongToday extends LitElement {
             });
             this.todaysResults.push(results);
         });
-        console.log(this.todaysResults);
         // this.todaysResultsのplayerごとのpointの合計を計算する
         const playerPoints = new Map();
         this.todaysResults.forEach((results) => {
@@ -136,11 +141,15 @@ let MahjongToday = class MahjongToday extends LitElement {
             });
         });
         this.playerPoints = playerPoints;
-        console.log(playerPoints);
-        this._setDistinctDates(docs);
     }
     _setDistinctDates(docs) {
-        const dates = docs.map((doc) => doc.data().gameInfo.date);
+        this.distinctDates = [];
+        const dates = docs.map((doc) => {
+            if (doc.data().gameInfo.gameType !== this._gameType.value) {
+                return '';
+            }
+            return doc.data().gameInfo.date;
+        });
         const distinctDates = [...new Set(dates)];
         this.distinctDates = distinctDates.sort((a, b) => {
             return a < b ? 1 : -1;
@@ -175,7 +184,7 @@ MahjongToday.styles = [
       table td {
         text-align: center;
         width: 25%;
-        padding: 1em 0;
+        padding: .5em 0;
       }
     `,
 ];

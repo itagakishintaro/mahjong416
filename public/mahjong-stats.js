@@ -76,7 +76,6 @@ import{i as t,n as e,e as s,t as a,h as i,k as r}from"./select-option-2c22287d.j
         min-width: calc(50% - 1rem);
       }
       table {
-        margin-top: 2em;
         border-collapse: collapse;
         border-spacing: 0;
         width: 100%;
@@ -95,6 +94,6 @@ import{i as t,n as e,e as s,t as a,h as i,k as r}from"./select-option-2c22287d.j
       table td {
         text-align: center;
         width: 25%;
-        padding: 1em 0;
+        padding: .5em 0;
       }
     `],h([e({type:Array})],c.prototype,"distinctYears",void 0),h([e({type:Array})],c.prototype,"totalPoints",void 0),h([e({type:Array})],c.prototype,"maxPoints",void 0),h([e({type:Array})],c.prototype,"avoidLast",void 0),h([s("#gameType")],c.prototype,"_gameType",void 0),h([s("#targetYear")],c.prototype,"_targetYear",void 0),c=h([a("mahjong-stats")],c);export{c as MahjongStats};
