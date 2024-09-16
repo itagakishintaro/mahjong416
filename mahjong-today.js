@@ -97,27 +97,30 @@ let MahjongToday = class MahjongToday extends LitElement {
     }
     async startup() {
         await this._loadData();
+        // 初期は日付を最新の日付にする
+        this._date.selectedIndex = 0;
         this._date.displayText = this.distinctDates[0];
     }
     async _changeGame() {
-        await this._loadData(true);
+        // gameTypeを変えた場合は日付をリセットする
+        this._date.value = '';
+        await this._loadData();
+        this._date.selectedIndex = 0;
+        this._date.displayText = this.distinctDates[0];
     }
     _changeDate() {
         this._loadData();
     }
-    async _loadData(changeGame = false) {
+    async _loadData() {
         this.todaysResults = [];
         const querySnapshot = await getDocs(collection(db, 'results'));
         const docs = querySnapshot.docs;
         this._setDistinctDates(docs);
         const gameType = this._gameType.value || '四麻';
-        const targetDate = changeGame ? this.distinctDates[0] : this._date.value || this.distinctDates[0];
-        this._date.value || this.distinctDates[0];
+        // 日付を選択していない場合は最初の日付を選択する
+        const targetDate = this._date.value || this.distinctDates[0];
         this._date.value = targetDate;
         this._date.selectedIndex = this.distinctDates.indexOf(targetDate);
-        if (changeGame) {
-            this._date.displayText = targetDate;
-        }
         docs.sort((a, b) => {
             return a.data().gameInfo.order < b.data().gameInfo.order ? -1 : 1;
         });

@@ -240,7 +240,7 @@ MahjongStats.styles = [
       table td {
         text-align: center;
         width: 25%;
-        padding: .5em 0;
+        padding: 0.5em 0;
       }
     `,
 ];

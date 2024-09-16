@@ -474,6 +474,9 @@ export class MahjongCalc extends LitElement {
     try {
       const docRef = await addDoc(collection(db, 'results'), data);
       console.log('Document written with ID: ', docRef.id);
+      this.dispatchEvent(
+        new CustomEvent('uploaded', {bubbles: true, composed: true})
+      );
     } catch (e) {
       console.error('Error adding document: ', e);
     } finally {

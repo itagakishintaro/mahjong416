@@ -15,7 +15,7 @@ export class MahjongMenu extends LitElement {
     return html`
       <md-tabs @change="${this._changed}">
         <md-primary-tab>点数計算</md-primary-tab>
-        <md-primary-tab>今日の成績</md-primary-tab>
+        <md-primary-tab id="today">今日の成績</md-primary-tab>
         <md-primary-tab>総合成績</md-primary-tab>
         <md-primary-tab>個人成績</md-primary-tab>
       </md-tabs>
@@ -23,6 +23,11 @@ export class MahjongMenu extends LitElement {
         <mahjong-calc></mahjong-calc>
       </main>
     `;
+  }
+
+  constructor() {
+    super();
+    this.addEventListener('uploaded', this._uploaded);
   }
 
   private _changed(event: CustomEvent) {
@@ -44,6 +49,13 @@ export class MahjongMenu extends LitElement {
       this.shadowRoot!.querySelector('main')!.innerHTML =
         '<mahjong-individual></mahjong-individual>';
     }
+  }
+
+  private _uploaded() {
+    const todayButton = this.shadowRoot!.querySelector('#today') as HTMLElement;
+    todayButton.click();
+    this.shadowRoot!.querySelector('main')!.innerHTML =
+      '<mahjong-today></mahjong-today>';
   }
 }
 

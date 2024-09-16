@@ -7,6 +7,7 @@ import '@material/web/button/filled-tonal-button.js';
 import '@material/web/button/filled-button.js';
 import '@material/web/progress/circular-progress.js';
 import '@patternfly/elements/pf-accordion/pf-accordion.js';
+import { OutlinedSelect } from '@material/web/select/internal/outlined-select';
 export declare class MahjongToday extends LitElement {
     distinctDates: string[];
     todaysResults: Result[][];
@@ -14,7 +15,7 @@ export declare class MahjongToday extends LitElement {
     static styles: import("lit").CSSResult[];
     render(): import("lit-html").TemplateResult<1>;
     _gameType: HTMLSelectElement;
-    _date: HTMLSelectElement;
+    _date: OutlinedSelect;
     constructor();
     private startup;
     private _changeGame;
