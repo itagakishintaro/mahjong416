@@ -11,3 +11,8 @@ interface GameInfo {
   order: string;
   players: string[];
 }
+
+interface Chonbo {
+  player: string;
+  point: number;
+}

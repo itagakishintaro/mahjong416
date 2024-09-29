@@ -157,6 +157,7 @@ export class MahjongStats extends LitElement {
     const docs = querySnapshot.docs;
 
     const allResults: Result[] = [];
+    const allChonbo: Chonbo[] = [];
     const gameType = this._gameType.value || '四麻';
     const targetYear =
       Number(this._targetYear.value) || new Date().getFullYear();
@@ -170,9 +171,13 @@ export class MahjongStats extends LitElement {
       }
       const results = doc.data().results;
       allResults.push(...results);
+      const chonbo = doc.data().chonbo;
+      if (chonbo?.length > 0) {
+        allChonbo.push(...chonbo);
+      }
     });
     this._setDistinctYears(docs);
-    this._setTotalPoint(allResults);
+    this._setTotalPoint(allResults, allChonbo);
     this._setMaxPoint(allResults);
     this._setAvoidLast(allResults);
   }
@@ -185,7 +190,7 @@ export class MahjongStats extends LitElement {
     this.distinctYears = distinctYears;
   }
 
-  private _setTotalPoint(allResults: Result[]) {
+  private _setTotalPoint(allResults: Result[], allChonbo: Chonbo[]) {
     const playerMap = new Map<string, number>();
 
     allResults.forEach((result) => {
@@ -197,6 +202,16 @@ export class MahjongStats extends LitElement {
         playerMap.set(player, updatedPoints);
       } else {
         playerMap.set(player, point);
+      }
+    });
+
+    // チョンボのマイナスポイントを適用
+    allChonbo.forEach((chonbo) => {
+      const {player, point} = chonbo;
+      if (playerMap.has(player)) {
+        const currentPoints = playerMap.get(player) || 0;
+        const updatedPoints = (currentPoints * 10 + point * 10) / 10;
+        playerMap.set(player, updatedPoints);
       }
     });
 

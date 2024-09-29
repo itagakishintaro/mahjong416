@@ -23,6 +23,8 @@ export class MahjongIndividual extends LitElement {
     fourthRate: number;
     averageRank: number;
     totalPoints: number;
+    point: number;
+    chonbo: number;
     maxPoint: number;
     averagePoint: number;
   } = {
@@ -33,6 +35,8 @@ export class MahjongIndividual extends LitElement {
     fourthRate: 0,
     averageRank: 0,
     totalPoints: 0,
+    point: 0,
+    chonbo: 0,
     maxPoint: 0,
     averagePoint: 0,
   };
@@ -105,7 +109,10 @@ export class MahjongIndividual extends LitElement {
       <dt>平均順位</dt>
       <dd>${this.playerData.averageRank.toFixed(2)}</dd>
       <dt>総合ポイント</dt>
-      <dd>${Math.round(this.playerData.totalPoints * 10) / 10}</dd>
+      <dd>
+        ${Math.round(this.playerData.totalPoints * 10) /
+        10}（内チョンボ：${Math.round(this.playerData.chonbo * 10) / 10}）
+      </dd>
       <dt>最高得点</dt>
       <dd>${this.playerData.maxPoint}</dd>
       <dt>平均得点</dt>
@@ -141,6 +148,7 @@ export class MahjongIndividual extends LitElement {
     const docs = querySnapshot.docs;
 
     const allResults: Result[] = [];
+    const allChonbo: Chonbo[] = [];
     const gameType = this._gameType.value || '四麻';
     const targetYear =
       Number(this._targetYear.value) || new Date().getFullYear();
@@ -154,11 +162,15 @@ export class MahjongIndividual extends LitElement {
       }
       const results = doc.data().results;
       allResults.push(...results);
+      const chonbo = doc.data().chonbo;
+      if (chonbo?.length > 0) {
+        allChonbo.push(...chonbo);
+      }
     });
     this._setDistinctYears(docs);
     this._setPlayers(docs);
     if (this._player.value) {
-      this._setPlayerData(allResults);
+      this._setPlayerData(allResults, allChonbo);
     }
   }
 
@@ -180,11 +192,13 @@ export class MahjongIndividual extends LitElement {
     this.players = distinctPlayers;
   }
 
-  private _setPlayerData(allResults: Result[]) {
+  private _setPlayerData(allResults: Result[], allChonbo: Chonbo[]) {
     const player = this._player.value;
     const playerResults = allResults.filter(
       (result) => result.player === player
     );
+    const playerChonbo = allChonbo.filter((chonbo) => chonbo.player === player);
+
     const totalGames = playerResults.length;
     const firstRate =
       playerResults.filter((result) => result.rank === 1).length / totalGames;
@@ -196,10 +210,9 @@ export class MahjongIndividual extends LitElement {
       playerResults.filter((result) => result.rank === 4).length / totalGames;
     const averageRank =
       playerResults.reduce((acc, result) => acc + result.rank, 0) / totalGames;
-    const totalPoints = playerResults.reduce(
-      (acc, result) => acc + result.point,
-      0
-    );
+    const point = playerResults.reduce((acc, result) => acc + result.point, 0);
+    const chonbo = playerChonbo.reduce((acc, result) => acc + result.point, 0);
+    const totalPoints = point + chonbo;
     const maxPoint = Math.max(...playerResults.map((result) => result.point));
     const averagePoint =
       playerResults.reduce((acc, result) => acc + result.point, 0) / totalGames;
@@ -211,6 +224,8 @@ export class MahjongIndividual extends LitElement {
       fourthRate,
       averageRank,
       totalPoints,
+      point,
+      chonbo,
       maxPoint,
       averagePoint,
     };

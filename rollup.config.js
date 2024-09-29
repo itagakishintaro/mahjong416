@@ -16,6 +16,7 @@ export default {
     today: 'mahjong-today.js',
     stats: 'mahjong-stats.js',
     individual: 'mahjong-individual.js',
+    rule: 'mahjong-rule.js',
   },
   output: {
     dir: './public',

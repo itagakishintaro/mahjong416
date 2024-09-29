@@ -18,15 +18,18 @@ export class MahjongCalc extends LitElement {
     css`
       .width-50 {
         width: calc(50% - 1rem);
-        margin-bottom: 1em;
+        margin-bottom: 0.5em;
       }
       .width-30 {
         width: 30%;
-        margin-bottom: 1em;
+        margin-bottom: 0.5em;
       }
       .results {
         margin-top: 2em;
         margin-left: 1em;
+      }
+      .controle {
+        margin-top: 1em;
       }
       md-outlined-text-field {
         --md-outlined-field-disabled-content-opacity: 1;
@@ -236,17 +239,95 @@ export class MahjongCalc extends LitElement {
           </md-outlined-text-field>
         </div>
 
-        <md-filled-tonal-button @click="${this._resetResults}"
-          >リセット</md-filled-tonal-button
-        >
-        <md-filled-button @click="${this._uploadResults}"
-          >登録</md-filled-button
-        >
-        <md-circular-progress
-          indeterminate
-          id="progress"
-          style="display: none"
-        ></md-circular-progress>
+        <pf-accordion>
+          <pf-accordion-header>
+            <h2>チョンボ</h2>
+          </pf-accordion-header>
+          <pf-accordion-panel>
+            <div>
+              <md-outlined-text-field
+                id="chonboPlayer1"
+                label="プレイヤー"
+                class="width-50"
+                type="text"
+              >
+              </md-outlined-text-field>
+              <md-outlined-text-field
+                id="chonboPoint1"
+                label="罰符"
+                class="width-30"
+                type="number"
+                value="-20"
+              >
+              </md-outlined-text-field>
+            </div>
+            <div>
+              <md-outlined-text-field
+                id="chonboPlayer2"
+                label="プレイヤー"
+                class="width-50"
+                type="text"
+              >
+              </md-outlined-text-field>
+              <md-outlined-text-field
+                id="chonboPoint2"
+                label="罰符"
+                class="width-30"
+                type="number"
+                value="-20"
+              >
+              </md-outlined-text-field>
+            </div>
+            <div>
+              <md-outlined-text-field
+                id="chonboPlayer3"
+                label="プレイヤー"
+                class="width-50"
+                type="text"
+              >
+              </md-outlined-text-field>
+              <md-outlined-text-field
+                id="chonboPoint3"
+                label="罰符"
+                class="width-30"
+                type="number"
+                value="-20"
+              >
+              </md-outlined-text-field>
+            </div>
+            <div>
+              <md-outlined-text-field
+                id="chonboPlayer4"
+                label="プレイヤー"
+                class="width-50"
+                type="text"
+              >
+              </md-outlined-text-field>
+              <md-outlined-text-field
+                id="chonboPoint4"
+                label="罰符"
+                class="width-30"
+                type="number"
+                value="-20"
+              >
+              </md-outlined-text-field>
+            </div>
+          </pf-accordion-panel>
+        </pf-accordion>
+
+        <div class="controle">
+          <md-filled-tonal-button @click="${this._resetResults}"
+            >リセット</md-filled-tonal-button
+          >
+          <md-filled-button @click="${this._uploadResults}"
+            >登録</md-filled-button
+          >
+          <md-circular-progress
+            indeterminate
+            id="progress"
+            style="display: none"
+          ></md-circular-progress>
+        </div>
       </div>
     `;
   }
@@ -298,6 +379,23 @@ export class MahjongCalc extends LitElement {
   _thirdPoint!: HTMLInputElement;
   @query('#fourthPoint')
   _fourthPoint!: HTMLInputElement;
+
+  @query('#chonboPlayer1')
+  _chonboPlayer1!: HTMLInputElement;
+  @query('#chonboPoint1')
+  _chonboPoint1!: HTMLInputElement;
+  @query('#chonboPlayer2')
+  _chonboPlayer2!: HTMLInputElement;
+  @query('#chonboPoint2')
+  _chonboPoint2!: HTMLInputElement;
+  @query('#chonboPlayer3')
+  _chonboPlayer3!: HTMLInputElement;
+  @query('#chonboPoint3')
+  _chonboPoint3!: HTMLInputElement;
+  @query('#chonboPlayer4')
+  _chonboPlayer4!: HTMLInputElement;
+  @query('#chonboPoint4')
+  _chonboPoint4!: HTMLInputElement;
 
   @query('#progress')
   _progress!: HTMLElement;
@@ -402,6 +500,7 @@ export class MahjongCalc extends LitElement {
     this._progress.style.display = 'block';
     let players: string[];
     let results: Result[];
+    const chonbo: Chonbo[] = [];
     if (this._gameType.value === '四麻') {
       players = [
         this._firstPlayer.value,
@@ -462,6 +561,31 @@ export class MahjongCalc extends LitElement {
         },
       ];
     }
+    if (this._chonboPlayer1.value !== '') {
+      chonbo.push({
+        player: this._chonboPlayer1.value,
+        point: Number(this._chonboPoint1.value),
+      });
+    }
+    if (this._chonboPlayer2.value !== '') {
+      chonbo.push({
+        player: this._chonboPlayer2.value,
+        point: Number(this._chonboPoint2.value),
+      });
+    }
+    if (this._chonboPlayer3.value !== '') {
+      chonbo.push({
+        player: this._chonboPlayer3.value,
+        point: Number(this._chonboPoint3.value),
+      });
+    }
+    if (this._chonboPlayer4.value !== '') {
+      chonbo.push({
+        player: this._chonboPlayer4.value,
+        point: Number(this._chonboPoint4.value),
+      });
+    }
+
     const data = {
       gameInfo: {
         date: this._date.value,
@@ -470,6 +594,7 @@ export class MahjongCalc extends LitElement {
         players: players,
       },
       results: results,
+      chonbo: chonbo,
     };
     try {
       const docRef = await addDoc(collection(db, 'results'), data);

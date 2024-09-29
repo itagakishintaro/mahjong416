@@ -12,6 +12,8 @@ export declare class MahjongIndividual extends LitElement {
     fourthRate: number;
     averageRank: number;
     totalPoints: number;
+    point: number;
+    chonbo: number;
     maxPoint: number;
     averagePoint: number;
   };

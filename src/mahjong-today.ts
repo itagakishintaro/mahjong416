@@ -13,7 +13,7 @@ import '@patternfly/elements/pf-accordion/pf-accordion.js';
 import {db} from './firestore';
 import {collection, getDocs} from 'firebase/firestore/lite';
 import {QueryDocumentSnapshot} from 'firebase/firestore/lite';
-import { OutlinedSelect } from '@material/web/select/internal/outlined-select';
+import {OutlinedSelect} from '@material/web/select/internal/outlined-select';
 
 @customElement('mahjong-today')
 export class MahjongToday extends LitElement {
@@ -23,6 +23,8 @@ export class MahjongToday extends LitElement {
   todaysResults: Result[][] = [];
   @property({attribute: false})
   playerPoints: Map<string, number> = new Map();
+  @property({type: Array})
+  todaysChonbo: Chonbo[][] = [];
 
   static override styles = [
     css`
@@ -52,7 +54,7 @@ export class MahjongToday extends LitElement {
       table td {
         text-align: center;
         width: 25%;
-        padding: .5em 0;
+        padding: 0.5em 0;
       }
     `,
   ];
@@ -72,10 +74,9 @@ export class MahjongToday extends LitElement {
 
       <md-outlined-select required id="date" @change="${this._changeDate}">
         ${map(this.distinctDates, (date: string) => {
-          return html`<md-select-option
-            value="${date}"
-            >${date}</md-select-option>
-          `;
+          return html`<md-select-option value="${date}"
+            >${date}</md-select-option
+          > `;
         })}
       </md-outlined-select>
 
@@ -107,20 +108,43 @@ export class MahjongToday extends LitElement {
       <table>
         <thead>
           <tr>
-          ${map(Array.from(this.playerPoints.entries()), ([player, _point]) => {
-          return html`
-              <th>${player}</th>
-          `;})}
+            ${map(
+              Array.from(this.playerPoints.entries()),
+              ([player, _point]) => {
+                return html` <th>${player}</th> `;
+              }
+            )}
           </tr>
         </thead>
         <tbody>
           <tr>
-        ${map(Array.from(this.playerPoints.entries()), ([_player, point]) => {
-          return html`
-              <td>${Math.round(point * 10) / 10}</td>
-          `;
-        })}
+            ${map(
+              Array.from(this.playerPoints.entries()),
+              ([_player, point]) => {
+                return html` <td>${Math.round(point * 10) / 10}</td> `;
+              }
+            )}
           </tr>
+        </tbody>
+      </table>
+
+      <h2>チョンボ</h2>
+      <table>
+        <thead>
+          <tr>
+            ${map(this.todaysChonbo[0], (chonbo: Chonbo) => {
+              return html` <th>${chonbo.player}</th> `;
+            })}
+          </tr>
+        </thead>
+        <tbody>
+          ${map(this.todaysChonbo, (chonboArray: Chonbo[]) => {
+            return html`<tr>
+              ${chonboArray.map((chonbo) => {
+                return html` <td>${Math.round(chonbo.point * 10) / 10}</td> `;
+              })}
+            </tr>`;
+          })}
         </tbody>
       </table>
     `;
@@ -156,6 +180,7 @@ export class MahjongToday extends LitElement {
   }
   private async _loadData() {
     this.todaysResults = [];
+    this.todaysChonbo = [];
 
     const querySnapshot = await getDocs(collection(db, 'results'));
     const docs = querySnapshot.docs;
@@ -170,7 +195,7 @@ export class MahjongToday extends LitElement {
     docs.sort((a, b) => {
       return a.data().gameInfo.order < b.data().gameInfo.order ? -1 : 1;
     });
-    
+
     docs.forEach((doc) => {
       // ゲームタイプと日付が一致するデータのみを抽出
       if (
@@ -183,6 +208,14 @@ export class MahjongToday extends LitElement {
         return a.player < b.player ? -1 : 1;
       });
       this.todaysResults.push(results);
+
+      const chonbo = doc.data().chonbo?.sort((a: Chonbo, b: Chonbo) => {
+        return a.player < b.player ? -1 : 1;
+      });
+      // チョンボ
+      if (chonbo?.length > 0) {
+        this.todaysChonbo.push(chonbo);
+      }
     });
     // this.todaysResultsのplayerごとのpointの合計を計算する
     const playerPoints = new Map<string, number>();
@@ -193,7 +226,6 @@ export class MahjongToday extends LitElement {
       });
     });
     this.playerPoints = playerPoints;
-    
   }
 
   private _setDistinctDates(docs: QueryDocumentSnapshot[]) {
