@@ -19,8 +19,8 @@ import {OutlinedSelect} from '@material/web/select/internal/outlined-select';
 export class MahjongToday extends LitElement {
   @property({type: Array})
   distinctDates: string[] = [];
-  @property({type: Array})
-  todaysResults: Result[][] = [];
+  @property({type: Object})
+  todaysResults: Map<string, Result[][]> = new Map();
   @property({attribute: false})
   playerPoints: Map<string, number> = new Map();
   @property({type: Array})
@@ -33,6 +33,10 @@ export class MahjongToday extends LitElement {
       }
       .rank-1 {
         font-weight: bold;
+      }
+
+      .table-box {
+        overflow-x: auto;
       }
 
       table {
@@ -50,11 +54,15 @@ export class MahjongToday extends LitElement {
         background-color: #d4f0fd;
       }
 
+      table th {
+        background-color: #eee;
+      }
+
       table th,
       table td {
         text-align: center;
-        width: 25%;
         padding: 0.5em 0;
+        min-width: 4em;
       }
     `,
   ];
@@ -82,51 +90,60 @@ export class MahjongToday extends LitElement {
 
       <h2>ゲームごとのポイント</h2>
       <table>
-        <thead>
-          <tr>
-            ${map(this.todaysResults[0], (result: Result) => {
-              return html` <th>${result.player}</th> `;
-            })}
-          </tr>
-        </thead>
-        <tbody>
-          ${map(this.todaysResults, (resultArray: Result[]) => {
-            return html`<tr>
-              ${resultArray.map((result) => {
-                return html`
-                  <td class="rank-${result.rank}">
-                    ${Math.round(result.point * 10) / 10}(${result.rank})
-                  </td>
-                `;
-              })}
-            </tr>`;
-          })}
-        </tbody>
+        ${map(this.todaysResults.keys(), (players: string) => {
+          return html`
+            <thead>
+              <tr>
+                ${map(this.todaysResults.get(players)![0], (result: Result) => {
+                  return html` <th>${result.player}</th> `;
+                })}
+              </tr>
+            </thead>
+            <tbody>
+              ${map(
+                this.todaysResults.get(players),
+                (resultArray: Result[]) => {
+                  return html`<tr>
+                    ${resultArray.map((result) => {
+                      return html`
+                        <td class="rank-${result.rank}">
+                          ${Math.round(result.point * 10) / 10}(${result.rank})
+                        </td>
+                      `;
+                    })}
+                  </tr>`;
+                }
+              )}
+            </tbody>
+          `;
+        })}
       </table>
 
       <h2>合計</h2>
-      <table>
-        <thead>
-          <tr>
-            ${map(
-              Array.from(this.playerPoints.entries()),
-              ([player, _point]) => {
-                return html` <th>${player}</th> `;
-              }
-            )}
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            ${map(
-              Array.from(this.playerPoints.entries()),
-              ([_player, point]) => {
-                return html` <td>${Math.round(point * 10) / 10}</td> `;
-              }
-            )}
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-box">
+        <table>
+          <thead>
+            <tr>
+              ${map(
+                Array.from(this.playerPoints.entries()),
+                ([player, _point]) => {
+                  return html` <th>${player}</th> `;
+                }
+              )}
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              ${map(
+                Array.from(this.playerPoints.entries()),
+                ([_player, point]) => {
+                  return html` <td>${Math.round(point * 10) / 10}</td> `;
+                }
+              )}
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <h2>チョンボ</h2>
       <table>
@@ -179,7 +196,7 @@ export class MahjongToday extends LitElement {
     this._loadData();
   }
   private async _loadData() {
-    this.todaysResults = [];
+    this.todaysResults = new Map();
     this.todaysChonbo = [];
 
     const querySnapshot = await getDocs(collection(db, 'results'));
@@ -196,6 +213,7 @@ export class MahjongToday extends LitElement {
       return a.data().gameInfo.order < b.data().gameInfo.order ? -1 : 1;
     });
 
+    const playerPoints = new Map<string, number>();
     docs.forEach((doc) => {
       // ゲームタイプと日付が一致するデータのみを抽出
       if (
@@ -207,7 +225,18 @@ export class MahjongToday extends LitElement {
       const results = doc.data().results.sort((a: Result, b: Result) => {
         return a.player < b.player ? -1 : 1;
       });
-      this.todaysResults.push(results);
+      const players = results.map((result: Result) => result.player).join();
+      // メンツごとに結果を保存
+      if (this.todaysResults.get(players)) {
+        this.todaysResults.get(players)!.push(results);
+      } else {
+        this.todaysResults.set(players, [results]);
+      }
+      // プレイヤーごとのポイントを計算
+      results.forEach((result: Result) => {
+        const point = playerPoints.get(result.player) || 0;
+        playerPoints.set(result.player, point + result.point);
+      });
 
       const chonbo = doc.data().chonbo?.sort((a: Chonbo, b: Chonbo) => {
         return a.player < b.player ? -1 : 1;
@@ -217,15 +246,12 @@ export class MahjongToday extends LitElement {
         this.todaysChonbo.push(chonbo);
       }
     });
-    // this.todaysResultsのplayerごとのpointの合計を計算する
-    const playerPoints = new Map<string, number>();
-    this.todaysResults.forEach((results) => {
-      results.forEach((result) => {
-        const point = playerPoints.get(result.player) || 0;
-        playerPoints.set(result.player, point + result.point);
-      });
-    });
-    this.playerPoints = playerPoints;
+    // プレイヤーごとのポイントをポイント順にソートして保存
+    this.playerPoints = new Map(
+      Array.from(playerPoints).sort((a, b) => {
+        return a[1] < b[1] ? 1 : -1;
+      })
+    );
   }
 
   private _setDistinctDates(docs: QueryDocumentSnapshot[]) {
