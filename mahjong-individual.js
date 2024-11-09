@@ -203,7 +203,7 @@ let MahjongIndividual = class MahjongIndividual extends LitElement {
                     },
                     {
                         label: '0線',
-                        borderColor: 'gray',
+                        borderColor: 'lightgray',
                         data: zeroPoints,
                         pointRadius: 0,
                         pointHoverRadius: 0,
