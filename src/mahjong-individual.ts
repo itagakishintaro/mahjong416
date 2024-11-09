@@ -241,14 +241,17 @@ export class MahjongIndividual extends LitElement {
         datasets: [
           {
             label: '獲得ポイント',
+            borderColor: 'rgba(99, 81, 159, 1)',
             data: this.chartData.map((data) => data.point),
             datalabels: {
+              color: 'rgba(99, 81, 159, 1)',
               anchor: 'end',
               align: 'end'
             },
           },
           {
             label: '0線',
+            borderColor: 'gray',
             data: zeroPoints,
             pointRadius: 0,
             pointHoverRadius: 0,
