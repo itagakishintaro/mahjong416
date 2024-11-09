@@ -114,11 +114,13 @@ let MahjongIndividual = class MahjongIndividual extends LitElement {
         this.chart = null;
         this._loadData();
     }
-    _changeGame() {
-        this._loadData();
+    async _changeGame() {
+        await this._loadData();
+        this._setChart();
     }
-    _changeYear() {
-        this._loadData();
+    async _changeYear() {
+        await this._loadData();
+        this._setChart();
     }
     async _changePlayer() {
         await this._loadData();
@@ -148,7 +150,7 @@ let MahjongIndividual = class MahjongIndividual extends LitElement {
         this._setPlayers(docs);
         if (this._player.value) {
             this._setPlayerData(allResults, allChonbo);
-            this._setChartData(docs);
+            this._setChartData(targetData);
         }
     }
     _setChartData(docs) {
