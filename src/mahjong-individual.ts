@@ -43,7 +43,12 @@ export class MahjongIndividual extends LitElement {
     averagePoint: 0,
   };
   @property({type: Array})
-  chartData: {date: string; order: string; point: number; totalPoint: number}[] = [];
+  chartData: {
+    date: string;
+    order: string;
+    point: number;
+    totalPoint: number;
+  }[] = [];
   @property({type: Object})
   chart: Chart | null = null;
 
@@ -59,7 +64,7 @@ export class MahjongIndividual extends LitElement {
 
   override render() {
     const info = html`
-          <h2>基本情報</h2>
+      <h2>基本情報</h2>
       <dt>総ゲーム数</dt>
       <dd>${this.playerData.totalGames}</dd>
       <dt>1位率</dt>
@@ -133,8 +138,8 @@ export class MahjongIndividual extends LitElement {
           >`;
         })}
       </md-outlined-select>
-      
-      ${this._player?.value ? info : ''} 
+
+      ${this._player?.value ? info : ''}
     `;
   }
 
@@ -174,7 +179,7 @@ export class MahjongIndividual extends LitElement {
     const gameType = this._gameType.value || '四麻';
     const targetYear =
       Number(this._targetYear.value) || new Date().getFullYear();
-      // ゲームタイプと年が一致するデータのみを抽出
+    // ゲームタイプと年が一致するデータのみを抽出
     const targetData = docs.filter((doc) => {
       return (
         doc.data().gameInfo.gameType === gameType &&
@@ -220,19 +225,19 @@ export class MahjongIndividual extends LitElement {
           return b.order - a.order;
         }
         return new Date(b.date).getTime() - new Date(a.date).getTime();
-      })
+      });
     this.chartData = chartData;
   }
 
   private _setChart() {
     if (this.chart) {
-      console.log('destroy'); 
+      console.log('destroy');
       this.chart.destroy();
       this._myChart.removeAttribute('width');
       this._myChart.removeAttribute('height');
     }
-    this._myChart.style.width = this.chartData.length * 50 + "px";
-    this._myChart.style.height = "400px";
+    this._myChart.style.width = this.chartData.length * 50 + 'px';
+    this._myChart.style.height = '400px';
     const zeroPoints = Array(this.chartData.length).fill(0);
 
     this.chart = new Chart(this._myChart, {
@@ -248,7 +253,7 @@ export class MahjongIndividual extends LitElement {
             datalabels: {
               color: 'rgba(99, 81, 159, 1)',
               anchor: 'end',
-              align: 'end'
+              align: 'end',
             },
           },
           {
@@ -262,7 +267,7 @@ export class MahjongIndividual extends LitElement {
             },
           },
         ],
-      }, 
+      },
       options: {
         responsive: false,
       },

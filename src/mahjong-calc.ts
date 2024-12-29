@@ -477,33 +477,51 @@ export class MahjongCalc extends LitElement {
     }
 
     // チョンボ
-    const chonboElement = this.renderRoot?.querySelector("mahjong-calc-chonbo") as LitElement;
-    const chonboPlayer1 = chonboElement?.renderRoot.querySelector("#chonboPlayer1") as HTMLInputElement
-    const chonboPoint1 = chonboElement?.renderRoot.querySelector("#chonboPoint1") as HTMLInputElement
+    const chonboElement = this.renderRoot?.querySelector(
+      'mahjong-calc-chonbo'
+    ) as LitElement;
+    const chonboPlayer1 = chonboElement?.renderRoot.querySelector(
+      '#chonboPlayer1'
+    ) as HTMLInputElement;
+    const chonboPoint1 = chonboElement?.renderRoot.querySelector(
+      '#chonboPoint1'
+    ) as HTMLInputElement;
     if (chonboPlayer1.value !== '') {
       chonbo.push({
         player: chonboPlayer1.value,
         point: Number(chonboPoint1.value),
       });
     }
-    const chonboPlayer2 = chonboElement?.renderRoot.querySelector("#chonboPlayer2") as HTMLInputElement
-    const chonboPoint2 = chonboElement?.renderRoot.querySelector("#chonboPoint2") as HTMLInputElement
+    const chonboPlayer2 = chonboElement?.renderRoot.querySelector(
+      '#chonboPlayer2'
+    ) as HTMLInputElement;
+    const chonboPoint2 = chonboElement?.renderRoot.querySelector(
+      '#chonboPoint2'
+    ) as HTMLInputElement;
     if (chonboPlayer2.value !== '') {
       chonbo.push({
         player: chonboPlayer2.value,
         point: Number(chonboPoint2.value),
       });
     }
-    const chonboPlayer3 = chonboElement?.renderRoot.querySelector("#chonboPlayer3") as HTMLInputElement
-    const chonboPoint3 = chonboElement?.renderRoot.querySelector("#chonboPoint3") as HTMLInputElement
+    const chonboPlayer3 = chonboElement?.renderRoot.querySelector(
+      '#chonboPlayer3'
+    ) as HTMLInputElement;
+    const chonboPoint3 = chonboElement?.renderRoot.querySelector(
+      '#chonboPoint3'
+    ) as HTMLInputElement;
     if (chonboPlayer3.value !== '') {
       chonbo.push({
         player: chonboPlayer3.value,
         point: Number(chonboPoint3.value),
       });
     }
-    const chonboPlayer4 = chonboElement?.renderRoot.querySelector("#chonboPlayer4") as HTMLInputElement
-    const chonboPoint4 = chonboElement?.renderRoot.querySelector("#chonboPoint4") as HTMLInputElement
+    const chonboPlayer4 = chonboElement?.renderRoot.querySelector(
+      '#chonboPlayer4'
+    ) as HTMLInputElement;
+    const chonboPoint4 = chonboElement?.renderRoot.querySelector(
+      '#chonboPoint4'
+    ) as HTMLInputElement;
     if (chonboPlayer4.value !== '') {
       chonbo.push({
         player: chonboPlayer4.value,
@@ -512,33 +530,51 @@ export class MahjongCalc extends LitElement {
     }
 
     // 役満
-    const yakumanElement = this.renderRoot?.querySelector("mahjong-calc-yakuman") as LitElement;
-    const yakumanPlayer1 = yakumanElement?.renderRoot.querySelector("#yakumanPlayer1") as HTMLInputElement
-    const yakuman1 = yakumanElement?.renderRoot.querySelector("#yakuman1") as HTMLInputElement
+    const yakumanElement = this.renderRoot?.querySelector(
+      'mahjong-calc-yakuman'
+    ) as LitElement;
+    const yakumanPlayer1 = yakumanElement?.renderRoot.querySelector(
+      '#yakumanPlayer1'
+    ) as HTMLInputElement;
+    const yakuman1 = yakumanElement?.renderRoot.querySelector(
+      '#yakuman1'
+    ) as HTMLInputElement;
     if (yakumanPlayer1.value !== '') {
       yakuman.push({
         player: yakumanPlayer1.value,
         yakuman: yakuman1.value,
       });
     }
-    const yakumanPlayer2 = yakumanElement?.renderRoot.querySelector("#yakumanPlayer2") as HTMLInputElement
-    const yakuman2 = yakumanElement?.renderRoot.querySelector("#yakuman2") as HTMLInputElement
+    const yakumanPlayer2 = yakumanElement?.renderRoot.querySelector(
+      '#yakumanPlayer2'
+    ) as HTMLInputElement;
+    const yakuman2 = yakumanElement?.renderRoot.querySelector(
+      '#yakuman2'
+    ) as HTMLInputElement;
     if (yakumanPlayer2.value !== '') {
       yakuman.push({
         player: yakumanPlayer2.value,
         yakuman: yakuman2.value,
       });
     }
-    const yakumanPlayer3 = yakumanElement?.renderRoot.querySelector("#yakumanPlayer3") as HTMLInputElement
-    const yakuman3 = yakumanElement?.renderRoot.querySelector("#yakuman3") as HTMLInputElement
+    const yakumanPlayer3 = yakumanElement?.renderRoot.querySelector(
+      '#yakumanPlayer3'
+    ) as HTMLInputElement;
+    const yakuman3 = yakumanElement?.renderRoot.querySelector(
+      '#yakuman3'
+    ) as HTMLInputElement;
     if (yakumanPlayer3.value !== '') {
       yakuman.push({
         player: yakumanPlayer3.value,
         yakuman: yakuman3.value,
       });
     }
-    const yakumanPlayer4 = yakumanElement?.renderRoot.querySelector("#yakumanPlayer4") as HTMLInputElement
-    const yakuman4 = yakumanElement?.renderRoot.querySelector("#yakuman4") as HTMLInputElement
+    const yakumanPlayer4 = yakumanElement?.renderRoot.querySelector(
+      '#yakumanPlayer4'
+    ) as HTMLInputElement;
+    const yakuman4 = yakumanElement?.renderRoot.querySelector(
+      '#yakuman4'
+    ) as HTMLInputElement;
     if (yakumanPlayer4.value !== '') {
       yakuman.push({
         player: yakumanPlayer4.value,

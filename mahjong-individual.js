@@ -16,7 +16,7 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 let MahjongIndividual = class MahjongIndividual extends LitElement {
     render() {
         const info = html `
-          <h2>基本情報</h2>
+      <h2>基本情報</h2>
       <dt>総ゲーム数</dt>
       <dd>${this.playerData.totalGames}</dd>
       <dt>1位率</dt>
@@ -89,8 +89,8 @@ let MahjongIndividual = class MahjongIndividual extends LitElement {
           >`;
         })}
       </md-outlined-select>
-      
-      ${this._player?.value ? info : ''} 
+
+      ${this._player?.value ? info : ''}
     `;
     }
     constructor() {
@@ -184,8 +184,8 @@ let MahjongIndividual = class MahjongIndividual extends LitElement {
             this._myChart.removeAttribute('width');
             this._myChart.removeAttribute('height');
         }
-        this._myChart.style.width = this.chartData.length * 50 + "px";
-        this._myChart.style.height = "400px";
+        this._myChart.style.width = this.chartData.length * 50 + 'px';
+        this._myChart.style.height = '400px';
         const zeroPoints = Array(this.chartData.length).fill(0);
         this.chart = new Chart(this._myChart, {
             plugins: [ChartDataLabels],
@@ -200,7 +200,7 @@ let MahjongIndividual = class MahjongIndividual extends LitElement {
                         datalabels: {
                             color: 'rgba(99, 81, 159, 1)',
                             anchor: 'end',
-                            align: 'end'
+                            align: 'end',
                         },
                     },
                     {

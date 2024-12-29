@@ -383,33 +383,33 @@ let MahjongCalc = class MahjongCalc extends LitElement {
             ];
         }
         // チョンボ
-        const chonboElement = this.renderRoot?.querySelector("mahjong-calc-chonbo");
-        const chonboPlayer1 = chonboElement?.renderRoot.querySelector("#chonboPlayer1");
-        const chonboPoint1 = chonboElement?.renderRoot.querySelector("#chonboPoint1");
+        const chonboElement = this.renderRoot?.querySelector('mahjong-calc-chonbo');
+        const chonboPlayer1 = chonboElement?.renderRoot.querySelector('#chonboPlayer1');
+        const chonboPoint1 = chonboElement?.renderRoot.querySelector('#chonboPoint1');
         if (chonboPlayer1.value !== '') {
             chonbo.push({
                 player: chonboPlayer1.value,
                 point: Number(chonboPoint1.value),
             });
         }
-        const chonboPlayer2 = chonboElement?.renderRoot.querySelector("#chonboPlayer2");
-        const chonboPoint2 = chonboElement?.renderRoot.querySelector("#chonboPoint2");
+        const chonboPlayer2 = chonboElement?.renderRoot.querySelector('#chonboPlayer2');
+        const chonboPoint2 = chonboElement?.renderRoot.querySelector('#chonboPoint2');
         if (chonboPlayer2.value !== '') {
             chonbo.push({
                 player: chonboPlayer2.value,
                 point: Number(chonboPoint2.value),
             });
         }
-        const chonboPlayer3 = chonboElement?.renderRoot.querySelector("#chonboPlayer3");
-        const chonboPoint3 = chonboElement?.renderRoot.querySelector("#chonboPoint3");
+        const chonboPlayer3 = chonboElement?.renderRoot.querySelector('#chonboPlayer3');
+        const chonboPoint3 = chonboElement?.renderRoot.querySelector('#chonboPoint3');
         if (chonboPlayer3.value !== '') {
             chonbo.push({
                 player: chonboPlayer3.value,
                 point: Number(chonboPoint3.value),
             });
         }
-        const chonboPlayer4 = chonboElement?.renderRoot.querySelector("#chonboPlayer4");
-        const chonboPoint4 = chonboElement?.renderRoot.querySelector("#chonboPoint4");
+        const chonboPlayer4 = chonboElement?.renderRoot.querySelector('#chonboPlayer4');
+        const chonboPoint4 = chonboElement?.renderRoot.querySelector('#chonboPoint4');
         if (chonboPlayer4.value !== '') {
             chonbo.push({
                 player: chonboPlayer4.value,
@@ -417,33 +417,33 @@ let MahjongCalc = class MahjongCalc extends LitElement {
             });
         }
         // 役満
-        const yakumanElement = this.renderRoot?.querySelector("mahjong-calc-yakuman");
-        const yakumanPlayer1 = yakumanElement?.renderRoot.querySelector("#yakumanPlayer1");
-        const yakuman1 = yakumanElement?.renderRoot.querySelector("#yakuman1");
+        const yakumanElement = this.renderRoot?.querySelector('mahjong-calc-yakuman');
+        const yakumanPlayer1 = yakumanElement?.renderRoot.querySelector('#yakumanPlayer1');
+        const yakuman1 = yakumanElement?.renderRoot.querySelector('#yakuman1');
         if (yakumanPlayer1.value !== '') {
             yakuman.push({
                 player: yakumanPlayer1.value,
                 yakuman: yakuman1.value,
             });
         }
-        const yakumanPlayer2 = yakumanElement?.renderRoot.querySelector("#yakumanPlayer2");
-        const yakuman2 = yakumanElement?.renderRoot.querySelector("#yakuman2");
+        const yakumanPlayer2 = yakumanElement?.renderRoot.querySelector('#yakumanPlayer2');
+        const yakuman2 = yakumanElement?.renderRoot.querySelector('#yakuman2');
         if (yakumanPlayer2.value !== '') {
             yakuman.push({
                 player: yakumanPlayer2.value,
                 yakuman: yakuman2.value,
             });
         }
-        const yakumanPlayer3 = yakumanElement?.renderRoot.querySelector("#yakumanPlayer3");
-        const yakuman3 = yakumanElement?.renderRoot.querySelector("#yakuman3");
+        const yakumanPlayer3 = yakumanElement?.renderRoot.querySelector('#yakumanPlayer3');
+        const yakuman3 = yakumanElement?.renderRoot.querySelector('#yakuman3');
         if (yakumanPlayer3.value !== '') {
             yakuman.push({
                 player: yakumanPlayer3.value,
                 yakuman: yakuman3.value,
             });
         }
-        const yakumanPlayer4 = yakumanElement?.renderRoot.querySelector("#yakumanPlayer4");
-        const yakuman4 = yakumanElement?.renderRoot.querySelector("#yakuman4");
+        const yakumanPlayer4 = yakumanElement?.renderRoot.querySelector('#yakumanPlayer4');
+        const yakuman4 = yakumanElement?.renderRoot.querySelector('#yakuman4');
         if (yakumanPlayer4.value !== '') {
             yakuman.push({
                 player: yakumanPlayer4.value,

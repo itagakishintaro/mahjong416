@@ -17,99 +17,98 @@ import '@patternfly/elements/pf-accordion/pf-accordion.js';
 let MahjongCalcYakuman = class MahjongCalcYakuman extends LitElement {
     render() {
         return html `
-
-<pf-accordion>
-          <pf-accordion-header>
-            <h2>役満</h2>
-          </pf-accordion-header>
-          <pf-accordion-panel>
-            <div>
-              <md-outlined-text-field
-                id="yakumanPlayer1"
-                label="プレイヤー"
-                class="width-50"
-                type="text"
-              >
-              </md-outlined-text-field>
-              <md-outlined-text-field
-                id="yakuman1"
-                label="役満"
-                class="width-30"
-                type="text"
-                value=""
-              >
-              </md-outlined-text-field>
-            </div>
-            <div>
-              <md-outlined-text-field
-                id="yakumanPlayer2"
-                label="プレイヤー"
-                class="width-50"
-                type="text"
-              >
-              </md-outlined-text-field>
-              <md-outlined-text-field
-                id="yakuman2"
-                label="役満"
-                class="width-30"
-                type="text"
-                value=""
-              >
-              </md-outlined-text-field>
-            </div>
-            <div>
-              <md-outlined-text-field
-                id="yakumanPlayer3"
-                label="プレイヤー"
-                class="width-50"
-                type="text"
-              >
-              </md-outlined-text-field>
-              <md-outlined-text-field
-                id="yakuman3"
-                label="役満"
-                class="width-30"
-                type="text"
-                value=""
-              >
-              </md-outlined-text-field>
-            </div>
-            <div>
-              <md-outlined-text-field
-                id="yakumanPlayer4"
-                label="プレイヤー"
-                class="width-50"
-                type="text"
-              >
-              </md-outlined-text-field>
-              <md-outlined-text-field
-                id="yakuman4"
-                label="役満"
-                class="width-30"
-                type="text"
-                value=""
-              >
-              </md-outlined-text-field>
-            </div>
-          </pf-accordion-panel>
-        </pf-accordion>
-        `;
+      <pf-accordion>
+        <pf-accordion-header>
+          <h2>役満</h2>
+        </pf-accordion-header>
+        <pf-accordion-panel>
+          <div>
+            <md-outlined-text-field
+              id="yakumanPlayer1"
+              label="プレイヤー"
+              class="width-50"
+              type="text"
+            >
+            </md-outlined-text-field>
+            <md-outlined-text-field
+              id="yakuman1"
+              label="役満"
+              class="width-30"
+              type="text"
+              value=""
+            >
+            </md-outlined-text-field>
+          </div>
+          <div>
+            <md-outlined-text-field
+              id="yakumanPlayer2"
+              label="プレイヤー"
+              class="width-50"
+              type="text"
+            >
+            </md-outlined-text-field>
+            <md-outlined-text-field
+              id="yakuman2"
+              label="役満"
+              class="width-30"
+              type="text"
+              value=""
+            >
+            </md-outlined-text-field>
+          </div>
+          <div>
+            <md-outlined-text-field
+              id="yakumanPlayer3"
+              label="プレイヤー"
+              class="width-50"
+              type="text"
+            >
+            </md-outlined-text-field>
+            <md-outlined-text-field
+              id="yakuman3"
+              label="役満"
+              class="width-30"
+              type="text"
+              value=""
+            >
+            </md-outlined-text-field>
+          </div>
+          <div>
+            <md-outlined-text-field
+              id="yakumanPlayer4"
+              label="プレイヤー"
+              class="width-50"
+              type="text"
+            >
+            </md-outlined-text-field>
+            <md-outlined-text-field
+              id="yakuman4"
+              label="役満"
+              class="width-30"
+              type="text"
+              value=""
+            >
+            </md-outlined-text-field>
+          </div>
+        </pf-accordion-panel>
+      </pf-accordion>
+    `;
     }
 };
 MahjongCalcYakuman.styles = [
     css `
-        .width-50 {
-          width: calc(50% - 1rem);
-          margin-bottom: 0.5em;
-        }
-        .width-30 {
-          width: 30%;
-          margin-bottom: 0.5em;
-        }
-        md-outlined-text-field {
-          --md-outlined-field-disabled-content-opacity: 1;
-        }
-      `,
+      .width-50 {
+        width: calc(50% - 1rem);
+        margin-bottom: 0.5em;
+      }
+      .width-30 {
+        width: 30%;
+        margin-bottom: 0.5em;
+      }
+      md-outlined-text-field {
+        --md-outlined-field-disabled-content-opacity: 1;
+      }
+    `,
 ];
 MahjongCalcYakuman = __decorate([
     customElement('mahjong-calc-yakuman')
