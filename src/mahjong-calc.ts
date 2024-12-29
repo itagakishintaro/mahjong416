@@ -11,6 +11,8 @@ import '@material/web/progress/circular-progress.js';
 import '@patternfly/elements/pf-accordion/pf-accordion.js';
 import {db} from './firestore';
 import {collection, addDoc} from 'firebase/firestore/lite';
+import './mahjong-calc-chonbo.js';
+import './mahjong-calc-yakuman.js';
 
 @customElement('mahjong-calc')
 export class MahjongCalc extends LitElement {
@@ -238,82 +240,10 @@ export class MahjongCalc extends LitElement {
           >
           </md-outlined-text-field>
         </div>
-
-        <pf-accordion>
-          <pf-accordion-header>
-            <h2>チョンボ</h2>
-          </pf-accordion-header>
-          <pf-accordion-panel>
-            <div>
-              <md-outlined-text-field
-                id="chonboPlayer1"
-                label="プレイヤー"
-                class="width-50"
-                type="text"
-              >
-              </md-outlined-text-field>
-              <md-outlined-text-field
-                id="chonboPoint1"
-                label="罰符"
-                class="width-30"
-                type="number"
-                value="-20"
-              >
-              </md-outlined-text-field>
-            </div>
-            <div>
-              <md-outlined-text-field
-                id="chonboPlayer2"
-                label="プレイヤー"
-                class="width-50"
-                type="text"
-              >
-              </md-outlined-text-field>
-              <md-outlined-text-field
-                id="chonboPoint2"
-                label="罰符"
-                class="width-30"
-                type="number"
-                value="-20"
-              >
-              </md-outlined-text-field>
-            </div>
-            <div>
-              <md-outlined-text-field
-                id="chonboPlayer3"
-                label="プレイヤー"
-                class="width-50"
-                type="text"
-              >
-              </md-outlined-text-field>
-              <md-outlined-text-field
-                id="chonboPoint3"
-                label="罰符"
-                class="width-30"
-                type="number"
-                value="-20"
-              >
-              </md-outlined-text-field>
-            </div>
-            <div>
-              <md-outlined-text-field
-                id="chonboPlayer4"
-                label="プレイヤー"
-                class="width-50"
-                type="text"
-              >
-              </md-outlined-text-field>
-              <md-outlined-text-field
-                id="chonboPoint4"
-                label="罰符"
-                class="width-30"
-                type="number"
-                value="-20"
-              >
-              </md-outlined-text-field>
-            </div>
-          </pf-accordion-panel>
-        </pf-accordion>
+        <!-- チョンボ -->
+        <mahjong-calc-chonbo></mahjong-calc-chonbo>
+        <!-- 役満 -->
+        <mahjong-calc-yakuman></mahjong-calc-yakuman>
 
         <div class="controle">
           <md-filled-tonal-button @click="${this._resetResults}"
@@ -379,23 +309,6 @@ export class MahjongCalc extends LitElement {
   _thirdPoint!: HTMLInputElement;
   @query('#fourthPoint')
   _fourthPoint!: HTMLInputElement;
-
-  @query('#chonboPlayer1')
-  _chonboPlayer1!: HTMLInputElement;
-  @query('#chonboPoint1')
-  _chonboPoint1!: HTMLInputElement;
-  @query('#chonboPlayer2')
-  _chonboPlayer2!: HTMLInputElement;
-  @query('#chonboPoint2')
-  _chonboPoint2!: HTMLInputElement;
-  @query('#chonboPlayer3')
-  _chonboPlayer3!: HTMLInputElement;
-  @query('#chonboPoint3')
-  _chonboPoint3!: HTMLInputElement;
-  @query('#chonboPlayer4')
-  _chonboPlayer4!: HTMLInputElement;
-  @query('#chonboPoint4')
-  _chonboPoint4!: HTMLInputElement;
 
   @query('#progress')
   _progress!: HTMLElement;
@@ -501,6 +414,7 @@ export class MahjongCalc extends LitElement {
     let players: string[];
     let results: Result[];
     const chonbo: Chonbo[] = [];
+    const yakuman: Yakuman[] = [];
     if (this._gameType.value === '四麻') {
       players = [
         this._firstPlayer.value,
@@ -561,28 +475,74 @@ export class MahjongCalc extends LitElement {
         },
       ];
     }
-    if (this._chonboPlayer1.value !== '') {
+
+    // チョンボ
+    const chonboElement = this.renderRoot?.querySelector("mahjong-calc-chonbo") as LitElement;
+    const chonboPlayer1 = chonboElement?.renderRoot.querySelector("#chonboPlayer1") as HTMLInputElement
+    const chonboPoint1 = chonboElement?.renderRoot.querySelector("#chonboPoint1") as HTMLInputElement
+    if (chonboPlayer1.value !== '') {
       chonbo.push({
-        player: this._chonboPlayer1.value,
-        point: Number(this._chonboPoint1.value),
+        player: chonboPlayer1.value,
+        point: Number(chonboPoint1.value),
       });
     }
-    if (this._chonboPlayer2.value !== '') {
+    const chonboPlayer2 = chonboElement?.renderRoot.querySelector("#chonboPlayer2") as HTMLInputElement
+    const chonboPoint2 = chonboElement?.renderRoot.querySelector("#chonboPoint2") as HTMLInputElement
+    if (chonboPlayer2.value !== '') {
       chonbo.push({
-        player: this._chonboPlayer2.value,
-        point: Number(this._chonboPoint2.value),
+        player: chonboPlayer2.value,
+        point: Number(chonboPoint2.value),
       });
     }
-    if (this._chonboPlayer3.value !== '') {
+    const chonboPlayer3 = chonboElement?.renderRoot.querySelector("#chonboPlayer3") as HTMLInputElement
+    const chonboPoint3 = chonboElement?.renderRoot.querySelector("#chonboPoint3") as HTMLInputElement
+    if (chonboPlayer3.value !== '') {
       chonbo.push({
-        player: this._chonboPlayer3.value,
-        point: Number(this._chonboPoint3.value),
+        player: chonboPlayer3.value,
+        point: Number(chonboPoint3.value),
       });
     }
-    if (this._chonboPlayer4.value !== '') {
+    const chonboPlayer4 = chonboElement?.renderRoot.querySelector("#chonboPlayer4") as HTMLInputElement
+    const chonboPoint4 = chonboElement?.renderRoot.querySelector("#chonboPoint4") as HTMLInputElement
+    if (chonboPlayer4.value !== '') {
       chonbo.push({
-        player: this._chonboPlayer4.value,
-        point: Number(this._chonboPoint4.value),
+        player: chonboPlayer4.value,
+        point: Number(chonboPoint4.value),
+      });
+    }
+
+    // 役満
+    const yakumanElement = this.renderRoot?.querySelector("mahjong-calc-yakuman") as LitElement;
+    const yakumanPlayer1 = yakumanElement?.renderRoot.querySelector("#yakumanPlayer1") as HTMLInputElement
+    const yakuman1 = yakumanElement?.renderRoot.querySelector("#yakuman1") as HTMLInputElement
+    if (yakumanPlayer1.value !== '') {
+      yakuman.push({
+        player: yakumanPlayer1.value,
+        yakuman: yakuman1.value,
+      });
+    }
+    const yakumanPlayer2 = yakumanElement?.renderRoot.querySelector("#yakumanPlayer2") as HTMLInputElement
+    const yakuman2 = yakumanElement?.renderRoot.querySelector("#yakuman2") as HTMLInputElement
+    if (yakumanPlayer2.value !== '') {
+      yakuman.push({
+        player: yakumanPlayer2.value,
+        yakuman: yakuman2.value,
+      });
+    }
+    const yakumanPlayer3 = yakumanElement?.renderRoot.querySelector("#yakumanPlayer3") as HTMLInputElement
+    const yakuman3 = yakumanElement?.renderRoot.querySelector("#yakuman3") as HTMLInputElement
+    if (yakumanPlayer3.value !== '') {
+      yakuman.push({
+        player: yakumanPlayer3.value,
+        yakuman: yakuman3.value,
+      });
+    }
+    const yakumanPlayer4 = yakumanElement?.renderRoot.querySelector("#yakumanPlayer4") as HTMLInputElement
+    const yakuman4 = yakumanElement?.renderRoot.querySelector("#yakuman4") as HTMLInputElement
+    if (yakumanPlayer4.value !== '') {
+      yakuman.push({
+        player: yakumanPlayer4.value,
+        yakuman: yakuman4.value,
       });
     }
 
@@ -595,6 +555,7 @@ export class MahjongCalc extends LitElement {
       },
       results: results,
       chonbo: chonbo,
+      yakuman: yakuman,
     };
     try {
       const docRef = await addDoc(collection(db, 'results'), data);

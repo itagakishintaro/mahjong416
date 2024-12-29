@@ -17,6 +17,8 @@ import '@material/web/progress/circular-progress.js';
 import '@patternfly/elements/pf-accordion/pf-accordion.js';
 import { db } from './firestore';
 import { collection, addDoc } from 'firebase/firestore/lite';
+import './mahjong-calc-chonbo.js';
+import './mahjong-calc-yakuman.js';
 let MahjongCalc = class MahjongCalc extends LitElement {
     render() {
         return html `
@@ -219,82 +221,10 @@ let MahjongCalc = class MahjongCalc extends LitElement {
           >
           </md-outlined-text-field>
         </div>
-
-        <pf-accordion>
-          <pf-accordion-header>
-            <h2>チョンボ</h2>
-          </pf-accordion-header>
-          <pf-accordion-panel>
-            <div>
-              <md-outlined-text-field
-                id="chonboPlayer1"
-                label="プレイヤー"
-                class="width-50"
-                type="text"
-              >
-              </md-outlined-text-field>
-              <md-outlined-text-field
-                id="chonboPoint1"
-                label="罰符"
-                class="width-30"
-                type="number"
-                value="-20"
-              >
-              </md-outlined-text-field>
-            </div>
-            <div>
-              <md-outlined-text-field
-                id="chonboPlayer2"
-                label="プレイヤー"
-                class="width-50"
-                type="text"
-              >
-              </md-outlined-text-field>
-              <md-outlined-text-field
-                id="chonboPoint2"
-                label="罰符"
-                class="width-30"
-                type="number"
-                value="-20"
-              >
-              </md-outlined-text-field>
-            </div>
-            <div>
-              <md-outlined-text-field
-                id="chonboPlayer3"
-                label="プレイヤー"
-                class="width-50"
-                type="text"
-              >
-              </md-outlined-text-field>
-              <md-outlined-text-field
-                id="chonboPoint3"
-                label="罰符"
-                class="width-30"
-                type="number"
-                value="-20"
-              >
-              </md-outlined-text-field>
-            </div>
-            <div>
-              <md-outlined-text-field
-                id="chonboPlayer4"
-                label="プレイヤー"
-                class="width-50"
-                type="text"
-              >
-              </md-outlined-text-field>
-              <md-outlined-text-field
-                id="chonboPoint4"
-                label="罰符"
-                class="width-30"
-                type="number"
-                value="-20"
-              >
-              </md-outlined-text-field>
-            </div>
-          </pf-accordion-panel>
-        </pf-accordion>
+        <!-- チョンボ -->
+        <mahjong-calc-chonbo></mahjong-calc-chonbo>
+        <!-- 役満 -->
+        <mahjong-calc-yakuman></mahjong-calc-yakuman>
 
         <div class="controle">
           <md-filled-tonal-button @click="${this._resetResults}"
@@ -390,6 +320,7 @@ let MahjongCalc = class MahjongCalc extends LitElement {
         let players;
         let results;
         const chonbo = [];
+        const yakuman = [];
         if (this._gameType.value === '四麻') {
             players = [
                 this._firstPlayer.value,
@@ -451,28 +382,72 @@ let MahjongCalc = class MahjongCalc extends LitElement {
                 },
             ];
         }
-        if (this._chonboPlayer1.value !== '') {
+        // チョンボ
+        const chonboElement = this.renderRoot?.querySelector("mahjong-calc-chonbo");
+        const chonboPlayer1 = chonboElement?.renderRoot.querySelector("#chonboPlayer1");
+        const chonboPoint1 = chonboElement?.renderRoot.querySelector("#chonboPoint1");
+        if (chonboPlayer1.value !== '') {
             chonbo.push({
-                player: this._chonboPlayer1.value,
-                point: Number(this._chonboPoint1.value),
+                player: chonboPlayer1.value,
+                point: Number(chonboPoint1.value),
             });
         }
-        if (this._chonboPlayer2.value !== '') {
+        const chonboPlayer2 = chonboElement?.renderRoot.querySelector("#chonboPlayer2");
+        const chonboPoint2 = chonboElement?.renderRoot.querySelector("#chonboPoint2");
+        if (chonboPlayer2.value !== '') {
             chonbo.push({
-                player: this._chonboPlayer2.value,
-                point: Number(this._chonboPoint2.value),
+                player: chonboPlayer2.value,
+                point: Number(chonboPoint2.value),
             });
         }
-        if (this._chonboPlayer3.value !== '') {
+        const chonboPlayer3 = chonboElement?.renderRoot.querySelector("#chonboPlayer3");
+        const chonboPoint3 = chonboElement?.renderRoot.querySelector("#chonboPoint3");
+        if (chonboPlayer3.value !== '') {
             chonbo.push({
-                player: this._chonboPlayer3.value,
-                point: Number(this._chonboPoint3.value),
+                player: chonboPlayer3.value,
+                point: Number(chonboPoint3.value),
             });
         }
-        if (this._chonboPlayer4.value !== '') {
+        const chonboPlayer4 = chonboElement?.renderRoot.querySelector("#chonboPlayer4");
+        const chonboPoint4 = chonboElement?.renderRoot.querySelector("#chonboPoint4");
+        if (chonboPlayer4.value !== '') {
             chonbo.push({
-                player: this._chonboPlayer4.value,
-                point: Number(this._chonboPoint4.value),
+                player: chonboPlayer4.value,
+                point: Number(chonboPoint4.value),
+            });
+        }
+        // 役満
+        const yakumanElement = this.renderRoot?.querySelector("mahjong-calc-yakuman");
+        const yakumanPlayer1 = yakumanElement?.renderRoot.querySelector("#yakumanPlayer1");
+        const yakuman1 = yakumanElement?.renderRoot.querySelector("#yakuman1");
+        if (yakumanPlayer1.value !== '') {
+            yakuman.push({
+                player: yakumanPlayer1.value,
+                yakuman: yakuman1.value,
+            });
+        }
+        const yakumanPlayer2 = yakumanElement?.renderRoot.querySelector("#yakumanPlayer2");
+        const yakuman2 = yakumanElement?.renderRoot.querySelector("#yakuman2");
+        if (yakumanPlayer2.value !== '') {
+            yakuman.push({
+                player: yakumanPlayer2.value,
+                yakuman: yakuman2.value,
+            });
+        }
+        const yakumanPlayer3 = yakumanElement?.renderRoot.querySelector("#yakumanPlayer3");
+        const yakuman3 = yakumanElement?.renderRoot.querySelector("#yakuman3");
+        if (yakumanPlayer3.value !== '') {
+            yakuman.push({
+                player: yakumanPlayer3.value,
+                yakuman: yakuman3.value,
+            });
+        }
+        const yakumanPlayer4 = yakumanElement?.renderRoot.querySelector("#yakumanPlayer4");
+        const yakuman4 = yakumanElement?.renderRoot.querySelector("#yakuman4");
+        if (yakumanPlayer4.value !== '') {
+            yakuman.push({
+                player: yakumanPlayer4.value,
+                yakuman: yakuman4.value,
             });
         }
         const data = {
@@ -484,6 +459,7 @@ let MahjongCalc = class MahjongCalc extends LitElement {
             },
             results: results,
             chonbo: chonbo,
+            yakuman: yakuman,
         };
         try {
             const docRef = await addDoc(collection(db, 'results'), data);
@@ -583,30 +559,6 @@ __decorate([
 __decorate([
     query('#fourthPoint')
 ], MahjongCalc.prototype, "_fourthPoint", void 0);
-__decorate([
-    query('#chonboPlayer1')
-], MahjongCalc.prototype, "_chonboPlayer1", void 0);
-__decorate([
-    query('#chonboPoint1')
-], MahjongCalc.prototype, "_chonboPoint1", void 0);
-__decorate([
-    query('#chonboPlayer2')
-], MahjongCalc.prototype, "_chonboPlayer2", void 0);
-__decorate([
-    query('#chonboPoint2')
-], MahjongCalc.prototype, "_chonboPoint2", void 0);
-__decorate([
-    query('#chonboPlayer3')
-], MahjongCalc.prototype, "_chonboPlayer3", void 0);
-__decorate([
-    query('#chonboPoint3')
-], MahjongCalc.prototype, "_chonboPoint3", void 0);
-__decorate([
-    query('#chonboPlayer4')
-], MahjongCalc.prototype, "_chonboPlayer4", void 0);
-__decorate([
-    query('#chonboPoint4')
-], MahjongCalc.prototype, "_chonboPoint4", void 0);
 __decorate([
     query('#progress')
 ], MahjongCalc.prototype, "_progress", void 0);

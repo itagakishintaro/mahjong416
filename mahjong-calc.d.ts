@@ -7,6 +7,8 @@ import '@material/web/button/filled-tonal-button.js';
 import '@material/web/button/filled-button.js';
 import '@material/web/progress/circular-progress.js';
 import '@patternfly/elements/pf-accordion/pf-accordion.js';
+import './mahjong-calc-chonbo.js';
+import './mahjong-calc-yakuman.js';
 export declare class MahjongCalc extends LitElement {
     static styles: import("lit").CSSResult[];
     render(): import("lit-html").TemplateResult<1>;
@@ -31,14 +33,6 @@ export declare class MahjongCalc extends LitElement {
     _secondPoint: HTMLInputElement;
     _thirdPoint: HTMLInputElement;
     _fourthPoint: HTMLInputElement;
-    _chonboPlayer1: HTMLInputElement;
-    _chonboPoint1: HTMLInputElement;
-    _chonboPlayer2: HTMLInputElement;
-    _chonboPoint2: HTMLInputElement;
-    _chonboPlayer3: HTMLInputElement;
-    _chonboPoint3: HTMLInputElement;
-    _chonboPlayer4: HTMLInputElement;
-    _chonboPoint4: HTMLInputElement;
     _progress: HTMLElement;
     private _calcFirstPoint;
     private _calcSecondPoint;

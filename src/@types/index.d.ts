@@ -16,3 +16,8 @@ interface Chonbo {
   player: string;
   point: number;
 }
+
+interface Yakuman {
+  player: string;
+  yakuman: string;
+}
