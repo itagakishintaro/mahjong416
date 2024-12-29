@@ -1,4 +1,4 @@
-import{i as t,t as e,h as i,k as d}from"./custom-element-6f1a92a3.js";import{n as l,e as o}from"./select-option-ec247a15.js";import"./pf-accordion-cc199819.js";import"./filled-button-87178736.js";import{a,c as n,d as r}from"./firestore-4afe899e.js";var s=function(t,e,i,d){for(var l,o=arguments.length,a=o<3?e:null===d?d=Object.getOwnPropertyDescriptor(e,i):d,n=t.length-1;n>=0;n--)(l=t[n])&&(a=(o<3?l(a):o>3?l(e,i,a):l(e,i))||a);return o>3&&a&&Object.defineProperty(e,i,a),a};let c=class extends i{render(){return d`
+import{i as t,t as e,h as i,k as d}from"./custom-element-6f1a92a3.js";import{n as l,e as o}from"./select-option-ec247a15.js";import"./pf-accordion-cc199819.js";import"./filled-button-87178736.js";import{a,c as n,d as r}from"./firestore-724ae668.js";var s=function(t,e,i,d){for(var l,o=arguments.length,a=o<3?e:null===d?d=Object.getOwnPropertyDescriptor(e,i):d,n=t.length-1;n>=0;n--)(l=t[n])&&(a=(o<3?l(a):o>3?l(e,i,a):l(e,i))||a);return o>3&&a&&Object.defineProperty(e,i,a),a};let c=class extends i{render(){return d`
       <pf-accordion>
         <pf-accordion-header>
           <h2>チョンボ</h2>
@@ -75,18 +75,18 @@ import{i as t,t as e,h as i,k as d}from"./custom-element-6f1a92a3.js";import{n a
         </pf-accordion-panel>
       </pf-accordion>
     `}};c.styles=[t`
-    .width-50 {
-      width: calc(50% - 1rem);
-      margin-bottom: 0.5em;
-    }
-    .width-30 {
-      width: 30%;
-      margin-bottom: 0.5em;
-    }
-    md-outlined-text-field {
-      --md-outlined-field-disabled-content-opacity: 1;
-    }
-  `],c=s([e("mahjong-calc-chonbo")],c);var h=function(t,e,i,d){for(var l,o=arguments.length,a=o<3?e:null===d?d=Object.getOwnPropertyDescriptor(e,i):d,n=t.length-1;n>=0;n--)(l=t[n])&&(a=(o<3?l(a):o>3?l(e,i,a):l(e,i))||a);return o>3&&a&&Object.defineProperty(e,i,a),a};let m=class extends i{render(){return d`
+      .width-50 {
+        width: calc(50% - 1rem);
+        margin-bottom: 0.5em;
+      }
+      .width-30 {
+        width: 30%;
+        margin-bottom: 0.5em;
+      }
+      md-outlined-text-field {
+        --md-outlined-field-disabled-content-opacity: 1;
+      }
+    `],c=s([e("mahjong-calc-chonbo")],c);var h=function(t,e,i,d){for(var l,o=arguments.length,a=o<3?e:null===d?d=Object.getOwnPropertyDescriptor(e,i):d,n=t.length-1;n>=0;n--)(l=t[n])&&(a=(o<3?l(a):o>3?l(e,i,a):l(e,i))||a);return o>3&&a&&Object.defineProperty(e,i,a),a};let m=class extends i{render(){return d`
       <pf-accordion>
         <pf-accordion-header>
           <h2>役満</h2>
@@ -163,18 +163,18 @@ import{i as t,t as e,h as i,k as d}from"./custom-element-6f1a92a3.js";import{n a
         </pf-accordion-panel>
       </pf-accordion>
     `}};m.styles=[t`
-    .width-50 {
-      width: calc(50% - 1rem);
-      margin-bottom: 0.5em;
-    }
-    .width-30 {
-      width: 30%;
-      margin-bottom: 0.5em;
-    }
-    md-outlined-text-field {
-      --md-outlined-field-disabled-content-opacity: 1;
-    }
-  `],m=h([e("mahjong-calc-yakuman")],m);var u=function(t,e,i,d){for(var l,o=arguments.length,a=o<3?e:null===d?d=Object.getOwnPropertyDescriptor(e,i):d,n=t.length-1;n>=0;n--)(l=t[n])&&(a=(o<3?l(a):o>3?l(e,i,a):l(e,i))||a);return o>3&&a&&Object.defineProperty(e,i,a),a};let f=class extends i{constructor(){super(...arguments),this.isPointCheckError=!0}render(){return d`
+      .width-50 {
+        width: calc(50% - 1rem);
+        margin-bottom: 0.5em;
+      }
+      .width-30 {
+        width: 30%;
+        margin-bottom: 0.5em;
+      }
+      md-outlined-text-field {
+        --md-outlined-field-disabled-content-opacity: 1;
+      }
+    `],m=h([e("mahjong-calc-yakuman")],m);var u=function(t,e,i,d){for(var l,o=arguments.length,a=o<3?e:null===d?d=Object.getOwnPropertyDescriptor(e,i):d,n=t.length-1;n>=0;n--)(l=t[n])&&(a=(o<3?l(a):o>3?l(e,i,a):l(e,i))||a);return o>3&&a&&Object.defineProperty(e,i,a),a};let f=class extends i{constructor(){super(...arguments),this.isPointCheckError=!0}render(){return d`
       <h1>点数計算</h1>
 
       <md-outlined-select required id="gameType" @change="${this._changeGame}">
