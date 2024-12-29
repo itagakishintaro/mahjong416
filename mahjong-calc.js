@@ -342,7 +342,7 @@ let MahjongCalc = class MahjongCalc extends LitElement {
     }
     _changeGame() {
         if (this._gameType.value === '三麻') {
-            this._changeSettings('35000', '40000', '15', '0', '-15', '0', true);
+            this._changeSettings('35000', '35000', '15', '0', '-15', '0', true);
         }
         else {
             this._changeSettings('25000', '30000', '50', '10', '-10', '-30', false);
