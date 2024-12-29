@@ -1,25 +1,6 @@
-import {t as l, h as i, k as e} from './custom-element-6f1a92a3.js';
-var t = function (l, i, e, t) {
-  for (
-    var r,
-      u = arguments.length,
-      a =
-        u < 3
-          ? i
-          : null === t
-          ? (t = Object.getOwnPropertyDescriptor(i, e))
-          : t,
-      p = l.length - 1;
-    p >= 0;
-    p--
-  )
-    (r = l[p]) && (a = (u < 3 ? r(a) : u > 3 ? r(i, e, a) : r(i, e)) || a);
-  return u > 3 && a && Object.defineProperty(i, e, a), a;
-};
-let r = class extends i {
-  render() {
-    return e`
+import{t as l,h as i,k as e}from"./custom-element-6f1a92a3.js";var t=function(l,i,e,t){for(var r,p=arguments.length,u=p<3?i:null===t?t=Object.getOwnPropertyDescriptor(i,e):t,a=l.length-1;a>=0;a--)(r=l[a])&&(u=(p<3?r(u):p>3?r(i,e,u):r(i,e))||u);return p>3&&u&&Object.defineProperty(i,e,u),u};let r=class extends i{render(){return e`
       <h1>ルール</h1>
+      <p>※参加者全員が合意のうえであれば、ルールを変えることも可とする（例. 符計算を用いた点数計算）。その場合も得点は通常と同様に集計する。</p>
       <h2>四麻</h2>
       <p>
         <a href="https://m-league.jp/about/" target="_blank">Mリーグのルール</a
@@ -52,8 +33,4 @@ let r = class extends i {
           オープンリーチ：アガリ牌に関係する牌のみ表示することで、通常のリーチの一翻に加えて、もう一翻適用される
         </li>
       </ul>
-    `;
-  }
-};
-r = t([l('mahjong-rule')], r);
-export {r as MahjongRule};
+    `}};r=t([l("mahjong-rule")],r);export{r as MahjongRule};

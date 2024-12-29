@@ -142,7 +142,7 @@ export class MahjongStats extends LitElement {
             </tr>`
           : html`
               <tr>
-                <th>順位</th>
+                <th>日付</th>
                 <th>プレイヤー</th>
                 <th>役満</th>
               </tr>
