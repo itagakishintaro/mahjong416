@@ -1,5 +1,5 @@
 import {LitElement, html, css} from 'lit';
-import {query} from 'lit/decorators.js';
+import {property, query} from 'lit/decorators.js';
 import {customElement} from 'lit/decorators.js';
 import '@material/web/textfield/outlined-text-field.js';
 import '@material/web/textfield/filled-text-field.js';
@@ -249,7 +249,9 @@ export class MahjongCalc extends LitElement {
           <md-filled-tonal-button @click="${this._resetResults}"
             >リセット</md-filled-tonal-button
           >
-          <md-filled-button @click="${this._uploadResults}"
+          <md-filled-button
+            @click="${this._uploadResults}"
+            ?disabled="${this.isPointCheckError}"
             >登録</md-filled-button
           >
           <md-circular-progress
@@ -261,6 +263,9 @@ export class MahjongCalc extends LitElement {
       </div>
     `;
   }
+
+  @property({type: Boolean})
+  isPointCheckError = true;
 
   @query('#gameType')
   _gameType!: HTMLSelectElement;
@@ -321,6 +326,7 @@ export class MahjongCalc extends LitElement {
       (Number(this._firstScore.value) - Number(this._oka.value)) / 1000 +
         Number(this._firstUma.value)
     );
+    this._setIsPointCheckError();
   }
   private _calcSecondPoint() {
     if (this._secondScore.value === '') {
@@ -330,6 +336,7 @@ export class MahjongCalc extends LitElement {
       (Number(this._secondScore.value) - Number(this._oka.value)) / 1000 +
         Number(this._secondUma.value)
     );
+    this._setIsPointCheckError();
   }
   private _calcThirdPoint() {
     if (this._thirdScore.value === '') {
@@ -339,6 +346,7 @@ export class MahjongCalc extends LitElement {
       (Number(this._thirdScore.value) - Number(this._oka.value)) / 1000 +
         Number(this._thirdUma.value)
     );
+    this._setIsPointCheckError();
   }
   private _calcFourthPoint() {
     if (this._fourthScore.value === '') {
@@ -348,6 +356,7 @@ export class MahjongCalc extends LitElement {
       (Number(this._fourthScore.value) - Number(this._oka.value)) / 1000 +
         Number(this._fourthUma.value)
     );
+    this._setIsPointCheckError();
   }
 
   private _changeGame() {
@@ -359,6 +368,26 @@ export class MahjongCalc extends LitElement {
     this._resetResults();
   }
 
+  private _setIsPointCheckError() {
+    const isSanma = this._gameType?.value === '三麻';
+    const scores = [
+      Number(this._firstScore?.value),
+      Number(this._secondScore?.value),
+      Number(this._thirdScore?.value),
+    ];
+
+    if (!isSanma) {
+      scores.push(Number(this._fourthScore?.value));
+    }
+
+    const totalScore = scores.reduce((acc, score) => acc + score, 0);
+    const expectedTotal = Number(this._initialPoint?.value) * (isSanma ? 3 : 4);
+
+    this.isPointCheckError = !(
+      this._initialPoint && totalScore === expectedTotal
+    );
+  }
+
   private _changeSettings(
     initialPoint: string,
     oka: string,
@@ -368,9 +397,7 @@ export class MahjongCalc extends LitElement {
     fourthUma: string,
     noFourth: boolean
   ) {
-    (
-      this.shadowRoot?.getElementById('initialPoint') as HTMLInputElement
-    ).value = initialPoint;
+    this._initialPoint.value = initialPoint;
     this._oka.value = oka;
     this._firstUma.value = firstUma;
     this._secondUma.value = secondUma;

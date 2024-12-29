@@ -1,25 +1,12 @@
-var __decorate =
-  (this && this.__decorate) ||
-  function (decorators, target, key, desc) {
-    var c = arguments.length,
-      r =
-        c < 3
-          ? target
-          : desc === null
-          ? (desc = Object.getOwnPropertyDescriptor(target, key))
-          : desc,
-      d;
-    if (typeof Reflect === 'object' && typeof Reflect.decorate === 'function')
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if ((d = decorators[i]))
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-import {LitElement, html, css} from 'lit';
-import {query} from 'lit/decorators.js';
-import {customElement} from 'lit/decorators.js';
+};
+import { LitElement, html, css } from 'lit';
+import { property, query } from 'lit/decorators.js';
+import { customElement } from 'lit/decorators.js';
 import '@material/web/textfield/outlined-text-field.js';
 import '@material/web/textfield/filled-text-field.js';
 import '@material/web/select/outlined-select.js';
@@ -28,13 +15,17 @@ import '@material/web/button/filled-tonal-button.js';
 import '@material/web/button/filled-button.js';
 import '@material/web/progress/circular-progress.js';
 import '@patternfly/elements/pf-accordion/pf-accordion.js';
-import {db} from './firestore';
-import {collection, addDoc} from 'firebase/firestore/lite';
+import { db } from './firestore';
+import { collection, addDoc } from 'firebase/firestore/lite';
 import './mahjong-calc-chonbo.js';
 import './mahjong-calc-yakuman.js';
 let MahjongCalc = class MahjongCalc extends LitElement {
-  render() {
-    return html`
+    constructor() {
+        super(...arguments);
+        this.isPointCheckError = true;
+    }
+    render() {
+        return html `
       <h1>点数計算</h1>
 
       <md-outlined-select required id="gameType" @change="${this._changeGame}">
@@ -243,7 +234,9 @@ let MahjongCalc = class MahjongCalc extends LitElement {
           <md-filled-tonal-button @click="${this._resetResults}"
             >リセット</md-filled-tonal-button
           >
-          <md-filled-button @click="${this._uploadResults}"
+          <md-filled-button
+            @click="${this._uploadResults}"
+            ?disabled="${this.isPointCheckError}"
             >登録</md-filled-button
           >
           <md-circular-progress
@@ -254,376 +247,350 @@ let MahjongCalc = class MahjongCalc extends LitElement {
         </div>
       </div>
     `;
-  }
-  _calcFirstPoint() {
-    if (this._firstScore.value === '') {
-      return;
     }
-    this._firstPoint.value = String(
-      (Number(this._firstScore.value) - Number(this._oka.value)) / 1000 +
-        Number(this._firstUma.value)
-    );
-  }
-  _calcSecondPoint() {
-    if (this._secondScore.value === '') {
-      return;
+    _calcFirstPoint() {
+        if (this._firstScore.value === '') {
+            return;
+        }
+        this._firstPoint.value = String((Number(this._firstScore.value) - Number(this._oka.value)) / 1000 +
+            Number(this._firstUma.value));
+        this._setIsPointCheckError();
     }
-    this._secondPoint.value = String(
-      (Number(this._secondScore.value) - Number(this._oka.value)) / 1000 +
-        Number(this._secondUma.value)
-    );
-  }
-  _calcThirdPoint() {
-    if (this._thirdScore.value === '') {
-      return;
+    _calcSecondPoint() {
+        if (this._secondScore.value === '') {
+            return;
+        }
+        this._secondPoint.value = String((Number(this._secondScore.value) - Number(this._oka.value)) / 1000 +
+            Number(this._secondUma.value));
+        this._setIsPointCheckError();
     }
-    this._thirdPoint.value = String(
-      (Number(this._thirdScore.value) - Number(this._oka.value)) / 1000 +
-        Number(this._thirdUma.value)
-    );
-  }
-  _calcFourthPoint() {
-    if (this._fourthScore.value === '') {
-      return;
+    _calcThirdPoint() {
+        if (this._thirdScore.value === '') {
+            return;
+        }
+        this._thirdPoint.value = String((Number(this._thirdScore.value) - Number(this._oka.value)) / 1000 +
+            Number(this._thirdUma.value));
+        this._setIsPointCheckError();
     }
-    this._fourthPoint.value = String(
-      (Number(this._fourthScore.value) - Number(this._oka.value)) / 1000 +
-        Number(this._fourthUma.value)
-    );
-  }
-  _changeGame() {
-    if (this._gameType.value === '三麻') {
-      this._changeSettings('35000', '35000', '15', '0', '-15', '0', true);
-    } else {
-      this._changeSettings('25000', '30000', '50', '10', '-10', '-30', false);
+    _calcFourthPoint() {
+        if (this._fourthScore.value === '') {
+            return;
+        }
+        this._fourthPoint.value = String((Number(this._fourthScore.value) - Number(this._oka.value)) / 1000 +
+            Number(this._fourthUma.value));
+        this._setIsPointCheckError();
     }
-    this._resetResults();
-  }
-  _changeSettings(
-    initialPoint,
-    oka,
-    firstUma,
-    secondUma,
-    thirdUma,
-    fourthUma,
-    noFourth
-  ) {
-    (this.shadowRoot?.getElementById('initialPoint')).value = initialPoint;
-    this._oka.value = oka;
-    this._firstUma.value = firstUma;
-    this._secondUma.value = secondUma;
-    this._thirdUma.value = thirdUma;
-    this._fourthUma.value = fourthUma;
-    if (!noFourth) {
-      this._clearFourth();
+    _changeGame() {
+        if (this._gameType.value === '三麻') {
+            this._changeSettings('35000', '35000', '15', '0', '-15', '0', true);
+        }
+        else {
+            this._changeSettings('25000', '30000', '50', '10', '-10', '-30', false);
+        }
+        this._resetResults();
     }
-    this._toggleFourth(noFourth);
-  }
-  _clearFourth() {
-    this._fourthPlayer.value = '';
-    this._fourthScore.value = '';
-    this._fourthPoint.value = '';
-  }
-  _toggleFourth(noFourth) {
-    this._fourthUma.disabled = noFourth;
-    this._fourthPlayer.disabled = noFourth;
-    this._fourthScore.disabled = noFourth;
-  }
-  _resetResults() {
-    this._firstPlayer.value = '';
-    this._secondPlayer.value = '';
-    this._thirdPlayer.value = '';
-    this._fourthPlayer.value = '';
-    this._firstScore.value = '';
-    this._secondScore.value = '';
-    this._thirdScore.value = '';
-    this._fourthScore.value = '';
-    this._firstPoint.value = '';
-    this._secondPoint.value = '';
-    this._thirdPoint.value = '';
-    this._fourthPoint.value = '';
-  }
-  async _uploadResults() {
-    this._progress.style.display = 'block';
-    let players;
-    let results;
-    const chonbo = [];
-    const yakuman = [];
-    if (this._gameType.value === '四麻') {
-      players = [
-        this._firstPlayer.value,
-        this._secondPlayer.value,
-        this._thirdPlayer.value,
-        this._fourthPlayer.value,
-      ].sort();
-      results = [
-        {
-          rank: 1,
-          player: this._firstPlayer.value,
-          score: Number(this._firstScore.value),
-          point: Number(this._firstPoint.value),
-        },
-        {
-          rank: 2,
-          player: this._secondPlayer.value,
-          score: Number(this._secondScore.value),
-          point: Number(this._secondPoint.value),
-        },
-        {
-          rank: 3,
-          player: this._thirdPlayer.value,
-          score: Number(this._thirdScore.value),
-          point: Number(this._thirdPoint.value),
-        },
-        {
-          rank: 4,
-          player: this._fourthPlayer.value,
-          score: Number(this._fourthScore.value),
-          point: Number(this._fourthPoint.value),
-        },
-      ];
-    } else {
-      players = [
-        this._firstPlayer.value,
-        this._secondPlayer.value,
-        this._thirdPlayer.value,
-      ].sort();
-      results = [
-        {
-          rank: 1,
-          player: this._firstPlayer.value,
-          score: Number(this._firstScore.value),
-          point: Number(this._firstPoint.value),
-        },
-        {
-          rank: 2,
-          player: this._secondPlayer.value,
-          score: Number(this._secondScore.value),
-          point: Number(this._secondPoint.value),
-        },
-        {
-          rank: 3,
-          player: this._thirdPlayer.value,
-          score: Number(this._thirdScore.value),
-          point: Number(this._thirdPoint.value),
-        },
-      ];
+    _setIsPointCheckError() {
+        const isSanma = this._gameType?.value === '三麻';
+        const scores = [
+            Number(this._firstScore?.value),
+            Number(this._secondScore?.value),
+            Number(this._thirdScore?.value),
+        ];
+        if (!isSanma) {
+            scores.push(Number(this._fourthScore?.value));
+        }
+        const totalScore = scores.reduce((acc, score) => acc + score, 0);
+        const expectedTotal = Number(this._initialPoint?.value) * (isSanma ? 3 : 4);
+        this.isPointCheckError = !(this._initialPoint && totalScore === expectedTotal);
     }
-    // チョンボ
-    const chonboElement = this.renderRoot?.querySelector('mahjong-calc-chonbo');
-    const chonboPlayer1 =
-      chonboElement?.renderRoot.querySelector('#chonboPlayer1');
-    const chonboPoint1 =
-      chonboElement?.renderRoot.querySelector('#chonboPoint1');
-    if (chonboPlayer1.value !== '') {
-      chonbo.push({
-        player: chonboPlayer1.value,
-        point: Number(chonboPoint1.value),
-      });
+    _changeSettings(initialPoint, oka, firstUma, secondUma, thirdUma, fourthUma, noFourth) {
+        this._initialPoint.value = initialPoint;
+        this._oka.value = oka;
+        this._firstUma.value = firstUma;
+        this._secondUma.value = secondUma;
+        this._thirdUma.value = thirdUma;
+        this._fourthUma.value = fourthUma;
+        if (!noFourth) {
+            this._clearFourth();
+        }
+        this._toggleFourth(noFourth);
     }
-    const chonboPlayer2 =
-      chonboElement?.renderRoot.querySelector('#chonboPlayer2');
-    const chonboPoint2 =
-      chonboElement?.renderRoot.querySelector('#chonboPoint2');
-    if (chonboPlayer2.value !== '') {
-      chonbo.push({
-        player: chonboPlayer2.value,
-        point: Number(chonboPoint2.value),
-      });
+    _clearFourth() {
+        this._fourthPlayer.value = '';
+        this._fourthScore.value = '';
+        this._fourthPoint.value = '';
     }
-    const chonboPlayer3 =
-      chonboElement?.renderRoot.querySelector('#chonboPlayer3');
-    const chonboPoint3 =
-      chonboElement?.renderRoot.querySelector('#chonboPoint3');
-    if (chonboPlayer3.value !== '') {
-      chonbo.push({
-        player: chonboPlayer3.value,
-        point: Number(chonboPoint3.value),
-      });
+    _toggleFourth(noFourth) {
+        this._fourthUma.disabled = noFourth;
+        this._fourthPlayer.disabled = noFourth;
+        this._fourthScore.disabled = noFourth;
     }
-    const chonboPlayer4 =
-      chonboElement?.renderRoot.querySelector('#chonboPlayer4');
-    const chonboPoint4 =
-      chonboElement?.renderRoot.querySelector('#chonboPoint4');
-    if (chonboPlayer4.value !== '') {
-      chonbo.push({
-        player: chonboPlayer4.value,
-        point: Number(chonboPoint4.value),
-      });
+    _resetResults() {
+        this._firstPlayer.value = '';
+        this._secondPlayer.value = '';
+        this._thirdPlayer.value = '';
+        this._fourthPlayer.value = '';
+        this._firstScore.value = '';
+        this._secondScore.value = '';
+        this._thirdScore.value = '';
+        this._fourthScore.value = '';
+        this._firstPoint.value = '';
+        this._secondPoint.value = '';
+        this._thirdPoint.value = '';
+        this._fourthPoint.value = '';
     }
-    // 役満
-    const yakumanElement = this.renderRoot?.querySelector(
-      'mahjong-calc-yakuman'
-    );
-    const yakumanPlayer1 =
-      yakumanElement?.renderRoot.querySelector('#yakumanPlayer1');
-    const yakuman1 = yakumanElement?.renderRoot.querySelector('#yakuman1');
-    if (yakumanPlayer1.value !== '') {
-      yakuman.push({
-        player: yakumanPlayer1.value,
-        yakuman: yakuman1.value,
-      });
+    async _uploadResults() {
+        this._progress.style.display = 'block';
+        let players;
+        let results;
+        const chonbo = [];
+        const yakuman = [];
+        if (this._gameType.value === '四麻') {
+            players = [
+                this._firstPlayer.value,
+                this._secondPlayer.value,
+                this._thirdPlayer.value,
+                this._fourthPlayer.value,
+            ].sort();
+            results = [
+                {
+                    rank: 1,
+                    player: this._firstPlayer.value,
+                    score: Number(this._firstScore.value),
+                    point: Number(this._firstPoint.value),
+                },
+                {
+                    rank: 2,
+                    player: this._secondPlayer.value,
+                    score: Number(this._secondScore.value),
+                    point: Number(this._secondPoint.value),
+                },
+                {
+                    rank: 3,
+                    player: this._thirdPlayer.value,
+                    score: Number(this._thirdScore.value),
+                    point: Number(this._thirdPoint.value),
+                },
+                {
+                    rank: 4,
+                    player: this._fourthPlayer.value,
+                    score: Number(this._fourthScore.value),
+                    point: Number(this._fourthPoint.value),
+                },
+            ];
+        }
+        else {
+            players = [
+                this._firstPlayer.value,
+                this._secondPlayer.value,
+                this._thirdPlayer.value,
+            ].sort();
+            results = [
+                {
+                    rank: 1,
+                    player: this._firstPlayer.value,
+                    score: Number(this._firstScore.value),
+                    point: Number(this._firstPoint.value),
+                },
+                {
+                    rank: 2,
+                    player: this._secondPlayer.value,
+                    score: Number(this._secondScore.value),
+                    point: Number(this._secondPoint.value),
+                },
+                {
+                    rank: 3,
+                    player: this._thirdPlayer.value,
+                    score: Number(this._thirdScore.value),
+                    point: Number(this._thirdPoint.value),
+                },
+            ];
+        }
+        // チョンボ
+        const chonboElement = this.renderRoot?.querySelector('mahjong-calc-chonbo');
+        const chonboPlayer1 = chonboElement?.renderRoot.querySelector('#chonboPlayer1');
+        const chonboPoint1 = chonboElement?.renderRoot.querySelector('#chonboPoint1');
+        if (chonboPlayer1.value !== '') {
+            chonbo.push({
+                player: chonboPlayer1.value,
+                point: Number(chonboPoint1.value),
+            });
+        }
+        const chonboPlayer2 = chonboElement?.renderRoot.querySelector('#chonboPlayer2');
+        const chonboPoint2 = chonboElement?.renderRoot.querySelector('#chonboPoint2');
+        if (chonboPlayer2.value !== '') {
+            chonbo.push({
+                player: chonboPlayer2.value,
+                point: Number(chonboPoint2.value),
+            });
+        }
+        const chonboPlayer3 = chonboElement?.renderRoot.querySelector('#chonboPlayer3');
+        const chonboPoint3 = chonboElement?.renderRoot.querySelector('#chonboPoint3');
+        if (chonboPlayer3.value !== '') {
+            chonbo.push({
+                player: chonboPlayer3.value,
+                point: Number(chonboPoint3.value),
+            });
+        }
+        const chonboPlayer4 = chonboElement?.renderRoot.querySelector('#chonboPlayer4');
+        const chonboPoint4 = chonboElement?.renderRoot.querySelector('#chonboPoint4');
+        if (chonboPlayer4.value !== '') {
+            chonbo.push({
+                player: chonboPlayer4.value,
+                point: Number(chonboPoint4.value),
+            });
+        }
+        // 役満
+        const yakumanElement = this.renderRoot?.querySelector('mahjong-calc-yakuman');
+        const yakumanPlayer1 = yakumanElement?.renderRoot.querySelector('#yakumanPlayer1');
+        const yakuman1 = yakumanElement?.renderRoot.querySelector('#yakuman1');
+        if (yakumanPlayer1.value !== '') {
+            yakuman.push({
+                player: yakumanPlayer1.value,
+                yakuman: yakuman1.value,
+            });
+        }
+        const yakumanPlayer2 = yakumanElement?.renderRoot.querySelector('#yakumanPlayer2');
+        const yakuman2 = yakumanElement?.renderRoot.querySelector('#yakuman2');
+        if (yakumanPlayer2.value !== '') {
+            yakuman.push({
+                player: yakumanPlayer2.value,
+                yakuman: yakuman2.value,
+            });
+        }
+        const yakumanPlayer3 = yakumanElement?.renderRoot.querySelector('#yakumanPlayer3');
+        const yakuman3 = yakumanElement?.renderRoot.querySelector('#yakuman3');
+        if (yakumanPlayer3.value !== '') {
+            yakuman.push({
+                player: yakumanPlayer3.value,
+                yakuman: yakuman3.value,
+            });
+        }
+        const yakumanPlayer4 = yakumanElement?.renderRoot.querySelector('#yakumanPlayer4');
+        const yakuman4 = yakumanElement?.renderRoot.querySelector('#yakuman4');
+        if (yakumanPlayer4.value !== '') {
+            yakuman.push({
+                player: yakumanPlayer4.value,
+                yakuman: yakuman4.value,
+            });
+        }
+        const data = {
+            gameInfo: {
+                date: this._date.value,
+                order: this._order.value,
+                gameType: this._gameType.value,
+                players: players,
+            },
+            results: results,
+            chonbo: chonbo,
+            yakuman: yakuman,
+        };
+        try {
+            const docRef = await addDoc(collection(db, 'results'), data);
+            console.log('Document written with ID: ', docRef.id);
+            this.dispatchEvent(new CustomEvent('uploaded', { bubbles: true, composed: true }));
+        }
+        catch (e) {
+            console.error('Error adding document: ', e);
+        }
+        finally {
+            this._progress.style.display = 'none';
+        }
     }
-    const yakumanPlayer2 =
-      yakumanElement?.renderRoot.querySelector('#yakumanPlayer2');
-    const yakuman2 = yakumanElement?.renderRoot.querySelector('#yakuman2');
-    if (yakumanPlayer2.value !== '') {
-      yakuman.push({
-        player: yakumanPlayer2.value,
-        yakuman: yakuman2.value,
-      });
-    }
-    const yakumanPlayer3 =
-      yakumanElement?.renderRoot.querySelector('#yakumanPlayer3');
-    const yakuman3 = yakumanElement?.renderRoot.querySelector('#yakuman3');
-    if (yakumanPlayer3.value !== '') {
-      yakuman.push({
-        player: yakumanPlayer3.value,
-        yakuman: yakuman3.value,
-      });
-    }
-    const yakumanPlayer4 =
-      yakumanElement?.renderRoot.querySelector('#yakumanPlayer4');
-    const yakuman4 = yakumanElement?.renderRoot.querySelector('#yakuman4');
-    if (yakumanPlayer4.value !== '') {
-      yakuman.push({
-        player: yakumanPlayer4.value,
-        yakuman: yakuman4.value,
-      });
-    }
-    const data = {
-      gameInfo: {
-        date: this._date.value,
-        order: this._order.value,
-        gameType: this._gameType.value,
-        players: players,
-      },
-      results: results,
-      chonbo: chonbo,
-      yakuman: yakuman,
-    };
-    try {
-      const docRef = await addDoc(collection(db, 'results'), data);
-      console.log('Document written with ID: ', docRef.id);
-      this.dispatchEvent(
-        new CustomEvent('uploaded', {bubbles: true, composed: true})
-      );
-    } catch (e) {
-      console.error('Error adding document: ', e);
-    } finally {
-      this._progress.style.display = 'none';
-    }
-  }
 };
 MahjongCalc.styles = [
-  css`
-    .width-50 {
-      width: calc(50% - 1rem);
-      margin-bottom: 0.5em;
-    }
-    .width-30 {
-      width: 30%;
-      margin-bottom: 0.5em;
-    }
-    .results {
-      margin-top: 2em;
-      margin-left: 1em;
-    }
-    .controle {
-      margin-top: 1em;
-    }
-    md-outlined-text-field {
-      --md-outlined-field-disabled-content-opacity: 1;
-    }
-  `,
+    css `
+      .width-50 {
+        width: calc(50% - 1rem);
+        margin-bottom: 0.5em;
+      }
+      .width-30 {
+        width: 30%;
+        margin-bottom: 0.5em;
+      }
+      .results {
+        margin-top: 2em;
+        margin-left: 1em;
+      }
+      .controle {
+        margin-top: 1em;
+      }
+      md-outlined-text-field {
+        --md-outlined-field-disabled-content-opacity: 1;
+      }
+    `,
 ];
-__decorate([query('#gameType')], MahjongCalc.prototype, '_gameType', void 0);
-__decorate(
-  [query('#initialPoint')],
-  MahjongCalc.prototype,
-  '_initialPoint',
-  void 0
-);
-__decorate([query('#oka')], MahjongCalc.prototype, '_oka', void 0);
-__decorate([query('#firstUma')], MahjongCalc.prototype, '_firstUma', void 0);
-__decorate([query('#secondUma')], MahjongCalc.prototype, '_secondUma', void 0);
-__decorate([query('#thirdUma')], MahjongCalc.prototype, '_thirdUma', void 0);
-__decorate([query('#fourthUma')], MahjongCalc.prototype, '_fourthUma', void 0);
-__decorate([query('#date')], MahjongCalc.prototype, '_date', void 0);
-__decorate([query('#order')], MahjongCalc.prototype, '_order', void 0);
-__decorate(
-  [query('#firstPlayer')],
-  MahjongCalc.prototype,
-  '_firstPlayer',
-  void 0
-);
-__decorate(
-  [query('#secondPlayer')],
-  MahjongCalc.prototype,
-  '_secondPlayer',
-  void 0
-);
-__decorate(
-  [query('#thirdPlayer')],
-  MahjongCalc.prototype,
-  '_thirdPlayer',
-  void 0
-);
-__decorate(
-  [query('#fourthPlayer')],
-  MahjongCalc.prototype,
-  '_fourthPlayer',
-  void 0
-);
-__decorate(
-  [query('#firstScore')],
-  MahjongCalc.prototype,
-  '_firstScore',
-  void 0
-);
-__decorate(
-  [query('#secondScore')],
-  MahjongCalc.prototype,
-  '_secondScore',
-  void 0
-);
-__decorate(
-  [query('#thirdScore')],
-  MahjongCalc.prototype,
-  '_thirdScore',
-  void 0
-);
-__decorate(
-  [query('#fourthScore')],
-  MahjongCalc.prototype,
-  '_fourthScore',
-  void 0
-);
-__decorate(
-  [query('#firstPoint')],
-  MahjongCalc.prototype,
-  '_firstPoint',
-  void 0
-);
-__decorate(
-  [query('#secondPoint')],
-  MahjongCalc.prototype,
-  '_secondPoint',
-  void 0
-);
-__decorate(
-  [query('#thirdPoint')],
-  MahjongCalc.prototype,
-  '_thirdPoint',
-  void 0
-);
-__decorate(
-  [query('#fourthPoint')],
-  MahjongCalc.prototype,
-  '_fourthPoint',
-  void 0
-);
-__decorate([query('#progress')], MahjongCalc.prototype, '_progress', void 0);
-MahjongCalc = __decorate([customElement('mahjong-calc')], MahjongCalc);
-export {MahjongCalc};
+__decorate([
+    property({ type: Boolean })
+], MahjongCalc.prototype, "isPointCheckError", void 0);
+__decorate([
+    query('#gameType')
+], MahjongCalc.prototype, "_gameType", void 0);
+__decorate([
+    query('#initialPoint')
+], MahjongCalc.prototype, "_initialPoint", void 0);
+__decorate([
+    query('#oka')
+], MahjongCalc.prototype, "_oka", void 0);
+__decorate([
+    query('#firstUma')
+], MahjongCalc.prototype, "_firstUma", void 0);
+__decorate([
+    query('#secondUma')
+], MahjongCalc.prototype, "_secondUma", void 0);
+__decorate([
+    query('#thirdUma')
+], MahjongCalc.prototype, "_thirdUma", void 0);
+__decorate([
+    query('#fourthUma')
+], MahjongCalc.prototype, "_fourthUma", void 0);
+__decorate([
+    query('#date')
+], MahjongCalc.prototype, "_date", void 0);
+__decorate([
+    query('#order')
+], MahjongCalc.prototype, "_order", void 0);
+__decorate([
+    query('#firstPlayer')
+], MahjongCalc.prototype, "_firstPlayer", void 0);
+__decorate([
+    query('#secondPlayer')
+], MahjongCalc.prototype, "_secondPlayer", void 0);
+__decorate([
+    query('#thirdPlayer')
+], MahjongCalc.prototype, "_thirdPlayer", void 0);
+__decorate([
+    query('#fourthPlayer')
+], MahjongCalc.prototype, "_fourthPlayer", void 0);
+__decorate([
+    query('#firstScore')
+], MahjongCalc.prototype, "_firstScore", void 0);
+__decorate([
+    query('#secondScore')
+], MahjongCalc.prototype, "_secondScore", void 0);
+__decorate([
+    query('#thirdScore')
+], MahjongCalc.prototype, "_thirdScore", void 0);
+__decorate([
+    query('#fourthScore')
+], MahjongCalc.prototype, "_fourthScore", void 0);
+__decorate([
+    query('#firstPoint')
+], MahjongCalc.prototype, "_firstPoint", void 0);
+__decorate([
+    query('#secondPoint')
+], MahjongCalc.prototype, "_secondPoint", void 0);
+__decorate([
+    query('#thirdPoint')
+], MahjongCalc.prototype, "_thirdPoint", void 0);
+__decorate([
+    query('#fourthPoint')
+], MahjongCalc.prototype, "_fourthPoint", void 0);
+__decorate([
+    query('#progress')
+], MahjongCalc.prototype, "_progress", void 0);
+MahjongCalc = __decorate([
+    customElement('mahjong-calc')
+], MahjongCalc);
+export { MahjongCalc };
 //# sourceMappingURL=mahjong-calc.js.map
