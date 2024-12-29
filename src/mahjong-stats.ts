@@ -17,6 +17,8 @@ export class MahjongStats extends LitElement {
   maxPoints: {index: number; player: string; point: number}[] = [];
   @property({type: Array})
   avoidLast: {index: number; player: string; point: number}[] = [];
+  @property({type: Array})
+  yakumanList: {date: string; player: string; yakuman: string}[] = [];
 
   static override styles = [
     css`
@@ -132,6 +134,23 @@ export class MahjongStats extends LitElement {
           `;
         })}
       </table>
+      <h2>役満</h2>
+      <table>
+        <tr>
+          <th>順位</th>
+          <th>プレイヤー</th>
+          <th>役満</th>
+        </tr>
+        ${map(this.yakumanList, (yakuman) => {
+          return html`
+            <tr>
+              <td>${yakuman.date}</td>
+              <td>${yakuman.player}</td>
+              <td>${yakuman.yakuman}</td>
+            </tr>
+          `;
+        })}
+      </table>
     `;
   }
 
@@ -158,6 +177,7 @@ export class MahjongStats extends LitElement {
 
     const allResults: Result[] = [];
     const allChonbo: Chonbo[] = [];
+    const allYakuman: YakumanWithDate[] = [];
     const gameType = this._gameType.value || '四麻';
     const targetYear =
       Number(this._targetYear.value) || new Date().getFullYear();
@@ -175,11 +195,19 @@ export class MahjongStats extends LitElement {
       if (chonbo?.length > 0) {
         allChonbo.push(...chonbo);
       }
+      const yakuman = doc.data().yakuman;
+      if (yakuman?.length > 0) {
+        const yakumanWithDate = yakuman.map((yakuman: Yakuman) => {
+          return {...yakuman, date: doc.data().gameInfo.date};
+        });
+        allYakuman.push(...yakumanWithDate);
+      }
     });
     this._setDistinctYears(docs);
     this._setTotalPoint(allResults, allChonbo);
     this._setMaxPoint(allResults);
     this._setAvoidLast(allResults);
+    this._setYakuman(allYakuman);
   }
 
   private _setDistinctYears(docs: QueryDocumentSnapshot[]) {
@@ -286,6 +314,10 @@ export class MahjongStats extends LitElement {
         point: Math.round((100 - (v[1].last / v[1].plays) * 100) * 10) / 10,
       };
     });
+  }
+
+  private _setYakuman(allYakuman: YakumanWithDate[]) {
+    this.yakumanList = allYakuman;
   }
 }
 

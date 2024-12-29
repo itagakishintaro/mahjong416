@@ -25,6 +25,8 @@ export class MahjongToday extends LitElement {
   playerPoints: Map<string, number> = new Map();
   @property({type: Array})
   todaysChonbo: Chonbo[][] = [];
+  @property({type: Array})
+  todaysYakuman: Yakuman[][] = [];
 
   static override styles = [
     css`
@@ -145,24 +147,48 @@ export class MahjongToday extends LitElement {
         </table>
       </div>
 
+      <h2>役満</h2>
+      <table>
+        ${map(this.todaysYakuman, (yakumanArray: Yakuman[]) => {
+          return html`
+            <thead>
+              <tr>
+                ${yakumanArray.map((yakuman) => {
+                  return html` <th>${yakuman.player}</th> `;
+                })}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                ${yakumanArray.map((yakuman) => {
+                  return html` <td>${yakuman.yakuman}</td> `;
+                })}
+              </tr>
+            </tbody>
+          `;
+        })}
+      </table>
+
       <h2>チョンボ</h2>
       <table>
-        <thead>
-          <tr>
-            ${map(this.todaysChonbo[0], (chonbo: Chonbo) => {
-              return html` <th>${chonbo.player}</th> `;
-            })}
-          </tr>
-        </thead>
-        <tbody>
-          ${map(this.todaysChonbo, (chonboArray: Chonbo[]) => {
-            return html`<tr>
-              ${chonboArray.map((chonbo) => {
-                return html` <td>${Math.round(chonbo.point * 10) / 10}</td> `;
-              })}
-            </tr>`;
-          })}
-        </tbody>
+        ${map(this.todaysChonbo, (chonboArray: Chonbo[]) => {
+          return html`
+            <thead>
+              <tr>
+                ${chonboArray.map((chonbo) => {
+                  return html` <th>${chonbo.player}</th> `;
+                })}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                ${chonboArray.map((chonbo) => {
+                  return html` <td>${chonbo.point}</td> `;
+                })}
+              </tr>
+            </tbody>
+          `;
+        })}
       </table>
     `;
   }
@@ -198,6 +224,7 @@ export class MahjongToday extends LitElement {
   private async _loadData() {
     this.todaysResults = new Map();
     this.todaysChonbo = [];
+    this.todaysYakuman = [];
 
     const querySnapshot = await getDocs(collection(db, 'results'));
     const docs = querySnapshot.docs;
@@ -237,14 +264,23 @@ export class MahjongToday extends LitElement {
         const point = playerPoints.get(result.player) || 0;
         playerPoints.set(result.player, point + result.point);
       });
-
+      // チョンボ
       const chonbo = doc.data().chonbo?.sort((a: Chonbo, b: Chonbo) => {
         return a.player < b.player ? -1 : 1;
       });
-      // チョンボ
       if (chonbo?.length > 0) {
         this.todaysChonbo.push(chonbo);
       }
+      // 役満
+      const yakuman = doc.data().yakuman?.sort((a: Yakuman, b: Yakuman) => {
+        return a.player < b.player ? -1 : 1;
+      });
+      if (yakuman?.length > 0) {
+        this.todaysYakuman.push(yakuman);
+      }
+
+      console.log(this.todaysChonbo);
+      console.log(this.todaysYakuman);
     });
     // プレイヤーごとのポイントをポイント順にソートして保存
     this.playerPoints = new Map(

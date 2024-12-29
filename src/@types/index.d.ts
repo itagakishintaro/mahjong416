@@ -21,3 +21,9 @@ interface Yakuman {
   player: string;
   yakuman: string;
 }
+
+interface YakumanWithDate {
+  date: string;
+  player: string;
+  yakuman: string;
+}
