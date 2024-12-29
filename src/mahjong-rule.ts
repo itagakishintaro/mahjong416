@@ -6,6 +6,7 @@ export class MahjongRule extends LitElement {
   override render() {
     return html`
       <h1>ルール</h1>
+      <p>※参加者全員が合意のうえであれば、ルールを変えることも可とする（例. 符計算を用いた点数計算）。その場合も得点は通常と同様に集計する。</p>
       <h2>四麻</h2>
       <p>
         <a href="https://m-league.jp/about/" target="_blank">Mリーグのルール</a
