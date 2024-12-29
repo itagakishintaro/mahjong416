@@ -136,11 +136,17 @@ export class MahjongStats extends LitElement {
       </table>
       <h2>役満</h2>
       <table>
-        <tr>
-          <th>順位</th>
-          <th>プレイヤー</th>
-          <th>役満</th>
-        </tr>
+        ${this.yakumanList.length === 0
+          ? html`<tr>
+              <td>なし</td>
+            </tr>`
+          : html`
+              <tr>
+                <th>順位</th>
+                <th>プレイヤー</th>
+                <th>役満</th>
+              </tr>
+            `}
         ${map(this.yakumanList, (yakuman) => {
           return html`
             <tr>

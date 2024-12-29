@@ -148,6 +148,7 @@ export class MahjongToday extends LitElement {
       </div>
 
       <h2>役満</h2>
+      ${this.todaysYakuman.length === 0 ? html`<p>なし</p>` : ''}
       <table>
         ${map(this.todaysYakuman, (yakumanArray: Yakuman[]) => {
           return html`
@@ -170,6 +171,7 @@ export class MahjongToday extends LitElement {
       </table>
 
       <h2>チョンボ</h2>
+      ${this.todaysChonbo.length === 0 ? html`<p>なし</p>` : ''}
       <table>
         ${map(this.todaysChonbo, (chonboArray: Chonbo[]) => {
           return html`

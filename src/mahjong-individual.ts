@@ -29,6 +29,7 @@ export class MahjongIndividual extends LitElement {
     chonbo: number;
     maxPoint: number;
     averagePoint: number;
+    yakuman: string;
   } = {
     totalGames: 0,
     firstRate: 0,
@@ -41,6 +42,7 @@ export class MahjongIndividual extends LitElement {
     chonbo: 0,
     maxPoint: 0,
     averagePoint: 0,
+    yakuman: '',
   };
   @property({type: Array})
   chartData: {
@@ -85,6 +87,8 @@ export class MahjongIndividual extends LitElement {
       <dd>${this.playerData.maxPoint}</dd>
       <dt>平均得点</dt>
       <dd>${this.playerData.averagePoint.toFixed(2)}</dd>
+      <dt>役満</dt>
+      <dd>${this.playerData.yakuman ? this.playerData.yakuman : 'なし'}</dd>
 
       <h2>獲得ポイント推移</h2>
       <div class="chart">
@@ -176,6 +180,7 @@ export class MahjongIndividual extends LitElement {
 
     const allResults: Result[] = [];
     const allChonbo: Chonbo[] = [];
+    const allYakuman: YakumanWithDate[] = [];
     const gameType = this._gameType.value || '四麻';
     const targetYear =
       Number(this._targetYear.value) || new Date().getFullYear();
@@ -193,11 +198,18 @@ export class MahjongIndividual extends LitElement {
       if (chonbo?.length > 0) {
         allChonbo.push(...chonbo);
       }
+      const yakuman = doc.data().yakuman;
+      if (yakuman?.length > 0) {
+        const yakumanWithDate = yakuman.map((yakuman: Yakuman) => {
+          return {...yakuman, date: doc.data().gameInfo.date};
+        });
+        allYakuman.push(...yakumanWithDate);
+      }
     });
     this._setDistinctYears(docs);
     this._setPlayers(docs);
     if (this._player.value) {
-      this._setPlayerData(allResults, allChonbo);
+      this._setPlayerData(allResults, allChonbo, allYakuman);
       this._setChartData(targetData);
     }
   }
@@ -292,12 +304,19 @@ export class MahjongIndividual extends LitElement {
     this.players = distinctPlayers;
   }
 
-  private _setPlayerData(allResults: Result[], allChonbo: Chonbo[]) {
+  private _setPlayerData(
+    allResults: Result[],
+    allChonbo: Chonbo[],
+    allYakuman: YakumanWithDate[]
+  ) {
     const player = this._player.value;
     const playerResults = allResults.filter(
       (result) => result.player === player
     );
     const playerChonbo = allChonbo.filter((chonbo) => chonbo.player === player);
+    const playerYakuman = allYakuman.filter(
+      (yakuman) => yakuman.player === player
+    );
 
     const totalGames = playerResults.length;
     const firstRate =
@@ -316,6 +335,7 @@ export class MahjongIndividual extends LitElement {
     const maxPoint = Math.max(...playerResults.map((result) => result.point));
     const averagePoint =
       playerResults.reduce((acc, result) => acc + result.point, 0) / totalGames;
+    const yakuman = playerYakuman.map((yakuman) => yakuman.yakuman).join(',');
     this.playerData = {
       totalGames,
       firstRate,
@@ -328,6 +348,7 @@ export class MahjongIndividual extends LitElement {
       chonbo,
       maxPoint,
       averagePoint,
+      yakuman,
     };
   }
 
