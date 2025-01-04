@@ -19,6 +19,7 @@ import { db } from './firestore';
 import { collection, addDoc } from 'firebase/firestore/lite';
 import './mahjong-calc-chonbo.js';
 import './mahjong-calc-yakuman.js';
+import './mahjong-calc-date-and-key.js';
 let MahjongCalc = class MahjongCalc extends LitElement {
     constructor() {
         super(...arguments);
@@ -47,16 +48,16 @@ let MahjongCalc = class MahjongCalc extends LitElement {
               id="initialPoint"
               class="width-50"
               label="初期点"
-              value="25000"
               type="number"
+              value="25000"
               required
             ></md-outlined-text-field>
             <md-outlined-text-field
               id="oka"
               class="width-50"
               label="オカ"
-              value="30000"
               type="number"
+              value="30000"
               required
             ></md-outlined-text-field>
           </div>
@@ -65,32 +66,32 @@ let MahjongCalc = class MahjongCalc extends LitElement {
               id="firstUma"
               class="width-50"
               label="1着"
-              value="50"
               type="number"
+              value="50"
               required
             ></md-outlined-text-field>
             <md-outlined-text-field
               id="secondUma"
               class="width-50"
               label="2着"
-              value="10"
               type="number"
+              value="10"
               required
             ></md-outlined-text-field>
             <md-outlined-text-field
               id="thirdUma"
               class="width-50"
               label="3着"
-              value="-10"
               type="number"
+              value="-10"
               required
             ></md-outlined-text-field>
             <md-outlined-text-field
               id="fourthUma"
               class="width-50"
               label="4着"
-              value="-30"
               type="number"
+              value="-30"
               required
             ></md-outlined-text-field>
           </div>
@@ -98,35 +99,20 @@ let MahjongCalc = class MahjongCalc extends LitElement {
       </pf-accordion>
       <div class="results">
         <h2>結果</h2>
-        <pf-accordion>
-          <pf-accordion-header>
-            <h2>日付、順序キー</h2>
-          </pf-accordion-header>
-          <pf-accordion-panel>
-            <md-filled-text-field
-              id="date"
-              label="日付"
-              class="width-50"
-              type="date"
-              value="${new Date().toISOString().split('T')[0]}"
-            >
-            </md-filled-text-field>
-            <md-filled-text-field
-              id="order"
-              label="順序キー"
-              class="width-50"
-              type="text"
-              value="${new Date().getTime()}"
-            >
-            </md-filled-text-field>
-          </pf-accordion-panel>
-        </pf-accordion>
+
+        <!-- 日付、順序キー -->
+        <mahjong-calc-date-and-key></mahjong-calc-date-and-key>
+        <!-- チョンボ -->
+        <mahjong-calc-chonbo></mahjong-calc-chonbo>
+        <!-- 役満 -->
+        <mahjong-calc-yakuman></mahjong-calc-yakuman>
         <div>
           <md-outlined-text-field
             id="firstPlayer"
             label="1位"
             class="width-30"
             type="text"
+            value=""
           >
           </md-outlined-text-field>
           <md-outlined-text-field
@@ -134,7 +120,8 @@ let MahjongCalc = class MahjongCalc extends LitElement {
             label="得点"
             class="width-30"
             type="number"
-            @blur="${this._calcFirstPoint}"
+            value=""
+            @blur="${this._calcPoint}"
           >
           </md-outlined-text-field>
           <span>→</span>
@@ -143,6 +130,8 @@ let MahjongCalc = class MahjongCalc extends LitElement {
             label="ポイント"
             class="width-30"
             type="number"
+            step="0.1"
+            value=""
             disabled
           >
           </md-outlined-text-field>
@@ -153,6 +142,7 @@ let MahjongCalc = class MahjongCalc extends LitElement {
             label="2位"
             class="width-30"
             type="text"
+            value=""
           >
           </md-outlined-text-field>
           <md-outlined-text-field
@@ -160,7 +150,8 @@ let MahjongCalc = class MahjongCalc extends LitElement {
             label="得点"
             class="width-30"
             type="number"
-            @blur="${this._calcSecondPoint}"
+            value=""
+            @blur="${this._calcPoint}"
           >
           </md-outlined-text-field>
           <span>→</span>
@@ -169,6 +160,8 @@ let MahjongCalc = class MahjongCalc extends LitElement {
             label="ポイント"
             class="width-30"
             type="number"
+            step="0.1"
+            value=""
             disabled
           >
           </md-outlined-text-field>
@@ -179,6 +172,7 @@ let MahjongCalc = class MahjongCalc extends LitElement {
             label="3位"
             class="width-30"
             type="text"
+            value=""
           >
           </md-outlined-text-field>
           <md-outlined-text-field
@@ -186,7 +180,8 @@ let MahjongCalc = class MahjongCalc extends LitElement {
             label="得点"
             class="width-30"
             type="number"
-            @blur="${this._calcThirdPoint}"
+            value=""
+            @blur="${this._calcPoint}"
           >
           </md-outlined-text-field>
           <span>→</span>
@@ -195,6 +190,8 @@ let MahjongCalc = class MahjongCalc extends LitElement {
             label="ポイント"
             class="width-30"
             type="number"
+            step="0.1"
+            value=""
             disabled
           >
           </md-outlined-text-field>
@@ -205,6 +202,7 @@ let MahjongCalc = class MahjongCalc extends LitElement {
             label="4位"
             class="width-30"
             type="text"
+            value=""
           >
           </md-outlined-text-field>
           <md-outlined-text-field
@@ -212,7 +210,8 @@ let MahjongCalc = class MahjongCalc extends LitElement {
             label="得点"
             class="width-30"
             type="number"
-            @blur="${this._calcFourthPoint}"
+            value=""
+            @blur="${this._calcPoint}"
           >
           </md-outlined-text-field>
           <span>→</span>
@@ -221,14 +220,12 @@ let MahjongCalc = class MahjongCalc extends LitElement {
             label="ポイント"
             class="width-30"
             type="number"
+            step="0.1"
+            value=""
             disabled
           >
           </md-outlined-text-field>
         </div>
-        <!-- チョンボ -->
-        <mahjong-calc-chonbo></mahjong-calc-chonbo>
-        <!-- 役満 -->
-        <mahjong-calc-yakuman></mahjong-calc-yakuman>
 
         <div class="controle">
           <md-filled-tonal-button @click="${this._resetResults}"
@@ -248,161 +245,274 @@ let MahjongCalc = class MahjongCalc extends LitElement {
       </div>
     `;
     }
-    _calcFirstPoint() {
-        if (this._firstScore.value === '') {
-            return;
-        }
-        this._firstPoint.value = String((Number(this._firstScore.value) - Number(this._oka.value)) / 1000 +
-            Number(this._firstUma.value));
-        this._setIsPointCheckError();
-    }
-    _calcSecondPoint() {
-        if (this._secondScore.value === '') {
-            return;
-        }
-        this._secondPoint.value = String((Number(this._secondScore.value) - Number(this._oka.value)) / 1000 +
-            Number(this._secondUma.value));
-        this._setIsPointCheckError();
-    }
-    _calcThirdPoint() {
-        if (this._thirdScore.value === '') {
-            return;
-        }
-        this._thirdPoint.value = String((Number(this._thirdScore.value) - Number(this._oka.value)) / 1000 +
-            Number(this._thirdUma.value));
-        this._setIsPointCheckError();
-    }
-    _calcFourthPoint() {
-        if (this._fourthScore.value === '') {
-            return;
-        }
-        this._fourthPoint.value = String((Number(this._fourthScore.value) - Number(this._oka.value)) / 1000 +
-            Number(this._fourthUma.value));
-        this._setIsPointCheckError();
-    }
-    _changeGame() {
-        if (this._gameType.value === '三麻') {
-            this._changeSettings('35000', '35000', '15', '0', '-15', '0', true);
+    _calcPoint() {
+        if (this.gameTypeElement.value === '三麻') {
+            this._calc3maPoint();
         }
         else {
-            this._changeSettings('25000', '30000', '50', '10', '-10', '-30', false);
+            this._calc4maPoint();
+        }
+        this._setIsPointCheckError();
+    }
+    // Calculate points for 4-player Mahjong
+    _calc4maPoint() {
+        const firstScore = this.firstScoreElement.valueAsNumber;
+        const secondScore = this.secondScoreElement.valueAsNumber;
+        const thirdScore = this.thirdScoreElement.valueAsNumber;
+        const fourthScore = this.fourthScoreElement.valueAsNumber;
+        const firstUma = this.firstUmaElement.valueAsNumber;
+        const secondUma = this.secondUmaElement.valueAsNumber;
+        const thirdUma = this.thirdUmaElement.valueAsNumber;
+        const fourthUma = this.fourthUmaElement.valueAsNumber;
+        const oka = this.okaElement.valueAsNumber;
+        // Helper function to set points
+        const setPoints = (first, second, third, fourth) => {
+            if (firstScore) {
+                this.firstPointElement.value = String(first);
+            }
+            if (secondScore) {
+                this.secondPointElement.value = String(second);
+            }
+            if (thirdScore) {
+                this.thirdPointElement.value = String(third);
+            }
+            if (fourthScore) {
+                this.fourthPointElement.value = String(fourth);
+            }
+        };
+        // All players have the same score
+        if (firstScore === secondScore &&
+            firstScore === thirdScore &&
+            firstScore === fourthScore) {
+            const umaSum = firstUma + secondUma + thirdUma + fourthUma;
+            const point = (firstScore - oka) / 1000 + umaSum / 4;
+            setPoints(point, point, point, point);
+        }
+        // First, second, and third players have the same score
+        else if (firstScore === secondScore && firstScore === thirdScore) {
+            const umaSum = firstUma + secondUma + thirdUma;
+            const firstPoint = (firstScore - oka) / 1000 + umaSum / 3;
+            const fourthPoint = (fourthScore - oka) / 1000 + fourthUma;
+            setPoints(firstPoint, firstPoint, firstPoint, fourthPoint);
+        }
+        // Second, third, and fourth players have the same score
+        else if (secondScore === thirdScore && secondScore === fourthScore) {
+            const umaSum = secondUma + thirdUma + fourthUma;
+            const secondPoint = (secondScore - oka) / 1000 + umaSum / 3;
+            const firstPoint = (firstScore - oka) / 1000 + firstUma;
+            setPoints(firstPoint, secondPoint, secondPoint, secondPoint);
+        }
+        // First and second players have the same score
+        else if (firstScore === secondScore) {
+            const umaSum = firstUma + secondUma;
+            const firstPoint = (firstScore - oka) / 1000 + umaSum / 2;
+            const thirdPoint = (thirdScore - oka) / 1000 + thirdUma;
+            const fourthPoint = (fourthScore - oka) / 1000 + fourthUma;
+            setPoints(firstPoint, firstPoint, thirdPoint, fourthPoint);
+        }
+        // Second and third players have the same score
+        else if (secondScore === thirdScore) {
+            const umaSum = secondUma + thirdUma;
+            const secondPoint = (secondScore - oka) / 1000 + umaSum / 2;
+            const firstPoint = (firstScore - oka) / 1000 + firstUma;
+            const fourthPoint = (fourthScore - oka) / 1000 + fourthUma;
+            setPoints(firstPoint, secondPoint, secondPoint, fourthPoint);
+        }
+        // Third and fourth players have the same score
+        else if (thirdScore === fourthScore) {
+            const umaSum = thirdUma + fourthUma;
+            const thirdPoint = (thirdScore - oka) / 1000 + umaSum / 2;
+            const firstPoint = (firstScore - oka) / 1000 + firstUma;
+            const secondPoint = (secondScore - oka) / 1000 + secondUma;
+            setPoints(firstPoint, secondPoint, thirdPoint, thirdPoint);
+        }
+        // Normal calculation
+        else {
+            const firstPoint = (firstScore - oka) / 1000 + firstUma;
+            const secondPoint = (secondScore - oka) / 1000 + secondUma;
+            const thirdPoint = (thirdScore - oka) / 1000 + thirdUma;
+            const fourthPoint = (fourthScore - oka) / 1000 + fourthUma;
+            setPoints(firstPoint, secondPoint, thirdPoint, fourthPoint);
+        }
+    }
+    // Calculate points for 3-player Mahjong
+    _calc3maPoint() {
+        const firstScore = this.firstScoreElement.valueAsNumber;
+        const secondScore = this.secondScoreElement.valueAsNumber;
+        const thirdScore = this.thirdScoreElement.valueAsNumber;
+        const firstUma = this.firstUmaElement.valueAsNumber;
+        const secondUma = this.secondUmaElement.valueAsNumber;
+        const thirdUma = this.thirdUmaElement.valueAsNumber;
+        const oka = this.okaElement.valueAsNumber;
+        // Helper function to set points
+        const setPoints = (first, second, third) => {
+            this.firstPointElement.value = String(first);
+            this.secondPointElement.value = String(second);
+            this.thirdPointElement.value = String(third);
+        };
+        // All players have the same score
+        if (firstScore === secondScore && firstScore === thirdScore) {
+            const umaSum = firstUma + secondUma + thirdUma;
+            const point = (firstScore - oka) / 1000 + umaSum / 3;
+            setPoints(point, point, point);
+        }
+        // First and second players have the same score
+        else if (firstScore === secondScore) {
+            const umaSum = firstUma + secondUma;
+            const firstPoint = (firstScore - oka) / 1000 + umaSum / 2;
+            const thirdPoint = (thirdScore - oka) / 1000 + thirdUma;
+            setPoints(firstPoint, firstPoint, thirdPoint);
+        }
+        // Second and third players have the same score
+        else if (secondScore === thirdScore) {
+            const umaSum = secondUma + thirdUma;
+            const secondPoint = (secondScore - oka) / 1000 + umaSum / 2;
+            const firstPoint = (firstScore - oka) / 1000 + firstUma;
+            setPoints(firstPoint, secondPoint, secondPoint);
+        }
+        // Normal calculation
+        else {
+            const firstPoint = (firstScore - oka) / 1000 + firstUma;
+            const secondPoint = (secondScore - oka) / 1000 + secondUma;
+            const thirdPoint = (thirdScore - oka) / 1000 + thirdUma;
+            setPoints(firstPoint, secondPoint, thirdPoint);
+        }
+    }
+    _changeGame() {
+        if (this.gameTypeElement.value === '三麻') {
+            this._changeSettings(35000, 35000, 15, 0, -15, 0, true);
+        }
+        else {
+            this._changeSettings(25000, 30000, 50, 10, -10, -30, false);
         }
         this._resetResults();
     }
     _setIsPointCheckError() {
-        const isSanma = this._gameType?.value === '三麻';
+        const isSanma = this.gameTypeElement?.value === '三麻';
         const scores = [
-            Number(this._firstScore?.value),
-            Number(this._secondScore?.value),
-            Number(this._thirdScore?.value),
+            this.firstScoreElement.valueAsNumber,
+            this.secondScoreElement.valueAsNumber,
+            this.thirdScoreElement.valueAsNumber,
         ];
         if (!isSanma) {
-            scores.push(Number(this._fourthScore?.value));
+            scores.push(this.fourthScoreElement.valueAsNumber);
         }
         const totalScore = scores.reduce((acc, score) => acc + score, 0);
-        const expectedTotal = Number(this._initialPoint?.value) * (isSanma ? 3 : 4);
-        this.isPointCheckError = !(this._initialPoint && totalScore === expectedTotal);
+        const expectedTotal = this.initialPointElement.valueAsNumber * (isSanma ? 3 : 4);
+        this.isPointCheckError = !(this.initialPointElement.valueAsNumber && totalScore === expectedTotal);
     }
     _changeSettings(initialPoint, oka, firstUma, secondUma, thirdUma, fourthUma, noFourth) {
-        this._initialPoint.value = initialPoint;
-        this._oka.value = oka;
-        this._firstUma.value = firstUma;
-        this._secondUma.value = secondUma;
-        this._thirdUma.value = thirdUma;
-        this._fourthUma.value = fourthUma;
+        this.initialPointElement.value = String(initialPoint);
+        this.okaElement.value = String(oka);
+        this.firstUmaElement.value = String(firstUma);
+        this.secondUmaElement.value = String(secondUma);
+        this.thirdUmaElement.value = String(thirdUma);
+        this.fourthUmaElement.value = String(fourthUma);
         if (!noFourth) {
             this._clearFourth();
         }
         this._toggleFourth(noFourth);
     }
     _clearFourth() {
-        this._fourthPlayer.value = '';
-        this._fourthScore.value = '';
-        this._fourthPoint.value = '';
+        this.fourthPlayerElement.value = '';
+        this.fourthScoreElement.value = '';
+        this.fourthPointElement.value = '';
     }
     _toggleFourth(noFourth) {
-        this._fourthUma.disabled = noFourth;
-        this._fourthPlayer.disabled = noFourth;
-        this._fourthScore.disabled = noFourth;
+        this.fourthUmaElement.disabled = noFourth;
+        this.fourthPlayerElement.disabled = noFourth;
+        this.fourthScoreElement.disabled = noFourth;
     }
     _resetResults() {
-        this._firstPlayer.value = '';
-        this._secondPlayer.value = '';
-        this._thirdPlayer.value = '';
-        this._fourthPlayer.value = '';
-        this._firstScore.value = '';
-        this._secondScore.value = '';
-        this._thirdScore.value = '';
-        this._fourthScore.value = '';
-        this._firstPoint.value = '';
-        this._secondPoint.value = '';
-        this._thirdPoint.value = '';
-        this._fourthPoint.value = '';
+        this.firstPlayerElement.value = '';
+        this.secondPlayerElement.value = '';
+        this.thirdPlayerElement.value = '';
+        this.fourthPlayerElement.value = '';
+        this.firstScoreElement.value = '';
+        this.secondScoreElement.value = '';
+        this.thirdScoreElement.value = '';
+        this.fourthScoreElement.value = '';
+        this.firstPointElement.value = '';
+        this.secondPointElement.value = '';
+        this.thirdPointElement.value = '';
+        this.fourthPointElement.value = '';
     }
     async _uploadResults() {
-        this._progress.style.display = 'block';
+        this.progressElement.style.display = 'block';
         let players;
         let results;
         const chonbo = [];
         const yakuman = [];
-        if (this._gameType.value === '四麻') {
+        if (this.gameTypeElement.value === '四麻') {
             players = [
-                this._firstPlayer.value,
-                this._secondPlayer.value,
-                this._thirdPlayer.value,
-                this._fourthPlayer.value,
+                this.firstPlayerElement.value,
+                this.secondPlayerElement.value,
+                this.thirdPlayerElement.value,
+                this.fourthPlayerElement.value,
             ].sort();
             results = [
                 {
                     rank: 1,
-                    player: this._firstPlayer.value,
-                    score: Number(this._firstScore.value),
-                    point: Number(this._firstPoint.value),
+                    player: this.firstPlayerElement.value,
+                    score: Number(this.firstScoreElement.value),
+                    point: Number(this.firstPointElement.value),
                 },
                 {
-                    rank: 2,
-                    player: this._secondPlayer.value,
-                    score: Number(this._secondScore.value),
-                    point: Number(this._secondPoint.value),
+                    rank: this.firstScoreElement.value === this.secondScoreElement.value
+                        ? 1
+                        : 2,
+                    player: this.secondPlayerElement.value,
+                    score: Number(this.secondScoreElement.value),
+                    point: Number(this.secondPointElement.value),
                 },
                 {
-                    rank: 3,
-                    player: this._thirdPlayer.value,
-                    score: Number(this._thirdScore.value),
-                    point: Number(this._thirdPoint.value),
+                    rank: this.firstScoreElement.value === this.thirdScoreElement.value
+                        ? 1
+                        : this.secondScoreElement.value === this.thirdScoreElement.value
+                            ? 2
+                            : 3,
+                    player: this.thirdPlayerElement.value,
+                    score: Number(this.thirdScoreElement.value),
+                    point: Number(this.thirdPointElement.value),
                 },
                 {
-                    rank: 4,
-                    player: this._fourthPlayer.value,
-                    score: Number(this._fourthScore.value),
-                    point: Number(this._fourthPoint.value),
+                    rank: this.firstScoreElement.value === this.fourthScoreElement.value
+                        ? 1
+                        : this.secondScoreElement.value === this.fourthScoreElement.value
+                            ? 2
+                            : this.thirdScoreElement.value === this.fourthScoreElement.value
+                                ? 3
+                                : 4,
+                    player: this.fourthPlayerElement.value,
+                    score: Number(this.fourthScoreElement.value),
+                    point: Number(this.fourthPointElement.value),
                 },
             ];
         }
         else {
             players = [
-                this._firstPlayer.value,
-                this._secondPlayer.value,
-                this._thirdPlayer.value,
+                this.firstPlayerElement.value,
+                this.secondPlayerElement.value,
+                this.thirdPlayerElement.value,
             ].sort();
             results = [
                 {
                     rank: 1,
-                    player: this._firstPlayer.value,
-                    score: Number(this._firstScore.value),
-                    point: Number(this._firstPoint.value),
+                    player: this.firstPlayerElement.value,
+                    score: Number(this.firstScoreElement.value),
+                    point: Number(this.firstPointElement.value),
                 },
                 {
                     rank: 2,
-                    player: this._secondPlayer.value,
-                    score: Number(this._secondScore.value),
-                    point: Number(this._secondPoint.value),
+                    player: this.secondPlayerElement.value,
+                    score: Number(this.secondScoreElement.value),
+                    point: Number(this.secondPointElement.value),
                 },
                 {
                     rank: 3,
-                    player: this._thirdPlayer.value,
-                    score: Number(this._thirdScore.value),
-                    point: Number(this._thirdPoint.value),
+                    player: this.thirdPlayerElement.value,
+                    score: Number(this.thirdScoreElement.value),
+                    point: Number(this.thirdPointElement.value),
                 },
             ];
         }
@@ -474,11 +584,15 @@ let MahjongCalc = class MahjongCalc extends LitElement {
                 yakuman: yakuman4.value,
             });
         }
+        // 日付、順序キー
+        const dateAndKeyElement = this.renderRoot?.querySelector('mahjong-calc-date-and-key');
+        const dateElement = dateAndKeyElement?.renderRoot?.querySelector('#date');
+        const orderElement = dateAndKeyElement?.renderRoot?.querySelector('#order');
         const data = {
             gameInfo: {
-                date: this._date.value,
-                order: this._order.value,
-                gameType: this._gameType.value,
+                date: dateElement?.value,
+                order: orderElement?.value,
+                gameType: this.gameTypeElement.value,
                 players: players,
             },
             results: results,
@@ -494,7 +608,7 @@ let MahjongCalc = class MahjongCalc extends LitElement {
             console.error('Error adding document: ', e);
         }
         finally {
-            this._progress.style.display = 'none';
+            this.progressElement.style.display = 'none';
         }
     }
 };
@@ -525,70 +639,64 @@ __decorate([
 ], MahjongCalc.prototype, "isPointCheckError", void 0);
 __decorate([
     query('#gameType')
-], MahjongCalc.prototype, "_gameType", void 0);
+], MahjongCalc.prototype, "gameTypeElement", void 0);
 __decorate([
     query('#initialPoint')
-], MahjongCalc.prototype, "_initialPoint", void 0);
+], MahjongCalc.prototype, "initialPointElement", void 0);
 __decorate([
     query('#oka')
-], MahjongCalc.prototype, "_oka", void 0);
+], MahjongCalc.prototype, "okaElement", void 0);
 __decorate([
     query('#firstUma')
-], MahjongCalc.prototype, "_firstUma", void 0);
+], MahjongCalc.prototype, "firstUmaElement", void 0);
 __decorate([
     query('#secondUma')
-], MahjongCalc.prototype, "_secondUma", void 0);
+], MahjongCalc.prototype, "secondUmaElement", void 0);
 __decorate([
     query('#thirdUma')
-], MahjongCalc.prototype, "_thirdUma", void 0);
+], MahjongCalc.prototype, "thirdUmaElement", void 0);
 __decorate([
     query('#fourthUma')
-], MahjongCalc.prototype, "_fourthUma", void 0);
-__decorate([
-    query('#date')
-], MahjongCalc.prototype, "_date", void 0);
-__decorate([
-    query('#order')
-], MahjongCalc.prototype, "_order", void 0);
+], MahjongCalc.prototype, "fourthUmaElement", void 0);
 __decorate([
     query('#firstPlayer')
-], MahjongCalc.prototype, "_firstPlayer", void 0);
+], MahjongCalc.prototype, "firstPlayerElement", void 0);
 __decorate([
     query('#secondPlayer')
-], MahjongCalc.prototype, "_secondPlayer", void 0);
+], MahjongCalc.prototype, "secondPlayerElement", void 0);
 __decorate([
     query('#thirdPlayer')
-], MahjongCalc.prototype, "_thirdPlayer", void 0);
+], MahjongCalc.prototype, "thirdPlayerElement", void 0);
 __decorate([
     query('#fourthPlayer')
-], MahjongCalc.prototype, "_fourthPlayer", void 0);
+], MahjongCalc.prototype, "fourthPlayerElement", void 0);
 __decorate([
     query('#firstScore')
-], MahjongCalc.prototype, "_firstScore", void 0);
+], MahjongCalc.prototype, "firstScoreElement", void 0);
 __decorate([
     query('#secondScore')
-], MahjongCalc.prototype, "_secondScore", void 0);
+], MahjongCalc.prototype, "secondScoreElement", void 0);
 __decorate([
     query('#thirdScore')
-], MahjongCalc.prototype, "_thirdScore", void 0);
+], MahjongCalc.prototype, "thirdScoreElement", void 0);
 __decorate([
     query('#fourthScore')
-], MahjongCalc.prototype, "_fourthScore", void 0);
+], MahjongCalc.prototype, "fourthScoreElement", void 0);
 __decorate([
     query('#firstPoint')
-], MahjongCalc.prototype, "_firstPoint", void 0);
+], MahjongCalc.prototype, "firstPointElement", void 0);
 __decorate([
     query('#secondPoint')
-], MahjongCalc.prototype, "_secondPoint", void 0);
+], MahjongCalc.prototype, "secondPointElement", void 0);
 __decorate([
     query('#thirdPoint')
-], MahjongCalc.prototype, "_thirdPoint", void 0);
+], MahjongCalc.prototype, "thirdPointElement", void 0);
 __decorate([
     query('#fourthPoint')
-], MahjongCalc.prototype, "_fourthPoint", void 0);
+], MahjongCalc.prototype, "fourthPointElement", void 0);
 __decorate([
     query('#progress')
-], MahjongCalc.prototype, "_progress", void 0);
+], MahjongCalc.prototype, "progressElement", void 0);
 MahjongCalc = __decorate([
     customElement('mahjong-calc')
 ], MahjongCalc);
