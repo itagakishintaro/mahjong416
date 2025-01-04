@@ -265,10 +265,10 @@ export class MahjongStats extends LitElement {
       if (playerMap.has(player)) {
         const currentPoints = playerMap.get(player) || 0;
         if (point > currentPoints) {
-          playerMap.set(player, point);
+          playerMap.set(player, Number(point.toFixed(1)));
         }
       } else {
-        playerMap.set(player, point);
+        playerMap.set(player, Number(point.toFixed(1)));
       }
     });
 
