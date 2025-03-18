@@ -228,15 +228,15 @@ export class MahjongIndividual extends LitElement {
             .data()
             .results.find(
               (result: Result) => result.player === this._player.value
-            ).point,
-          totalPoint: 0, // Initialize totalPoint property
+            ).point.toFixed(1),
+          totalPoint: 0,
         };
       })
       .sort((a, b) => {
         if (a.date === b.date) {
           return b.order - a.order;
         }
-        return new Date(b.date).getTime() - new Date(a.date).getTime();
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
       });
     this.chartData = chartData;
   }
@@ -248,7 +248,7 @@ export class MahjongIndividual extends LitElement {
       this._myChart.removeAttribute('width');
       this._myChart.removeAttribute('height');
     }
-    this._myChart.style.width = this.chartData.length * 50 + 'px';
+    this._myChart.style.width = 4 <= this.chartData.length ? this.chartData.length * 50 + 'px': '300px';
     this._myChart.style.height = '400px';
     const zeroPoints = Array(this.chartData.length).fill(0);
 
@@ -282,6 +282,26 @@ export class MahjongIndividual extends LitElement {
       },
       options: {
         responsive: false,
+        plugins: {
+          datalabels: {
+            color: 'rgba(99, 81, 159, 1)',
+            anchor: 'end',
+            align: 'end',
+          }
+        },
+        scales: {
+          x: {
+            position: 'bottom',
+          }
+        },
+        animation: {
+          onComplete: (_animation) => {
+            const chartDiv = this.shadowRoot?.querySelector('.chart');
+            if (chartDiv) {
+              chartDiv.scrollLeft = chartDiv.scrollWidth;
+            }
+          }
+        }
       },
     });
   }
@@ -332,7 +352,7 @@ export class MahjongIndividual extends LitElement {
     const point = playerResults.reduce((acc, result) => acc + result.point, 0);
     const chonbo = playerChonbo.reduce((acc, result) => acc + result.point, 0);
     const totalPoints = point + chonbo;
-    const maxPoint = Math.max(...playerResults.map((result) => result.point));
+    const maxPoint = Number(Math.max(...playerResults.map((result) => result.point)).toFixed(1));
     const averagePoint =
       playerResults.reduce((acc, result) => acc + result.point, 0) / totalGames;
     const yakuman = playerYakuman.map((yakuman) => yakuman.yakuman).join(',');
