@@ -15,16 +15,16 @@ let MahjongVersus = class MahjongVersus extends LitElement {
     render() {
         return html `
       <h2>対戦成績</h2>
-
-      <table class="versus-table">
-        <tr>
-          <th></th>
-          ${map(this.players, (player) => html `<th>${player}</th>`)}
-        </tr>
-        ${map(this.players, (player1) => html `
+      <div class="table-container">
+        <table class="versus-table">
           <tr>
-            <th>${player1}</th>
-            ${map(this.players, (player2) => {
+            <th></th>
+            ${map(this.players, (player) => html `<th>${player}</th>`)}
+          </tr>
+          ${map(this.players, (player1) => html `
+            <tr>
+              <th>${player1}</th>
+              ${map(this.players, (player2) => {
             if (player1 === player2) {
                 return html `<td>-</td>`;
             }
@@ -35,16 +35,17 @@ let MahjongVersus = class MahjongVersus extends LitElement {
             }
             const pointDiff = data.player1 === player1 ? data.pointDiff : -data.pointDiff;
             return html `
-                <td class="${pointDiff > 0 ? 'positive' : 'negative'}">
-                  ${pointDiff.toFixed(1)}
-                  <br>
-                  (${data.games}戦)
-                </td>
-              `;
+                  <td class="${pointDiff > 0 ? 'positive' : 'negative'}">
+                    ${pointDiff.toFixed(1)}
+                    <br>
+                    (${data.games}戦)
+                  </td>
+                `;
         })}
-          </tr>
-        `)}
-      </table>
+            </tr>
+          `)}
+        </table>
+      </div>
     `;
     }
     constructor() {
@@ -109,10 +110,15 @@ let MahjongVersus = class MahjongVersus extends LitElement {
     }
 };
 MahjongVersus.styles = css `
-    .versus-table {
+    .table-container {
       width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .versus-table {
       border-collapse: collapse;
       margin-top: 1rem;
+      min-width: 600px;
     }
     .versus-table th,
     .versus-table td {
@@ -123,6 +129,14 @@ MahjongVersus.styles = css `
     }
     .versus-table th {
       background-color: #f5f5f5;
+      position: sticky;
+      left: 0;
+      z-index: 1;
+    }
+    .versus-table tr th:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 2;
     }
     .positive {
       color: #2196f3;
