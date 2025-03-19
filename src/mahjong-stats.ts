@@ -6,6 +6,7 @@ import '@material/web/select/select-option.js';
 import {db} from './firestore';
 import {collection, getDocs} from 'firebase/firestore/lite';
 import {QueryDocumentSnapshot} from 'firebase/firestore/lite';
+import './mahjong-versus';
 
 @customElement('mahjong-stats')
 export class MahjongStats extends LitElement {
@@ -157,6 +158,7 @@ export class MahjongStats extends LitElement {
           `;
         })}
       </table>
+      <mahjong-versus></mahjong-versus>
     `;
   }
 
@@ -164,17 +166,28 @@ export class MahjongStats extends LitElement {
   _gameType!: HTMLSelectElement;
   @query('#targetYear')
   _targetYear!: HTMLSelectElement;
+  @query('mahjong-versus')
+  _versus!: HTMLElementTagNameMap['mahjong-versus'];
 
   constructor() {
     super();
     this._loadData();
   }
 
-  private _changeGame() {
-    this._loadData();
+  private async _changeGame() {
+    await this._loadData();
+    this._updateVersusData();
   }
-  private _changeYear() {
-    this._loadData();
+
+  private async _changeYear() {
+    await this._loadData();
+    this._updateVersusData();
+  }
+
+  private _updateVersusData() {
+    const gameType = this._gameType.value || '四麻';
+    const targetYear = Number(this._targetYear.value) || new Date().getFullYear();
+    this._versus?.updateData(gameType, targetYear);
   }
 
   private async _loadData() {

@@ -11,6 +11,7 @@ import '@material/web/select/outlined-select.js';
 import '@material/web/select/select-option.js';
 import { db } from './firestore';
 import { collection, getDocs } from 'firebase/firestore/lite';
+import './mahjong-versus';
 let MahjongStats = class MahjongStats extends LitElement {
     render() {
         return html `
@@ -121,6 +122,7 @@ let MahjongStats = class MahjongStats extends LitElement {
           `;
         })}
       </table>
+      <mahjong-versus></mahjong-versus>
     `;
     }
     constructor() {
@@ -132,11 +134,18 @@ let MahjongStats = class MahjongStats extends LitElement {
         this.yakumanList = [];
         this._loadData();
     }
-    _changeGame() {
-        this._loadData();
+    async _changeGame() {
+        await this._loadData();
+        this._updateVersusData();
     }
-    _changeYear() {
-        this._loadData();
+    async _changeYear() {
+        await this._loadData();
+        this._updateVersusData();
+    }
+    _updateVersusData() {
+        const gameType = this._gameType.value || '四麻';
+        const targetYear = Number(this._targetYear.value) || new Date().getFullYear();
+        this._versus?.updateData(gameType, targetYear);
     }
     async _loadData() {
         const querySnapshot = await getDocs(collection(db, 'results'));
@@ -315,6 +324,9 @@ __decorate([
 __decorate([
     query('#targetYear')
 ], MahjongStats.prototype, "_targetYear", void 0);
+__decorate([
+    query('mahjong-versus')
+], MahjongStats.prototype, "_versus", void 0);
 MahjongStats = __decorate([
     customElement('mahjong-stats')
 ], MahjongStats);
