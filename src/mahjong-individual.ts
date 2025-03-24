@@ -234,7 +234,7 @@ export class MahjongIndividual extends LitElement {
       })
       .sort((a, b) => {
         if (a.date === b.date) {
-          return b.order - a.order;
+          return a.order - b.order;
         }
         return new Date(a.date).getTime() - new Date(b.date).getTime();
       });
