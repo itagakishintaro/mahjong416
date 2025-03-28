@@ -1,0 +1,58 @@
+[debug] [2025-03-28T06:37:08.081Z] ----------------------------------------------------------------------
+[debug] [2025-03-28T06:37:08.082Z] Command:       /Users/shintaro.itagaki/.nvm/versions/node/v22.6.0/bin/node /Users/shintaro.itagaki/.nvm/versions/node/v11.8.0/bin/firebase deploy
+[debug] [2025-03-28T06:37:08.082Z] CLI Version:   12.5.4
+[debug] [2025-03-28T06:37:08.082Z] Platform:      darwin
+[debug] [2025-03-28T06:37:08.082Z] Node Version:  v22.6.0
+[debug] [2025-03-28T06:37:08.083Z] Time:          Fri Mar 28 2025 15:37:08 GMT+0900 (日本標準時)
+[debug] [2025-03-28T06:37:08.083Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-03-28T06:37:08.118Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-03-28T06:37:08.119Z] > authorizing via signed-in user (itagaki.shintaro@gmail.com)
+[debug] [2025-03-28T06:37:08.119Z] [iam] checking project mahjong416 for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2025-03-28T06:37:08.120Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/mahjong416:testIamPermissions [none]
+[debug] [2025-03-28T06:37:08.120Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/mahjong416:testIamPermissions x-goog-quota-user=projects/mahjong416
+[debug] [2025-03-28T06:37:08.120Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/mahjong416:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-03-28T06:37:08.927Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/mahjong416:testIamPermissions 200
+[debug] [2025-03-28T06:37:08.927Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/mahjong416:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-03-28T06:37:08.928Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/mahjong416 [none]
+[debug] [2025-03-28T06:37:09.403Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/mahjong416 200
+[debug] [2025-03-28T06:37:09.403Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/mahjong416 {"projectId":"mahjong416","projectNumber":"330986708658","displayName":"mahjong416","name":"projects/mahjong416","resources":{"hostingSite":"mahjong416"},"state":"ACTIVE","etag":"1_6db090c6-81d1-4d5a-9ced-d27548522d36"}
+[info] 
+[info] === Deploying to 'mahjong416'...
+[info] 
+[info] i  deploying hosting 
+[debug] [2025-03-28T06:37:09.408Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/mahjong416/versions [none]
+[debug] [2025-03-28T06:37:09.409Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/mahjong416/versions {"status":"CREATED","labels":{"deployment-tool":"cli-firebase"}}
+[debug] [2025-03-28T06:37:10.374Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/mahjong416/versions 200
+[debug] [2025-03-28T06:37:10.374Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/mahjong416/versions {"name":"projects/330986708658/sites/mahjong416/versions/a743c98bcde5d7c2","status":"CREATED","config":{},"labels":{"deployment-tool":"cli-firebase"}}
+[info] i  hosting[mahjong416]: beginning deploy... 
+[info] i  hosting[mahjong416]: found 24 files in public 
+[debug] [2025-03-28T06:37:10.379Z] [hosting] uploading with 200 concurrency
+[debug] [2025-03-28T06:37:10.397Z] [hosting] hash cache [cHVibGlj] stored for 24 files
+[debug] [2025-03-28T06:37:10.397Z] [hosting][hash queue][FINAL] {"max":12,"min":0,"avg":3.8333333333333335,"active":0,"complete":24,"success":24,"errored":0,"retried":0,"total":24,"elapsed":15}
+[debug] [2025-03-28T06:37:10.398Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/330986708658/sites/mahjong416/versions/a743c98bcde5d7c2:populateFiles [none]
+[debug] [2025-03-28T06:37:10.398Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/330986708658/sites/mahjong416/versions/a743c98bcde5d7c2:populateFiles {"files":{"/404.html":"545d1792708ef86dcb7c84510f9d7f2882162e1f538eecbeab38ef5b1d36a742","/filled-button-87178736.js":"26fa6857ab062bbdefeb3ca40c0e63e3dfb8c9499ef226d84a3d85480f7c1b82","/filled-button-a7dde759.js":"035a7566ac5aeea5173ecf9048ff21170983e871a9ee3d5fbaeab0cc56d0fe5c","/firestore-724ae668.js":"a27d651cff79d3e4b163be0912e9c889c2a68f22c2c237b04848f81fdfe5f0d5","/pf-accordion-cc13577d.js":"b3e47131878ec42d2012cb43caae913ced9f9ad2f0e2b95d3f53ee9062543cc3","/pf-accordion-cc199819.js":"16688a1aaac0bd56b611d136505c63da56cdbc45ed14ebb0722c64c47d91ab12","/select-option-2c22287d.js":"734ae8ad1fef98576ce0c8f05ce5fe6b2f8ca038164e3d424fcf20be00311066","/select-option-ec247a15.js":"2dd059d3be764ad692abecc667b94e9c49852e8ce6ae3fd7a1ba5e613c3303fa","/filled-button-ee8cba52.js":"583bbf7e2bd7681b4de3065124b7d352752b7a46742d07a4bb6596f43de2eb4a","/custom-element-6f1a92a3.js":"be0616380d87640ce3ef90169d5020c47bd7e75df37208b095b147dbefbc663e","/index.html":"8a428b6515ae9d983f1d5e9577996b253fa28325c944332424765c14c5e14bc2","/mahjong-calc.js":"34817616e5572669f6ec7a94f4ac8671580690857340cf65c20d1824906ebe93","/mahjong-menu.js":"e556fccfe49ba2e42981dbfa119efe89b7dba8542c169ec3487b7a0d08d8da31","/mahjong-rule.js":"aecf6320440e513e0c78adc4f460fe09a7638f0cdf9529245c0b241bc5162375","/mahjong-stats.js":"5688bcdbce8be9eafb9a33e69d6acb6e598f58e907708bb27678b9cb9807e503","/map-7f5238f0.js":"fafcc5f191697871a072a6cb9bfa6cc5dc105c7f5ad0051aea3360b681b03fdf","/mahjong-title.js":"39ecc27d6296405e8ba7e3a3bb851093a2853824d9d39e8afbdabafb69fe1909","/mahjong-today.js":"8ed276d3c7fd1b6d99894541a3562903535da5b7a6f2021399041deaede68a42","/tslib.es6-0fe1dd1f.js":"cc43bc138c19674e83455c08baaa4d2d54dbc1ef70bb522137c478a827dca82d","/circular-progress-77202d31.js":"bc25b034d54f80d9c994712582d6f65475fae8e03ac9002dda9aaecd6811ea7c","/pf-accordion-e1b9fe75.js":"5a613015c148f6c68856ba21f455653cb5ba14ae7fc502dab6783bc1daddd556","/firestore-4afe899e.js":"95e6bf01aa0af48f85af97cae4ecb819f7a7e323394b9b21620831190ca165e9","/select-option-960bdd27.js":"f32ed5e462946f845f69af97f16acd455f8faf33702807838ec7f4f44f037012","/mahjong-individual.js":"0f5756b3678450d7c0c5f8533633a64bb9586bb3f8d39ede72f5940f6e65f6f1"}}
+[debug] [2025-03-28T06:37:10.815Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/330986708658/sites/mahjong416/versions/a743c98bcde5d7c2:populateFiles 200
+[debug] [2025-03-28T06:37:10.815Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/330986708658/sites/mahjong416/versions/a743c98bcde5d7c2:populateFiles {"uploadUrl":"https://upload-firebasehosting.googleapis.com/upload/sites/mahjong416/versions/a743c98bcde5d7c2/files"}
+[debug] [2025-03-28T06:37:10.815Z] [hosting][populate queue][FINAL] {"max":419,"min":419,"avg":419,"active":0,"complete":1,"success":1,"errored":0,"retried":0,"total":1,"elapsed":419}
+[debug] [2025-03-28T06:37:10.815Z] [hosting] uploads queued: 0
+[debug] [2025-03-28T06:37:10.815Z] [hosting][upload queue][FINAL] {"max":0,"min":9999999999,"avg":0,"active":0,"complete":0,"success":0,"errored":0,"retried":0,"total":0,"elapsed":1743143830815}
+[info] ✔  hosting[mahjong416]: file upload complete 
+[debug] [2025-03-28T06:37:10.816Z] [hosting] deploy completed after 440ms
+[debug] [2025-03-28T06:37:10.816Z] [
+  {
+    "config": {
+      "public": "public",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "site": "mahjong416"
+    },
+    "version": "projects/330986708658/sites/mahjong416/versions/a743c98bcde5d7c2"
+  }
+]
+[info] i  hosting[mahjong416]: finalizing version... 
+[debug] [2025-03-28T06:37:10.817Z] >>> [apiv2][query] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/mahjong416/versions/a743c98bcde5d7c2 updateMask=status%2Cconfig
+[debug] [2025-03-28T06:37:10.817Z] >>> [apiv2][body] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/mahjong416/versions/a743c98bcde5d7c2 {"status":"FINALIZED","config":{}}

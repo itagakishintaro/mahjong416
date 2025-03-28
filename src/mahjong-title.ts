@@ -156,7 +156,7 @@ export class MahjongTitleList extends LitElement {
 
     return html`
       <div class="title-container">
-        <h1>麻雀タイトル一覧</h1>
+        <h1>タイトル一覧</h1>
 
         <pf-accordion>
           <pf-accordion-header>
