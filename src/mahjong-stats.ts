@@ -186,7 +186,8 @@ export class MahjongStats extends LitElement {
 
   private _updateVersusData() {
     const gameType = this._gameType.value || '四麻';
-    const targetYear = Number(this._targetYear.value) || new Date().getFullYear();
+    const targetYear =
+      Number(this._targetYear.value) || new Date().getFullYear();
     this._versus?.updateData(gameType, targetYear);
   }
 

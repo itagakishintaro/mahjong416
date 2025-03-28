@@ -228,7 +228,8 @@ export class MahjongIndividual extends LitElement {
             .data()
             .results.find(
               (result: Result) => result.player === this._player.value
-            ).point.toFixed(1),
+            )
+            .point.toFixed(1),
           totalPoint: 0,
         };
       })
@@ -248,7 +249,8 @@ export class MahjongIndividual extends LitElement {
       this._myChart.removeAttribute('width');
       this._myChart.removeAttribute('height');
     }
-    this._myChart.style.width = 4 <= this.chartData.length ? this.chartData.length * 50 + 'px': '300px';
+    this._myChart.style.width =
+      4 <= this.chartData.length ? this.chartData.length * 50 + 'px' : '300px';
     this._myChart.style.height = '400px';
     const zeroPoints = Array(this.chartData.length).fill(0);
 
@@ -287,12 +289,12 @@ export class MahjongIndividual extends LitElement {
             color: 'rgba(99, 81, 159, 1)',
             anchor: 'end',
             align: 'end',
-          }
+          },
         },
         scales: {
           x: {
             position: 'bottom',
-          }
+          },
         },
         animation: {
           onComplete: (_animation) => {
@@ -300,8 +302,8 @@ export class MahjongIndividual extends LitElement {
             if (chartDiv) {
               chartDiv.scrollLeft = chartDiv.scrollWidth;
             }
-          }
-        }
+          },
+        },
       },
     });
   }
@@ -352,7 +354,9 @@ export class MahjongIndividual extends LitElement {
     const point = playerResults.reduce((acc, result) => acc + result.point, 0);
     const chonbo = playerChonbo.reduce((acc, result) => acc + result.point, 0);
     const totalPoints = point + chonbo;
-    const maxPoint = Number(Math.max(...playerResults.map((result) => result.point)).toFixed(1));
+    const maxPoint = Number(
+      Math.max(...playerResults.map((result) => result.point)).toFixed(1)
+    );
     const averagePoint =
       playerResults.reduce((acc, result) => acc + result.point, 0) / totalGames;
     const yakuman = playerYakuman.map((yakuman) => yakuman.yakuman).join(',');

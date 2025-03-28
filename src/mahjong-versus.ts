@@ -14,6 +14,14 @@ interface VersusData {
   pointDiff: number;
 }
 
+// 結果オブジェクトの型を定義
+interface GameResult {
+  player: string;
+  point: number;
+  rank: number;
+  score: number;
+}
+
 @customElement('mahjong-versus')
 export class MahjongVersus extends LitElement {
   @property({type: Array})
@@ -69,38 +77,38 @@ export class MahjongVersus extends LitElement {
         <table class="versus-table">
           <tr>
             <th></th>
-            ${map(
-              this.players,
-              (player) => html`<th>${player}</th>`
-            )}
+            ${map(this.players, (player) => html`<th>${player}</th>`)}
           </tr>
-          ${map(this.players, (player1) => html`
-            <tr>
-              <th>${player1}</th>
-              ${map(this.players, (player2) => {
-                if (player1 === player2) {
-                  return html`<td>-</td>`;
-                }
-                const data = this.versusData.find(
-                  (d) =>
-                    (d.player1 === player1 && d.player2 === player2) ||
-                    (d.player1 === player2 && d.player2 === player1)
-                );
-                if (!data) {
-                  return html`<td>-</td>`;
-                }
-                const pointDiff =
-                  data.player1 === player1 ? data.pointDiff : -data.pointDiff;
-                return html`
-                  <td class="${pointDiff > 0 ? 'positive' : 'negative'}">
-                    ${pointDiff.toFixed(1)}
-                    <br>
-                    (${data.games}戦)
-                  </td>
-                `;
-              })}
-            </tr>
-          `)}
+          ${map(
+            this.players,
+            (player1) => html`
+              <tr>
+                <th>${player1}</th>
+                ${map(this.players, (player2) => {
+                  if (player1 === player2) {
+                    return html`<td>-</td>`;
+                  }
+                  const data = this.versusData.find(
+                    (d) =>
+                      (d.player1 === player1 && d.player2 === player2) ||
+                      (d.player1 === player2 && d.player2 === player1)
+                  );
+                  if (!data) {
+                    return html`<td>-</td>`;
+                  }
+                  const pointDiff =
+                    data.player1 === player1 ? data.pointDiff : -data.pointDiff;
+                  return html`
+                    <td class="${pointDiff > 0 ? 'positive' : 'negative'}">
+                      ${pointDiff.toFixed(1)}
+                      <br />
+                      (${data.games}戦)
+                    </td>
+                  `;
+                })}
+              </tr>
+            `
+          )}
         </table>
       </div>
     `;
@@ -160,14 +168,16 @@ export class MahjongVersus extends LitElement {
         if (commonGames.length > 0) {
           let pointDiff = 0;
           commonGames.forEach((doc) => {
-            const results = doc.data().results;
+            const results = doc.data().results as GameResult[];
             const player1Result = results.find(
-              (r: any) => r.player === player1
+              (r: GameResult) => r.player === player1
             );
             const player2Result = results.find(
-              (r: any) => r.player === player2
+              (r: GameResult) => r.player === player2
             );
-            pointDiff += player1Result.point - player2Result.point;
+            if (player1Result && player2Result) {
+              pointDiff += player1Result.point - player2Result.point;
+            }
           });
 
           versusData.push({

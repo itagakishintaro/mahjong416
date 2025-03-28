@@ -1,8 +1,11 @@
 import {LitElement} from 'lit';
-import '@material/web/textfield/filled-text-field.js';
 import '@patternfly/elements/pf-accordion/pf-accordion.js';
-export declare class MahjongCalcDateAndKey extends LitElement {
+export declare class MahjongTitleList extends LitElement {
   static styles: import('lit').CSSResult[];
+  private titles;
+  constructor();
+  private _loadTitles;
+  private addTitle;
   render(): import('lit-html').TemplateResult<1>;
 }
-//# sourceMappingURL=mahjong-calc-date-and-key.d.ts.map
+//# sourceMappingURL=mahjong-title.d.ts.map

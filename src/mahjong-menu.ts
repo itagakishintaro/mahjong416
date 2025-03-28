@@ -18,6 +18,7 @@ export class MahjongMenu extends LitElement {
         <md-primary-tab id="today">今日の成績</md-primary-tab>
         <md-primary-tab>総合成績</md-primary-tab>
         <md-primary-tab>個人成績</md-primary-tab>
+        <md-primary-tab>タイトル</md-primary-tab>
         <md-primary-tab>ルール</md-primary-tab>
       </md-tabs>
       <main>
@@ -51,6 +52,10 @@ export class MahjongMenu extends LitElement {
         '<mahjong-individual></mahjong-individual>';
     }
     if (index === 4) {
+      this.shadowRoot!.querySelector('main')!.innerHTML =
+        '<mahjong-title></mahjong-title>';
+    }
+    if (index === 5) {
       this.shadowRoot!.querySelector('main')!.innerHTML =
         '<mahjong-rule></mahjong-rule>';
     }
