@@ -1,4 +1,4 @@
-import{t as l,h as i,k as e}from"./custom-element-6f1a92a3.js";var t=function(l,i,e,t){for(var r,p=arguments.length,u=p<3?i:null===t?t=Object.getOwnPropertyDescriptor(i,e):t,a=l.length-1;a>=0;a--)(r=l[a])&&(u=(p<3?r(u):p>3?r(i,e,u):r(i,e))||u);return p>3&&u&&Object.defineProperty(i,e,u),u};let r=class extends i{render(){return e`
+import{t as l,h as e,k as i}from"./custom-element-6f1a92a3.js";var t=function(l,e,i,t){for(var r,p=arguments.length,u=p<3?e:null===t?t=Object.getOwnPropertyDescriptor(e,i):t,a=l.length-1;a>=0;a--)(r=l[a])&&(u=(p<3?r(u):p>3?r(e,i,u):r(e,i))||u);return p>3&&u&&Object.defineProperty(e,i,u),u};let r=class extends e{render(){return i`
       <h1>ルール</h1>
       <p>
         ※参加者全員が合意のうえであれば、ルールを変えることも可とする（例.
@@ -11,7 +11,6 @@ import{t as l,h as i,k as e}from"./custom-element-6f1a92a3.js";var t=function(l,
       </p>
       <p>Mリーグと異なるルールは次のとおり。</p>
       <ul>
-        <li>30符ルール：簡略化のため符計算はせずに、すべて30符とする</li>
         <li>箱下終了：マイナスの点数が発生した時点で競技終了とする</li>
       </ul>
       <p>一般と異なる主なルールは次のとおり。</p>

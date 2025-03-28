@@ -133,7 +133,7 @@ export class MahjongTitleList extends LitElement {
     if (this.titles.length === 0) {
       return html`
         <div class="title-container">
-          <h2>麻雀タイトル一覧</h2>
+          <h2>タイトル一覧</h2>
           <p>データを読み込んでいます...</p>
         </div>
       `;
