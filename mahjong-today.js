@@ -42,30 +42,26 @@ let MahjongToday = class MahjongToday extends LitElement {
 
       <h2>ゲームごとのポイント</h2>
       <table>
-        ${map(this.todaysResults.keys(), (players) => {
-            return html `
-            <thead>
-              <tr>
-                ${map(this.todaysResults.get(players)[0], (result) => {
-                return html ` <th>${result.player}</th> `;
-            })}
-              </tr>
-            </thead>
-            <tbody>
-              ${map(this.todaysResults.get(players), (resultArray) => {
-                return html `<tr>
-                    ${resultArray.map((result) => {
-                    return html `
-                        <td class="rank-${result.rank}">
-                          ${Math.round(result.point * 10) / 10}(${result.rank})
-                        </td>
-                      `;
-                })}
-                  </tr>`;
-            })}
-            </tbody>
-          `;
-        })}
+        ${(() => {
+            let prevMembers = '';
+            return this.todaysResultsList.map((game) => {
+                const members = game.results.map((r) => r.player).join(',');
+                const showHeader = members !== prevMembers;
+                prevMembers = members;
+                return html `
+              ${showHeader ? html `<thead><tr>${game.results.map((result) => html `<th>${result.player}</th>`)}</tr></thead>` : ''}
+              <tbody>
+                <tr>
+                  ${game.results.map((result) => html `
+                    <td class="rank-${result.rank}">
+                      ${Math.round(result.point * 10) / 10}(${result.rank})
+                    </td>
+                  `)}
+                </tr>
+              </tbody>
+            `;
+            });
+        })()}
       </table>
 
       <h2>合計</h2>
@@ -114,31 +110,36 @@ let MahjongToday = class MahjongToday extends LitElement {
       <h2>チョンボ</h2>
       ${this.todaysChonbo.length === 0 ? html `<p>なし</p>` : ''}
       <table>
-        ${map(this.todaysChonbo, (chonboArray) => {
-            return html `
-            <thead>
-              <tr>
-                ${chonboArray.map((chonbo) => {
-                return html ` <th>${chonbo.player}</th> `;
-            })}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                ${chonboArray.map((chonbo) => {
-                return html ` <td>${chonbo.point}</td> `;
-            })}
-              </tr>
-            </tbody>
-          `;
-        })}
+        <thead>
+          <tr>
+            ${(() => {
+            // 全チョンボを合算
+            const chonboMap = new Map();
+            this.todaysChonbo.flat().forEach((chonbo) => {
+                chonboMap.set(chonbo.player, (chonboMap.get(chonbo.player) || 0) + chonbo.point);
+            });
+            return Array.from(chonboMap.keys()).map(player => html `<th>${player}</th>`);
+        })()}
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            ${(() => {
+            const chonboMap = new Map();
+            this.todaysChonbo.flat().forEach((chonbo) => {
+                chonboMap.set(chonbo.player, (chonboMap.get(chonbo.player) || 0) + chonbo.point);
+            });
+            return Array.from(chonboMap.values()).map(point => html `<td>${point}</td>`);
+        })()}
+          </tr>
+        </tbody>
       </table>
     `;
     }
     constructor() {
         super();
         this.distinctDates = [];
-        this.todaysResults = new Map();
+        this.todaysResultsList = [];
         this.playerPoints = new Map();
         this.todaysChonbo = [];
         this.todaysYakuman = [];
@@ -146,53 +147,72 @@ let MahjongToday = class MahjongToday extends LitElement {
     }
     async startup() {
         await this._loadData();
-        // 初期は日付を最新の日付にする
-        this._date.selectedIndex = 0;
-        this._date.displayText = this.distinctDates[0];
+        // 初期は日付を最新年月日にする
+        const currentYear = new Date().getFullYear().toString();
+        const defaultDate = this.distinctDates[0] === currentYear ? this.distinctDates[1] : this.distinctDates[0];
+        this._date.selectedIndex = this.distinctDates.indexOf(defaultDate);
+        this._date.displayText = defaultDate;
     }
     async _changeGame() {
         // gameTypeを変えた場合は日付をリセットする
         this._date.value = '';
         await this._loadData();
-        this._date.selectedIndex = 0;
-        this._date.displayText = this.distinctDates[0];
+        const currentYear = new Date().getFullYear().toString();
+        const defaultDate = this.distinctDates[0] === currentYear ? this.distinctDates[1] : this.distinctDates[0];
+        this._date.selectedIndex = this.distinctDates.indexOf(defaultDate);
+        this._date.displayText = defaultDate;
     }
     _changeDate() {
         this._loadData();
     }
     async _loadData() {
-        this.todaysResults = new Map();
+        this.todaysResultsList = [];
         this.todaysChonbo = [];
         this.todaysYakuman = [];
         const querySnapshot = await getDocs(collection(db, 'results'));
         const docs = querySnapshot.docs;
         this._setDistinctDates(docs);
         const gameType = this._gameType.value || '四麻';
-        // 日付を選択していない場合は最初の日付を選択する
-        const targetDate = this._date.value || this.distinctDates[0];
+        const currentYear = new Date().getFullYear().toString();
+        // デフォルトは最新年月日（distinctDates[1]が存在すればそれを使う）
+        const defaultDate = this.distinctDates[0] === currentYear ? this.distinctDates[1] : this.distinctDates[0];
+        const targetDate = this._date.value || defaultDate;
         this._date.value = targetDate;
         this._date.selectedIndex = this.distinctDates.indexOf(targetDate);
+        this._date.displayText = targetDate;
+        // docs.sort((a, b) => {
+        //   return a.data().gameInfo.order < b.data().gameInfo.order ? -1 : 1;
+        // });
+        // 表示用に、日付と順序キーで昇順ソート
         docs.sort((a, b) => {
-            return a.data().gameInfo.order < b.data().gameInfo.order ? -1 : 1;
+            const dateA = a.data().gameInfo.date;
+            const dateB = b.data().gameInfo.date;
+            if (dateA !== dateB) {
+                return dateA < dateB ? -1 : 1;
+            }
+            // 日付が同じ場合はorderで昇順
+            return a.data().gameInfo.order - b.data().gameInfo.order;
         });
         const playerPoints = new Map();
         docs.forEach((doc) => {
-            // ゲームタイプと日付が一致するデータのみを抽出
-            if (doc.data().gameInfo.gameType !== gameType ||
-                doc.data().gameInfo.date !== targetDate) {
+            // ゲームタイプが一致しない場合はスキップ
+            if (doc.data().gameInfo.gameType !== gameType) {
+                return;
+            }
+            // 「現在年」選択時はその年の全データを対象に
+            if ((targetDate !== currentYear && doc.data().gameInfo.date !== targetDate) ||
+                (targetDate === currentYear && !doc.data().gameInfo.date.startsWith(currentYear))) {
                 return;
             }
             const results = doc.data().results.sort((a, b) => {
                 return a.player < b.player ? -1 : 1;
             });
-            const players = results.map((result) => result.player).join();
-            // メンツごとに結果を保存
-            if (this.todaysResults.get(players)) {
-                this.todaysResults.get(players).push(results);
-            }
-            else {
-                this.todaysResults.set(players, [results]);
-            }
+            // 配列に格納
+            this.todaysResultsList.push({
+                date: doc.data().gameInfo.date,
+                order: doc.data().gameInfo.order,
+                results
+            });
             // プレイヤーごとのポイントを計算
             results.forEach((result) => {
                 const point = playerPoints.get(result.player) || 0;
@@ -212,8 +232,6 @@ let MahjongToday = class MahjongToday extends LitElement {
             if (yakuman?.length > 0) {
                 this.todaysYakuman.push(yakuman);
             }
-            console.log(this.todaysChonbo);
-            console.log(this.todaysYakuman);
         });
         // プレイヤーごとのポイントをポイント順にソートして保存
         this.playerPoints = new Map(Array.from(playerPoints).sort((a, b) => {
@@ -228,10 +246,11 @@ let MahjongToday = class MahjongToday extends LitElement {
             }
             return doc.data().gameInfo.date;
         });
-        const distinctDates = [...new Set(dates)];
-        this.distinctDates = distinctDates.sort((a, b) => {
-            return a < b ? 1 : -1;
-        });
+        const distinctDates = [...new Set(dates)].filter((d) => d);
+        distinctDates.sort((a, b) => (a < b ? 1 : -1));
+        // 現在年を先頭に追加
+        const currentYear = new Date().getFullYear().toString();
+        this.distinctDates = [currentYear, ...distinctDates];
     }
 };
 MahjongToday.styles = [
@@ -278,8 +297,8 @@ __decorate([
     property({ type: Array })
 ], MahjongToday.prototype, "distinctDates", void 0);
 __decorate([
-    property({ type: Object })
-], MahjongToday.prototype, "todaysResults", void 0);
+    property({ type: Array })
+], MahjongToday.prototype, "todaysResultsList", void 0);
 __decorate([
     property({ attribute: false })
 ], MahjongToday.prototype, "playerPoints", void 0);

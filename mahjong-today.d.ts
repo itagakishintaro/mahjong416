@@ -10,7 +10,11 @@ import '@patternfly/elements/pf-accordion/pf-accordion.js';
 import { OutlinedSelect } from '@material/web/select/internal/outlined-select';
 export declare class MahjongToday extends LitElement {
     distinctDates: string[];
-    todaysResults: Map<string, Result[][]>;
+    todaysResultsList: {
+        date: string;
+        order: number;
+        results: Result[];
+    }[];
     playerPoints: Map<string, number>;
     todaysChonbo: Chonbo[][];
     todaysYakuman: Yakuman[][];
