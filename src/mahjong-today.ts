@@ -232,9 +232,10 @@ export class MahjongToday extends LitElement {
 
     const querySnapshot = await getDocs(collection(db, 'results'));
     const docs = querySnapshot.docs;
-    this._setDistinctDates(docs);
-
+    
     const gameType = this._gameType.value || '四麻';
+    this._setDistinctDates(docs, gameType);
+
     const currentYear = new Date().getFullYear().toString();
     // デフォルトは最新年月日（distinctDates[1]が存在すればそれを使う）
     const defaultDate = this.distinctDates[0] === currentYear ? this.distinctDates[1] : this.distinctDates[0];
@@ -307,10 +308,10 @@ export class MahjongToday extends LitElement {
     );
   }
 
-  private _setDistinctDates(docs: QueryDocumentSnapshot[]) {
+  private _setDistinctDates(docs: QueryDocumentSnapshot[], gameType: string) {
     this.distinctDates = [];
     const dates = docs.map((doc) => {
-      if (doc.data().gameInfo.gameType !== this._gameType.value) {
+      if (doc.data().gameInfo.gameType !== gameType) {
         return '';
       }
       return doc.data().gameInfo.date;

@@ -171,8 +171,8 @@ let MahjongToday = class MahjongToday extends LitElement {
         this.todaysYakuman = [];
         const querySnapshot = await getDocs(collection(db, 'results'));
         const docs = querySnapshot.docs;
-        this._setDistinctDates(docs);
         const gameType = this._gameType.value || '四麻';
+        this._setDistinctDates(docs, gameType);
         const currentYear = new Date().getFullYear().toString();
         // デフォルトは最新年月日（distinctDates[1]が存在すればそれを使う）
         const defaultDate = this.distinctDates[0] === currentYear ? this.distinctDates[1] : this.distinctDates[0];
@@ -238,10 +238,10 @@ let MahjongToday = class MahjongToday extends LitElement {
             return a[1] < b[1] ? 1 : -1;
         }));
     }
-    _setDistinctDates(docs) {
+    _setDistinctDates(docs, gameType) {
         this.distinctDates = [];
         const dates = docs.map((doc) => {
-            if (doc.data().gameInfo.gameType !== this._gameType.value) {
+            if (doc.data().gameInfo.gameType !== gameType) {
                 return '';
             }
             return doc.data().gameInfo.date;
