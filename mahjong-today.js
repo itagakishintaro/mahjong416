@@ -161,6 +161,7 @@ let MahjongToday = class MahjongToday extends LitElement {
         const defaultDate = this.distinctDates[0] === currentYear ? this.distinctDates[1] : this.distinctDates[0];
         this._date.selectedIndex = this.distinctDates.indexOf(defaultDate);
         this._date.displayText = defaultDate;
+        await this._loadData();
     }
     _changeDate() {
         this._loadData();
