@@ -3,7 +3,7 @@ import{i as e,t as i,h as t,k as r}from"./custom-element-6f1a92a3.js";import{r a
           <h2>タイトル一覧</h2>
           <p>データを読み込んでいます...</p>
         </div>
-      `;const e=this.titles.reduce(((e,i)=>{const t=i.year;return e[t]||(e[t]=[]),e[t].push(i),e}),{}),i=Object.keys(e).map(Number).sort(((e,i)=>i-e));return r`
+      `;const e=this.titles.reduce(((e,i)=>{const t=i.year;return e[t]||(e[t]=[]),e[t].push(i),e}),{});Object.values(e).forEach((e=>e.sort(((e,i)=>e.displayOrder-i.displayOrder))));const i=Object.keys(e).map(Number).sort(((e,i)=>i-e));return r`
       <div class="title-container">
         <h1>タイトル一覧</h1>
 

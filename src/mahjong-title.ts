@@ -149,6 +149,11 @@ export class MahjongTitleList extends LitElement {
       return groups;
     }, {} as Record<number, MahjongTitle[]>);
 
+    // 年ごとにdisplayOrder昇順で並び替え
+    Object.values(groupedTitles).forEach((titlesInYear) =>
+      titlesInYear.sort((a, b) => a.displayOrder - b.displayOrder)
+    );
+
     // 年の降順でグループを並べ替え
     const sortedYears = Object.keys(groupedTitles)
       .map(Number)
