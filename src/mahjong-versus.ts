@@ -6,21 +6,7 @@ import '@material/web/select/outlined-select.js';
 import '@material/web/select/select-option.js';
 import {db} from './firestore';
 import {collection, getDocs} from 'firebase/firestore/lite';
-
-interface VersusData {
-  player1: string;
-  player2: string;
-  games: number;
-  pointDiff: number;
-}
-
-// 結果オブジェクトの型を定義
-interface GameResult {
-  player: string;
-  point: number;
-  rank: number;
-  score: number;
-}
+import {distinct} from './utils';
 
 @customElement('mahjong-versus')
 export class MahjongVersus extends LitElement {
@@ -147,7 +133,7 @@ export class MahjongVersus extends LitElement {
       const players = doc.data().gameInfo.players;
       allPlayers.push(...players);
     });
-    this.players = [...new Set(allPlayers)];
+    this.players = distinct(allPlayers);
 
     // 対戦成績を計算
     const versusData: VersusData[] = [];
@@ -168,12 +154,12 @@ export class MahjongVersus extends LitElement {
         if (commonGames.length > 0) {
           let pointDiff = 0;
           commonGames.forEach((doc) => {
-            const results = doc.data().results as GameResult[];
+            const results = doc.data().results as Result[];
             const player1Result = results.find(
-              (r: GameResult) => r.player === player1
+              (r: Result) => r.player === player1
             );
             const player2Result = results.find(
-              (r: GameResult) => r.player === player2
+              (r: Result) => r.player === player2
             );
             if (player1Result && player2Result) {
               pointDiff += player1Result.point - player2Result.point;

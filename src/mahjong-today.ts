@@ -10,6 +10,7 @@ import '@material/web/button/filled-tonal-button.js';
 import '@material/web/button/filled-button.js';
 import '@material/web/progress/circular-progress.js';
 import '@patternfly/elements/pf-accordion/pf-accordion.js';
+import {roundTo1, distinct} from './utils';
 import {db} from './firestore';
 import {collection, getDocs} from 'firebase/firestore/lite';
 import {QueryDocumentSnapshot} from 'firebase/firestore/lite';
@@ -104,7 +105,7 @@ export class MahjongToday extends LitElement {
                 <tr>
                   ${game.results.map((result) => html`
                     <td class="rank-${result.rank}">
-                      ${Math.round(result.point * 10) / 10}(${result.rank})
+                      ${roundTo1(result.point)}(${result.rank})
                     </td>
                   `)}
                 </tr>
@@ -132,7 +133,7 @@ export class MahjongToday extends LitElement {
               ${map(
                 Array.from(this.playerPoints.entries()),
                 ([_player, point]) => {
-                  return html` <td>${Math.round(point * 10) / 10}</td> `;
+                  return html` <td>${roundTo1(point)}</td> `;
                 }
               )}
             </tr>
@@ -165,31 +166,27 @@ export class MahjongToday extends LitElement {
 
       <h2>チョンボ</h2>
       ${this.todaysChonbo.length === 0 ? html`<p>なし</p>` : ''}
-      <table>
-        <thead>
-          <tr>
-            ${(() => {
-              // 全チョンボを合算
-              const chonboMap = new Map<string, number>();
-              this.todaysChonbo.flat().forEach((chonbo: Chonbo) => {
-                chonboMap.set(chonbo.player, (chonboMap.get(chonbo.player) || 0) + chonbo.point);
-              });
-              return Array.from(chonboMap.keys()).map(player => html`<th>${player}</th>`);
-            })()}
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            ${(() => {
-              const chonboMap = new Map<string, number>();
-              this.todaysChonbo.flat().forEach((chonbo: Chonbo) => {
-                chonboMap.set(chonbo.player, (chonboMap.get(chonbo.player) || 0) + chonbo.point);
-              });
-              return Array.from(chonboMap.values()).map(point => html`<td>${point}</td>`);
-            })()}
-          </tr>
-        </tbody>
-      </table>
+      ${(() => {
+        // 全チョンボを合算（1回だけ計算）
+        const chonboMap = new Map<string, number>();
+        this.todaysChonbo.flat().forEach((chonbo: Chonbo) => {
+          chonboMap.set(chonbo.player, (chonboMap.get(chonbo.player) || 0) + chonbo.point);
+        });
+        return html`
+          <table>
+            <thead>
+              <tr>
+                ${Array.from(chonboMap.keys()).map(player => html`<th>${player}</th>`)}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                ${Array.from(chonboMap.values()).map(point => html`<td>${point}</td>`)}
+              </tr>
+            </tbody>
+          </table>
+        `;
+      })()}
     `;
   }
 
@@ -220,11 +217,10 @@ export class MahjongToday extends LitElement {
     const defaultDate = this.distinctDates[0] === currentYear ? this.distinctDates[1] : this.distinctDates[0];
     this._date.selectedIndex = this.distinctDates.indexOf(defaultDate);
     this._date.displayText = defaultDate;
-    await this._loadData();
   }
 
-  private _changeDate() {
-    this._loadData();
+  private async _changeDate() {
+    await this._loadData();
   }
   private async _loadData() {
     this.todaysResultsList = [];
@@ -245,9 +241,6 @@ export class MahjongToday extends LitElement {
     this._date.selectedIndex = this.distinctDates.indexOf(targetDate);
     this._date.displayText = targetDate;
 
-    // docs.sort((a, b) => {
-    //   return a.data().gameInfo.order < b.data().gameInfo.order ? -1 : 1;
-    // });
     // 表示用に、日付と順序キーで昇順ソート
     docs.sort((a, b) => {
       const dateA = a.data().gameInfo.date;
@@ -317,7 +310,7 @@ export class MahjongToday extends LitElement {
       }
       return doc.data().gameInfo.date;
     });
-    const distinctDates = [...new Set(dates)].filter((d) => d);
+    const distinctDates = distinct(dates).filter((d) => d);
     distinctDates.sort((a: string, b: string) => (a < b ? 1 : -1));
     // 現在年を先頭に追加
     const currentYear = new Date().getFullYear().toString();

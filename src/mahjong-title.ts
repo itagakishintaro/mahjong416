@@ -4,14 +4,6 @@ import {db} from './firestore';
 import {collection, addDoc, getDocs} from 'firebase/firestore/lite';
 import '@patternfly/elements/pf-accordion/pf-accordion.js';
 
-interface MahjongTitle {
-  id: number;
-  year: number;
-  name: string;
-  winner: string;
-  displayOrder: number;
-}
-
 @customElement('mahjong-title')
 export class MahjongTitleList extends LitElement {
   static override styles = [
@@ -95,13 +87,7 @@ export class MahjongTitleList extends LitElement {
         } as MahjongTitle;
       });
 
-      // データが正しく取得できているか確認
-      console.log('Loaded titles:', loadedTitles);
-
       this.titles = loadedTitles;
-
-      // 状態が更新されたことを通知
-      this.requestUpdate();
     } catch (e) {
       console.error('Error loading titles: ', e);
     }

@@ -3,6 +3,7 @@ import {customElement, property, query} from 'lit/decorators.js';
 import {map} from 'lit/directives/map.js';
 import '@material/web/select/outlined-select.js';
 import '@material/web/select/select-option.js';
+import {roundTo1, distinct} from './utils';
 import {db} from './firestore';
 import {collection, getDocs} from 'firebase/firestore/lite';
 import {QueryDocumentSnapshot} from 'firebase/firestore/lite';
@@ -98,7 +99,7 @@ export class MahjongStats extends LitElement {
             <tr>
               <td>${p.index}</td>
               <td>${p.player}</td>
-              <td>${Math.round(p.point * 10) / 10}</td>
+              <td>${roundTo1(p.point)}</td>
             </tr>
           `;
         })}
@@ -254,9 +255,8 @@ export class MahjongStats extends LitElement {
     const years = docs.map((doc) =>
       new Date(doc.data().gameInfo.date).getFullYear()
     );
-    const distinctYears = [...new Set(years)];
     // 年の降順でソート
-    this.distinctYears = distinctYears.sort((a, b) => b - a);
+    this.distinctYears = distinct(years).sort((a, b) => b - a);
   }
 
   private _setTotalPoint(allResults: Result[], allChonbo: Chonbo[]) {
@@ -316,85 +316,47 @@ export class MahjongStats extends LitElement {
     });
   }
 
+  // 指定した順位の出現率を集計する共通ヘルパー
+  private _calcRankRate(
+    allResults: Result[],
+    targetRank: number,
+    ascending: boolean,
+    calcRate: (count: number, plays: number) => number
+  ): {index: number; player: string; point: number}[] {
+    const playerMap = new Map<string, {plays: number; count: number}>();
+
+    allResults.forEach(({player, rank}) => {
+      const current = playerMap.get(player) ?? {plays: 0, count: 0};
+      playerMap.set(player, {
+        plays: current.plays + 1,
+        count: current.count + (rank === targetRank ? 1 : 0),
+      });
+    });
+
+    const sortedPlayers = Array.from(playerMap.entries()).sort((a, b) => {
+      const rateA = a[1].count / a[1].plays;
+      const rateB = b[1].count / b[1].plays;
+      return ascending ? rateA - rateB : rateB - rateA;
+    });
+
+    return sortedPlayers.map((v, i) => ({
+      index: i + 1,
+      player: v[0],
+      point: calcRate(v[1].count, v[1].plays),
+    }));
+  }
+
   private _setAvoidLast(allResults: Result[]) {
-    const playerMap = new Map<string, {plays: number; last: number}>();
     const last = this._gameType.value === '四麻' ? 4 : 3;
-
-    allResults.forEach((result) => {
-      const {player, rank} = result;
-      if (playerMap.has(player)) {
-        const current = playerMap.get(player) || {plays: 0, last: 0};
-        if (rank === last) {
-          playerMap.set(player, {
-            plays: current.plays + 1,
-            last: current.last + 1,
-          });
-        } else {
-          playerMap.set(player, {
-            plays: current.plays + 1,
-            last: current.last,
-          });
-        }
-      } else {
-        if (rank === last) {
-          playerMap.set(player, {plays: 1, last: 1});
-        } else {
-          playerMap.set(player, {plays: 1, last: 0});
-        }
-      }
-    });
-
-    const sortedPlayers = Array.from(playerMap.entries()).sort(
-      (a, b) => a[1].last / a[1].plays - b[1].last / b[1].plays
+    this.avoidLast = this._calcRankRate(allResults, last, true, (count, plays) =>
+      roundTo1(100 - (count / plays) * 100)
     );
-
-    this.avoidLast = sortedPlayers.map((v, i) => {
-      return {
-        index: i + 1,
-        player: v[0],
-        point: Math.round((100 - (v[1].last / v[1].plays) * 100) * 10) / 10,
-      };
-    });
   }
 
   private _setTopRate(allResults: Result[]) {
-    const playerMap = new Map<string, {plays: number; first: number}>();
-
-    allResults.forEach((result) => {
-      const {player, rank} = result;
-      if (playerMap.has(player)) {
-        const current = playerMap.get(player) || {plays: 0, first: 0};
-        if (rank === 1) {
-          playerMap.set(player, {
-            plays: current.plays + 1,
-            first: current.first + 1,
-          });
-        } else {
-          playerMap.set(player, {
-            plays: current.plays + 1,
-            first: current.first,
-          });
-        }
-      } else {
-        if (rank === 1) {
-          playerMap.set(player, {plays: 1, first: 1});
-        } else {
-          playerMap.set(player, {plays: 1, first: 0});
-        }
-      }
-    });
-
-    const sortedPlayers = Array.from(playerMap.entries()).sort(
-      (a, b) => b[1].first / b[1].plays - a[1].first / a[1].plays
+    this.topRate = this._calcRankRate(allResults, 1, false, (count, plays) =>
+      roundTo1((count / plays) * 100)
     );
-
-    this.topRate = sortedPlayers.map((v, i) => {
-      return {
-        index: i + 1,
-        player: v[0],
-        point: Math.round((v[1].first / v[1].plays) * 100 * 10) / 10,
-      };
-    });
   }
 
   private _setYakuman(allYakuman: YakumanWithDate[]) {

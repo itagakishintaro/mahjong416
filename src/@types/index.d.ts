@@ -27,3 +27,18 @@ interface YakumanWithDate {
   player: string;
   yakuman: string;
 }
+
+interface MahjongTitle {
+  id: number;
+  year: number;
+  name: string;
+  winner: string;
+  displayOrder: number;
+}
+
+interface VersusData {
+  player1: string;
+  player2: string;
+  games: number;
+  pointDiff: number;
+}

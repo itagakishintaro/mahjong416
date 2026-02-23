@@ -1,28 +1,15 @@
-import {LitElement, html, css} from 'lit';
+import {LitElement, html} from 'lit';
 import {customElement} from 'lit/decorators.js';
 import '@material/web/textfield/outlined-text-field.js';
 import '@material/web/textfield/filled-text-field.js';
 import '@material/web/button/filled-tonal-button.js';
 import '@material/web/button/filled-button.js';
 import '@patternfly/elements/pf-accordion/pf-accordion.js';
+import {calcSubStyles} from './calc-sub-styles';
 
 @customElement('mahjong-calc-chonbo')
 export class MahjongCalcChonbo extends LitElement {
-  static override styles = [
-    css`
-      .width-50 {
-        width: calc(50% - 1rem);
-        margin-bottom: 0.5em;
-      }
-      .width-30 {
-        width: 30%;
-        margin-bottom: 0.5em;
-      }
-      md-outlined-text-field {
-        --md-outlined-field-disabled-content-opacity: 1;
-      }
-    `,
-  ];
+  static override styles = [calcSubStyles];
 
   override render() {
     return html`

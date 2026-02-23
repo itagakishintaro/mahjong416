@@ -4,6 +4,7 @@ import {map} from 'lit/directives/map.js';
 
 import '@material/web/select/outlined-select.js';
 import '@material/web/select/select-option.js';
+import {roundTo1, distinct} from './utils';
 import {db} from './firestore';
 import {collection, getDocs} from 'firebase/firestore/lite';
 import {QueryDocumentSnapshot} from 'firebase/firestore/lite';
@@ -80,8 +81,7 @@ export class MahjongIndividual extends LitElement {
       <dd>${this.playerData.averageRank.toFixed(2)}</dd>
       <dt>総合ポイント</dt>
       <dd>
-        ${Math.round(this.playerData.totalPoints * 10) /
-        10}（内チョンボ：${Math.round(this.playerData.chonbo * 10) / 10}）
+        ${roundTo1(this.playerData.totalPoints)}（内チョンボ：${roundTo1(this.playerData.chonbo)}）
       </dd>
       <dt>最高得点</dt>
       <dd>${this.playerData.maxPoint}</dd>
@@ -244,7 +244,6 @@ export class MahjongIndividual extends LitElement {
 
   private _setChart() {
     if (this.chart) {
-      console.log('destroy');
       this.chart.destroy();
       this._myChart.removeAttribute('width');
       this._myChart.removeAttribute('height');
@@ -312,19 +311,13 @@ export class MahjongIndividual extends LitElement {
     const years = docs.map((doc) =>
       new Date(doc.data().gameInfo.date).getFullYear()
     );
-    const distinctYears = [...new Set(years)];
     // 年の降順でソート
-    this.distinctYears = distinctYears.sort((a, b) => b - a);
+    this.distinctYears = distinct(years).sort((a, b) => b - a);
   }
 
   private _setPlayers(docs: QueryDocumentSnapshot[]) {
-    const allPlayers: string[] = [];
-    docs.forEach((doc) => {
-      const players = doc.data().gameInfo.players;
-      allPlayers.push(...players);
-    });
-    const distinctPlayers = [...new Set(allPlayers)];
-    this.players = distinctPlayers;
+    const allPlayers: string[] = docs.flatMap((doc) => doc.data().gameInfo.players);
+    this.players = distinct(allPlayers);
   }
 
   private _setPlayerData(

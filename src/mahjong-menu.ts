@@ -1,16 +1,21 @@
 import {LitElement, html} from 'lit';
-import {customElement} from 'lit/decorators.js';
+import {customElement, state} from 'lit/decorators.js';
+import {choose} from 'lit/directives/choose.js';
 
 import '@material/web/tabs/tabs.js';
 import '@material/web/tabs/primary-tab.js';
-import '@material/web/select/outlined-select.js';
-import '@material/web/select/select-option.js';
-import '@material/web/menu/menu.js';
-import '@material/web/menu/menu-item.js';
-import '@material/web/button/filled-button.js';
+import './mahjong-calc';
+import './mahjong-today';
+import './mahjong-stats';
+import './mahjong-individual';
+import './mahjong-title';
+import './mahjong-rule';
 
 @customElement('mahjong-menu')
 export class MahjongMenu extends LitElement {
+  @state()
+  private _activeTab = 0;
+
   override render() {
     return html`
       <md-tabs @change="${this._changed}">
@@ -22,7 +27,14 @@ export class MahjongMenu extends LitElement {
         <md-primary-tab>ルール</md-primary-tab>
       </md-tabs>
       <main>
-        <mahjong-calc></mahjong-calc>
+        ${choose(this._activeTab, [
+          [0, () => html`<mahjong-calc></mahjong-calc>`],
+          [1, () => html`<mahjong-today></mahjong-today>`],
+          [2, () => html`<mahjong-stats></mahjong-stats>`],
+          [3, () => html`<mahjong-individual></mahjong-individual>`],
+          [4, () => html`<mahjong-title></mahjong-title>`],
+          [5, () => html`<mahjong-rule></mahjong-rule>`],
+        ])}
       </main>
     `;
   }
@@ -34,38 +46,13 @@ export class MahjongMenu extends LitElement {
 
   private _changed(event: CustomEvent) {
     const tabsElement = event.target as HTMLElementTagNameMap['md-tabs'];
-    const index = tabsElement.activeTabIndex;
-    if (index === 0) {
-      this.shadowRoot!.querySelector('main')!.innerHTML =
-        '<mahjong-calc></mahjong-calc>';
-    }
-    if (index === 1) {
-      this.shadowRoot!.querySelector('main')!.innerHTML =
-        '<mahjong-today></mahjong-today>';
-    }
-    if (index === 2) {
-      this.shadowRoot!.querySelector('main')!.innerHTML =
-        '<mahjong-stats></mahjong-stats>';
-    }
-    if (index === 3) {
-      this.shadowRoot!.querySelector('main')!.innerHTML =
-        '<mahjong-individual></mahjong-individual>';
-    }
-    if (index === 4) {
-      this.shadowRoot!.querySelector('main')!.innerHTML =
-        '<mahjong-title></mahjong-title>';
-    }
-    if (index === 5) {
-      this.shadowRoot!.querySelector('main')!.innerHTML =
-        '<mahjong-rule></mahjong-rule>';
-    }
+    this._activeTab = tabsElement.activeTabIndex;
   }
 
   private _uploaded() {
+    // click() → _changed() → this._activeTab = 1 の流れでタブ切り替えと再描画を行う
     const todayButton = this.shadowRoot!.querySelector('#today') as HTMLElement;
     todayButton.click();
-    this.shadowRoot!.querySelector('main')!.innerHTML =
-      '<mahjong-today></mahjong-today>';
   }
 }
 
