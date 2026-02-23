@@ -9,7 +9,7 @@
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "build:deploy": "npx rollup -c && cp index.html public/index.html",
+    "build:deploy": "npx rollup -c && sed 's|src=\"dist/|src=\"|g' index.html > public/index.html",
     "clean": "rimraf ./dist",
     "lint": "npm run lint:lit-analyzer && npm run lint:eslint",
     "lint:eslint": "eslint 'src/**/*.ts'",
