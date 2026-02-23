@@ -19,6 +19,8 @@ export class MahjongStats extends LitElement {
   @property({type: Array})
   avoidLast: {index: number; player: string; point: number}[] = [];
   @property({type: Array})
+  topRate: {index: number; player: string; point: number}[] = [];
+  @property({type: Array})
   yakumanList: {date: string; player: string; yakuman: string}[] = [];
 
   static override styles = [
@@ -135,6 +137,23 @@ export class MahjongStats extends LitElement {
           `;
         })}
       </table>
+      <h2>トップ率</h2>
+      <table>
+        <tr>
+          <th>順位</th>
+          <th>プレイヤー</th>
+          <th>トップ率</th>
+        </tr>
+        ${map(this.topRate, (p) => {
+          return html`
+            <tr>
+              <td>${p.index}</td>
+              <td>${p.player}</td>
+              <td>${p.point}%</td>
+            </tr>
+          `;
+        })}
+      </table>
       <h2>役満</h2>
       <table>
         ${this.yakumanList.length === 0
@@ -227,6 +246,7 @@ export class MahjongStats extends LitElement {
     this._setTotalPoint(allResults, allChonbo);
     this._setMaxPoint(allResults);
     this._setAvoidLast(allResults);
+    this._setTopRate(allResults);
     this._setYakuman(allYakuman);
   }
 
@@ -235,7 +255,8 @@ export class MahjongStats extends LitElement {
       new Date(doc.data().gameInfo.date).getFullYear()
     );
     const distinctYears = [...new Set(years)];
-    this.distinctYears = distinctYears;
+    // 年の降順でソート
+    this.distinctYears = distinctYears.sort((a, b) => b - a);
   }
 
   private _setTotalPoint(allResults: Result[], allChonbo: Chonbo[]) {
@@ -332,6 +353,46 @@ export class MahjongStats extends LitElement {
         index: i + 1,
         player: v[0],
         point: Math.round((100 - (v[1].last / v[1].plays) * 100) * 10) / 10,
+      };
+    });
+  }
+
+  private _setTopRate(allResults: Result[]) {
+    const playerMap = new Map<string, {plays: number; first: number}>();
+
+    allResults.forEach((result) => {
+      const {player, rank} = result;
+      if (playerMap.has(player)) {
+        const current = playerMap.get(player) || {plays: 0, first: 0};
+        if (rank === 1) {
+          playerMap.set(player, {
+            plays: current.plays + 1,
+            first: current.first + 1,
+          });
+        } else {
+          playerMap.set(player, {
+            plays: current.plays + 1,
+            first: current.first,
+          });
+        }
+      } else {
+        if (rank === 1) {
+          playerMap.set(player, {plays: 1, first: 1});
+        } else {
+          playerMap.set(player, {plays: 1, first: 0});
+        }
+      }
+    });
+
+    const sortedPlayers = Array.from(playerMap.entries()).sort(
+      (a, b) => b[1].first / b[1].plays - a[1].first / a[1].plays
+    );
+
+    this.topRate = sortedPlayers.map((v, i) => {
+      return {
+        index: i + 1,
+        player: v[0],
+        point: Math.round((v[1].first / v[1].plays) * 100 * 10) / 10,
       };
     });
   }

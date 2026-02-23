@@ -11,13 +11,13 @@ import replace from '@rollup/plugin-replace';
 
 export default {
   input: {
-    menu: 'mahjong-menu.js',
-    calc: 'mahjong-calc.js',
-    today: 'mahjong-today.js',
-    stats: 'mahjong-stats.js',
-    individual: 'mahjong-individual.js',
-    title: 'mahjong-title.js',
-    rule: 'mahjong-rule.js',
+    menu: 'dist/mahjong-menu.js',
+    calc: 'dist/mahjong-calc.js',
+    today: 'dist/mahjong-today.js',
+    stats: 'dist/mahjong-stats.js',
+    individual: 'dist/mahjong-individual.js',
+    title: 'dist/mahjong-title.js',
+    rule: 'dist/mahjong-rule.js',
   },
   output: {
     dir: './public',

@@ -313,7 +313,8 @@ export class MahjongIndividual extends LitElement {
       new Date(doc.data().gameInfo.date).getFullYear()
     );
     const distinctYears = [...new Set(years)];
-    this.distinctYears = distinctYears;
+    // 年の降順でソート
+    this.distinctYears = distinctYears.sort((a, b) => b - a);
   }
 
   private _setPlayers(docs: QueryDocumentSnapshot[]) {
