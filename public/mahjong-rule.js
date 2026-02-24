@@ -1,4 +1,4 @@
-import{t as l,h as e,k as i}from"./custom-element-6f1a92a3.js";var t=function(l,e,i,t){for(var r,p=arguments.length,u=p<3?e:null===t?t=Object.getOwnPropertyDescriptor(e,i):t,a=l.length-1;a>=0;a--)(r=l[a])&&(u=(p<3?r(u):p>3?r(e,i,u):r(e,i))||u);return p>3&&u&&Object.defineProperty(e,i,u),u};let r=class extends e{render(){return i`
+import{t as l,i as e,b as i}from"./custom-element-BXQNS_jb.js";var t=function(l,e,i,t){for(var r,p=arguments.length,u=p<3?e:null===t?t=Object.getOwnPropertyDescriptor(e,i):t,a=l.length-1;a>=0;a--)(r=l[a])&&(u=(p<3?r(u):p>3?r(e,i,u):r(e,i))||u);return p>3&&u&&Object.defineProperty(e,i,u),u};let r=class extends e{render(){return i`
       <h1>ルール</h1>
       <p>
         ※参加者全員が合意のうえであれば、ルールを変えることも可とする（例.

@@ -1,4 +1,4 @@
-import{i as e,t as i,h as t,k as r}from"./custom-element-6f1a92a3.js";import{r as a}from"./tslib.es6-0fe1dd1f.js";import{g as n,c as o,d,a as s}from"./firestore-724ae668.js";import"./pf-accordion-e1b9fe75.js";var l=function(e,i,t,r){for(var a,n=arguments.length,o=n<3?i:null===r?r=Object.getOwnPropertyDescriptor(i,t):r,d=e.length-1;d>=0;d--)(a=e[d])&&(o=(n<3?a(o):n>3?a(i,t,o):a(i,t))||o);return n>3&&o&&Object.defineProperty(i,t,o),o};let c=class extends t{constructor(){super(),this.titles=[],this._loadTitles()}async _loadTitles(){try{const e=(await n(o(d,"titles"))).docs.map(((e,i)=>{const t=e.data();return{id:i+1,year:Number(t.year),name:String(t.name),winner:String(t.winner),displayOrder:Number(t.displayOrder)}}));console.log("Loaded titles:",e),this.titles=e,this.requestUpdate()}catch(e){console.error("Error loading titles: ",e)}}async addTitle(e){e.preventDefault();const i=e.target,t=new FormData(i),r={year:Number(t.get("year")),name:String(t.get("name")),winner:String(t.get("winner")),displayOrder:Number(t.get("displayOrder"))};try{await s(o(d,"titles"),r),await this._loadTitles(),i.reset()}catch(e){console.error("Error adding title: ",e)}}render(){if(0===this.titles.length)return r`
+import{a as e,t as i,i as t,b as r}from"./custom-element-BXQNS_jb.js";import{r as a,g as n,c as o,d,a as s}from"./firestore-BnCVonOG.js";import"./pf-accordion-DBdqHKw_.js";var c=function(e,i,t,r){for(var a,n=arguments.length,o=n<3?i:null===r?r=Object.getOwnPropertyDescriptor(i,t):r,d=e.length-1;d>=0;d--)(a=e[d])&&(o=(n<3?a(o):n>3?a(i,t,o):a(i,t))||o);return n>3&&o&&Object.defineProperty(i,t,o),o};let l=class extends t{constructor(){super(),this.titles=[],this._loadTitles()}async _loadTitles(){try{const e=(await n(o(d,"titles"))).docs.map(((e,i)=>{const t=e.data();return{id:i+1,year:Number(t.year),name:String(t.name),winner:String(t.winner),displayOrder:Number(t.displayOrder)}}));this.titles=e}catch(e){console.error("Error loading titles: ",e)}}async addTitle(e){e.preventDefault();const i=e.target,t=new FormData(i),r={year:Number(t.get("year")),name:String(t.get("name")),winner:String(t.get("winner")),displayOrder:Number(t.get("displayOrder"))};try{await s(o(d,"titles"),r),await this._loadTitles(),i.reset()}catch(e){console.error("Error adding title: ",e)}}render(){if(0===this.titles.length)return r`
         <div class="title-container">
           <h2>タイトル一覧</h2>
           <p>データを読み込んでいます...</p>
@@ -63,7 +63,7 @@ import{i as e,t as i,h as t,k as r}from"./custom-element-6f1a92a3.js";import{r a
             `))}
         </div>
       </div>
-    `}};c.styles=[e`
+    `}};l.styles=[e`
       .title-form {
         margin-bottom: 20px;
         padding: 15px;
@@ -117,4 +117,4 @@ import{i as e,t as i,h as t,k as r}from"./custom-element-6f1a92a3.js";import{r a
       .form-container {
         background: #fff;
       }
-    `],l([a()],c.prototype,"titles",void 0),c=l([i("mahjong-title")],c);export{c as MahjongTitleList};
+    `],c([a()],l.prototype,"titles",void 0),l=c([i("mahjong-title")],l);export{l as MahjongTitleList};
