@@ -210,19 +210,14 @@ export class MahjongToday extends LitElement {
   }
 
   private async _changeGame() {
-    // gameTypeを変えた場合は日付をリセットする
-    this._date.value = '';
-    await this._loadData();
-    const currentYear = new Date().getFullYear().toString();
-    const defaultDate = this.distinctDates[0] === currentYear ? this.distinctDates[1] : this.distinctDates[0];
-    this._date.selectedIndex = this.distinctDates.indexOf(defaultDate);
-    this._date.displayText = defaultDate;
+    // gameTypeを変えた場合は日付をデフォルト（最新日付）にリセットする
+    await this._loadData(true);
   }
 
   private async _changeDate() {
     await this._loadData();
   }
-  private async _loadData() {
+  private async _loadData(resetDate = false) {
     this.todaysResultsList = [];
     this.todaysChonbo = [];
     this.todaysYakuman = [];
@@ -236,7 +231,9 @@ export class MahjongToday extends LitElement {
     const currentYear = new Date().getFullYear().toString();
     // デフォルトは最新年月日（distinctDates[1]が存在すればそれを使う）
     const defaultDate = this.distinctDates[0] === currentYear ? this.distinctDates[1] : this.distinctDates[0];
-    const targetDate = this._date.value || defaultDate;
+    const rawDate = this._date.value;
+    // resetDate=trueはゲームタイプ変更時。必ずdefaultDateを使う
+    const targetDate = (!resetDate && rawDate) ? rawDate : defaultDate;
     this._date.value = targetDate;
     this._date.selectedIndex = this.distinctDates.indexOf(targetDate);
     this._date.displayText = targetDate;
