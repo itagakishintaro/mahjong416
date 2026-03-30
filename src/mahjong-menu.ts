@@ -49,8 +49,12 @@ export class MahjongMenu extends LitElement {
 
   private _changed(event: CustomEvent) {
     const tabsElement = event.target as HTMLElementTagNameMap['md-tabs'];
-    this._activeTab = tabsElement.activeTabIndex;
-    this._prefillData = null;
+    const newTab = tabsElement.activeTabIndex;
+    // 点数計算タブ以外に移動したときだけ prefillData をクリア
+    if (newTab !== 0) {
+      this._prefillData = null;
+    }
+    this._activeTab = newTab;
   }
 
   private _uploaded() {
