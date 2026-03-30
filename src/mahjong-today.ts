@@ -60,13 +60,13 @@ export class MahjongToday extends LitElement {
   private _editError = '';
 
   @state()
-  private _deletingGame: TodayGameRow | null = null;
+  private _editGame: TodayGameRow | null = null;
   @state()
-  private _deleteDialogOpen = false;
+  private _editMode: 'edit' | 'delete-confirm' = 'edit';
   @state()
-  private _deleteError = '';
+  private _deleteConfirmInput = '';
   @state()
-  private _deleteConfirming = false;
+  private _deleteExecuting = false;
 
   static override styles = [
     calcSubStyles,
@@ -151,6 +151,38 @@ export class MahjongToday extends LitElement {
         color: #b3261e;
         margin: 0.5rem 0 0;
         font-size: 0.875rem;
+      }
+
+      .delete-section {
+        margin-top: 1.25rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e0e0e0;
+      }
+
+      .delete-section-label {
+        font-size: 0.75rem;
+        color: #49454f;
+        margin: 0 0 0.5rem;
+      }
+
+      .delete-warning {
+        background-color: #fceceb;
+        border-radius: 4px;
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+        font-size: 0.875rem;
+        color: #410e0b;
+      }
+
+      .danger-text-button {
+        --md-text-button-label-text-color: #b3261e;
+        --md-text-button-hover-label-text-color: #8c1d18;
+        --md-text-button-hover-state-layer-color: #b3261e;
+      }
+
+      .danger-filled-button {
+        --md-filled-button-container-color: #b3261e;
+        --md-filled-button-hover-container-elevation: 2;
       }
 
       .dialog-row-actions {
@@ -238,25 +270,6 @@ export class MahjongToday extends LitElement {
                         />
                       </svg>
                     </md-icon-button>
-                    <md-icon-button
-                      type="button"
-                      aria-label="削除して再入力"
-                      @click=${(e: Event) => {
-                        e.stopPropagation();
-                        this._openDeleteDialog(game);
-                      }}
-                    >
-                      <svg
-                        class="edit-icon-svg"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                      >
-                        <path
-                          d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
-                        />
-                      </svg>
-                    </md-icon-button>
                   </td>
                 </tr>
               </tbody>
@@ -270,13 +283,38 @@ export class MahjongToday extends LitElement {
         quick
         @closed=${this._onEditDialogClosed}
       >
-        <div slot="headline">チョンボ・役満の修正</div>
+        <div slot="headline">
+          ${this._editMode === 'delete-confirm'
+            ? '削除して再入力'
+            : 'チョンボ・役満の修正'}
+        </div>
         <div slot="content" class="edit-dialog-content">
           <p>${this._editHeadline}</p>
-          ${this._editError
-            ? html`<p class="edit-dialog-error">${this._editError}</p>`
-            : ''}
-          <h3>チョンボ</h3>
+          ${this._editMode === 'delete-confirm'
+            ? html`
+                <div class="delete-warning">
+                  ⚠
+                  このゲームを削除して点数計算画面で再入力します。この操作は取り消せません。
+                </div>
+                <md-outlined-text-field
+                  class="width-50"
+                  label="確認のため「削除」と入力"
+                  type="text"
+                  .value=${this._deleteConfirmInput}
+                  @input=${(e: Event) => {
+                    const field = e.currentTarget as unknown as {value: string};
+                    this._deleteConfirmInput = field.value;
+                  }}
+                ></md-outlined-text-field>
+                ${this._editError
+                  ? html`<p class="edit-dialog-error">${this._editError}</p>`
+                  : ''}
+              `
+            : html`
+                ${this._editError
+                  ? html`<p class="edit-dialog-error">${this._editError}</p>`
+                  : ''}
+                <h3>チョンボ</h3>
           ${map(this._editChonboRows, (row, i) => {
             return html`
               <div class="dialog-row-actions">
@@ -398,48 +436,44 @@ export class MahjongToday extends LitElement {
               <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
             </svg>
           </md-icon-button>
+          <div class="delete-section">
+            <p class="delete-section-label">危険な操作</p>
+            <md-text-button
+              class="danger-text-button"
+              type="button"
+              @click=${this._enterDeleteConfirm}
+            >削除して再入力</md-text-button>
+          </div>
+        `}
         </div>
         <div slot="actions">
-          <md-text-button
-            @click=${this._closeEditDialog}
-            ?disabled=${this._editSaving}
-            >キャンセル</md-text-button
-          >
-          <md-filled-button
-            @click=${this._saveEditDialog}
-            ?disabled=${this._editSaving}
-            >保存</md-filled-button
-          >
-        </div>
-      </md-dialog>
-
-      <md-dialog
-        ?open=${this._deleteDialogOpen}
-        quick
-        @closed=${this._onDeleteDialogClosed}
-      >
-        <div slot="headline">削除して再入力</div>
-        <div slot="content" class="edit-dialog-content">
-          <p>
-            ${this._deletingGame?.date} · 順序 ${this._deletingGame?.order}
-            のデータを削除して点数計算画面に移動します。
-          </p>
-          <p>得点が入力済みの状態で点数計算画面が開きます。</p>
-          ${this._deleteError
-            ? html`<p class="edit-dialog-error">${this._deleteError}</p>`
-            : ''}
-        </div>
-        <div slot="actions">
-          <md-text-button
-            @click=${this._closeDeleteDialog}
-            ?disabled=${this._deleteConfirming}
-            >キャンセル</md-text-button
-          >
-          <md-filled-button
-            @click=${this._confirmDelete}
-            ?disabled=${this._deleteConfirming}
-            >削除して再入力</md-filled-button
-          >
+          ${this._editMode === 'delete-confirm'
+            ? html`
+                <md-text-button
+                  @click=${this._cancelDeleteConfirm}
+                  ?disabled=${this._deleteExecuting}
+                  >戻る</md-text-button
+                >
+                <md-filled-button
+                  class="danger-filled-button"
+                  @click=${this._executeDelete}
+                  ?disabled=${this._deleteConfirmInput !== '削除' ||
+                    this._deleteExecuting}
+                  >削除を実行</md-filled-button
+                >
+              `
+            : html`
+                <md-text-button
+                  @click=${this._closeEditDialog}
+                  ?disabled=${this._editSaving}
+                  >キャンセル</md-text-button
+                >
+                <md-filled-button
+                  @click=${this._saveEditDialog}
+                  ?disabled=${this._editSaving}
+                  >保存</md-filled-button
+                >
+              `}
         </div>
       </md-dialog>
 
@@ -634,6 +668,7 @@ export class MahjongToday extends LitElement {
   private _openEditDialog(game: TodayGameRow) {
     this._editError = '';
     this._editDocId = game.docId;
+    this._editGame = game;
     this._editHeadline = `${game.date} · 順序 ${game.order}`;
     this._editChonboRows =
       game.chonbo.length > 0
@@ -656,8 +691,12 @@ export class MahjongToday extends LitElement {
   private _onEditDialogClosed() {
     this._editDialogOpen = false;
     this._editDocId = null;
+    this._editGame = null;
     this._editError = '';
     this._editSaving = false;
+    this._editMode = 'edit';
+    this._deleteConfirmInput = '';
+    this._deleteExecuting = false;
   }
 
   private _patchChonboRow(index: number, field: 'player' | 'point', value: string) {
@@ -741,46 +780,40 @@ export class MahjongToday extends LitElement {
     }
   }
 
-  private _openDeleteDialog(game: TodayGameRow) {
-    this._deletingGame = game;
-    this._deleteError = '';
-    this._deleteDialogOpen = true;
+  private _enterDeleteConfirm() {
+    this._editMode = 'delete-confirm';
+    this._deleteConfirmInput = '';
+    this._editError = '';
   }
 
-  private _closeDeleteDialog() {
-    if (this._deleteConfirming) return;
-    this._deleteDialogOpen = false;
+  private _cancelDeleteConfirm() {
+    this._editMode = 'edit';
+    this._deleteConfirmInput = '';
+    this._editError = '';
   }
 
-  private _onDeleteDialogClosed() {
-    this._deleteDialogOpen = false;
-    this._deletingGame = null;
-    this._deleteError = '';
-    this._deleteConfirming = false;
-  }
-
-  private async _confirmDelete() {
-    if (!this._deletingGame || this._deleteConfirming) return;
-    this._deleteConfirming = true;
-    this._deleteError = '';
+  private async _executeDelete() {
+    if (!this._editGame || this._deleteExecuting) return;
+    this._deleteExecuting = true;
+    this._editError = '';
     try {
-      await deleteDoc(doc(db, 'results', this._deletingGame.docId));
-      const prefillResults = [...this._deletingGame.results].sort(
+      await deleteDoc(doc(db, 'results', this._editGame.docId));
+      const prefillResults = [...this._editGame.results].sort(
         (a, b) => b.score - a.score
       );
+      this._editDialogOpen = false;
       this.dispatchEvent(
         new CustomEvent('delete-and-recalc', {
           bubbles: true,
           composed: true,
-          detail: {gameType: this._deletingGame.gameType, results: prefillResults},
+          detail: {gameType: this._editGame.gameType, results: prefillResults},
         })
       );
-      this._deleteDialogOpen = false;
     } catch (e) {
       console.error(e);
-      this._deleteError = '削除に失敗しました。もう一度お試しください。';
+      this._editError = '削除に失敗しました。もう一度お試しください。';
     } finally {
-      this._deleteConfirming = false;
+      this._deleteExecuting = false;
     }
   }
 

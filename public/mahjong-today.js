@@ -1,4 +1,4 @@
-import{i as t,a as e,t as i,b as o,A as a}from"./custom-element-BXQNS_jb.js";import{_ as s,n,r,g as d,c as l,d as h,u as c,b as p,e as m}from"./firestore-D58uvr3k.js";import{E as v,r as u,e as b,a as g,b as y}from"./select-option-BinNGx14.js";import{o as x,r as f,d as w}from"./utils-D4GKOtwe.js";import{B as $,s as _,c as k}from"./calc-sub-styles-DMQCouV8.js";import"./pf-accordion-2H0RkR96.js";
+import{i as t,a as e,t as i,b as o,A as a}from"./custom-element-BXQNS_jb.js";import{_ as s,n,r,g as d,c as l,d as c,u as h,b as m,e as p}from"./firestore-D58uvr3k.js";import{E as u,r as v,e as b,a as g,b as y}from"./select-option-BinNGx14.js";import{o as x,r as f,d as w}from"./utils-D4GKOtwe.js";import{B as $,s as _,c as k}from"./calc-sub-styles-DMQCouV8.js";import"./pf-accordion-2H0RkR96.js";
 /**
  * @license
  * Copyright 2023 Google LLC
@@ -15,13 +15,13 @@ const C=e`:host{box-sizing:border-box;color:var(--md-divider-color, var(--md-sys
  * @license
  * Copyright 2023 Google LLC
  * SPDX-License-Identifier: Apache-2.0
- */;let D=class extends z{};D.styles=[C],D=s([i("md-divider")],D);
+ */;let E=class extends z{};E.styles=[C],E=s([i("md-divider")],E);
 /**
  * @license
  * Copyright 2021 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-class E extends ${}
+class D extends ${}
 /**
  * @license
  * Copyright 2024 Google LLC
@@ -32,19 +32,19 @@ class E extends ${}
  * @license
  * Copyright 2021 Google LLC
  * SPDX-License-Identifier: Apache-2.0
- */;let B=class extends E{};B.styles=[_,A],B=s([i("md-text-button")],B);
+ */;let R=class extends D{};R.styles=[_,A],R=s([i("md-text-button")],R);
 /**
  * @license
  * Copyright 2023 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-const R={dialog:[[[{transform:"translateY(-50px)"},{transform:"translateY(0)"}],{duration:500,easing:v.EMPHASIZED}]],scrim:[[[{opacity:0},{opacity:.32}],{duration:500,easing:"linear"}]],container:[[[{opacity:0},{opacity:1}],{duration:50,easing:"linear",pseudoElement:"::before"}],[[{height:"35%"},{height:"100%"}],{duration:500,easing:v.EMPHASIZED,pseudoElement:"::before"}]],headline:[[[{opacity:0},{opacity:0,offset:.2},{opacity:1}],{duration:250,easing:"linear",fill:"forwards"}]],content:[[[{opacity:0},{opacity:0,offset:.2},{opacity:1}],{duration:250,easing:"linear",fill:"forwards"}]],actions:[[[{opacity:0},{opacity:0,offset:.5},{opacity:1}],{duration:300,easing:"linear",fill:"forwards"}]]},j={dialog:[[[{transform:"translateY(0)"},{transform:"translateY(-50px)"}],{duration:150,easing:v.EMPHASIZED_ACCELERATE}]],scrim:[[[{opacity:.32},{opacity:0}],{duration:150,easing:"linear"}]],container:[[[{height:"100%"},{height:"35%"}],{duration:150,easing:v.EMPHASIZED_ACCELERATE,pseudoElement:"::before"}],[[{opacity:"1"},{opacity:"0"}],{delay:100,duration:50,easing:"linear",pseudoElement:"::before"}]],headline:[[[{opacity:1},{opacity:0}],{duration:100,easing:"linear",fill:"forwards"}]],content:[[[{opacity:1},{opacity:0}],{duration:100,easing:"linear",fill:"forwards"}]],actions:[[[{opacity:1},{opacity:0}],{duration:100,easing:"linear",fill:"forwards"}]]};
+const B={dialog:[[[{transform:"translateY(-50px)"},{transform:"translateY(0)"}],{duration:500,easing:u.EMPHASIZED}]],scrim:[[[{opacity:0},{opacity:.32}],{duration:500,easing:"linear"}]],container:[[[{opacity:0},{opacity:1}],{duration:50,easing:"linear",pseudoElement:"::before"}],[[{height:"35%"},{height:"100%"}],{duration:500,easing:u.EMPHASIZED,pseudoElement:"::before"}]],headline:[[[{opacity:0},{opacity:0,offset:.2},{opacity:1}],{duration:250,easing:"linear",fill:"forwards"}]],content:[[[{opacity:0},{opacity:0,offset:.2},{opacity:1}],{duration:250,easing:"linear",fill:"forwards"}]],actions:[[[{opacity:0},{opacity:0,offset:.5},{opacity:1}],{duration:300,easing:"linear",fill:"forwards"}]]},j={dialog:[[[{transform:"translateY(0)"},{transform:"translateY(-50px)"}],{duration:150,easing:u.EMPHASIZED_ACCELERATE}]],scrim:[[[{opacity:.32},{opacity:0}],{duration:150,easing:"linear"}]],container:[[[{height:"100%"},{height:"35%"}],{duration:150,easing:u.EMPHASIZED_ACCELERATE,pseudoElement:"::before"}],[[{opacity:"1"},{opacity:"0"}],{delay:100,duration:50,easing:"linear",pseudoElement:"::before"}]],headline:[[[{opacity:1},{opacity:0}],{duration:100,easing:"linear",fill:"forwards"}]],content:[[[{opacity:1},{opacity:0}],{duration:100,easing:"linear",fill:"forwards"}]],actions:[[[{opacity:1},{opacity:0}],{duration:100,easing:"linear",fill:"forwards"}]]};
 /**
  * @license
  * Copyright 2023 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-class M extends t{get open(){return this.isOpen}set open(t){t!==this.isOpen&&(this.isOpen=t,t?(this.setAttribute("open",""),this.show()):(this.removeAttribute("open"),this.close()))}constructor(){super(),this.quick=!1,this.returnValue="",this.noFocusTrap=!1,this.getOpenAnimation=()=>R,this.getCloseAnimation=()=>j,this.isOpen=!1,this.isOpening=!1,this.isConnectedPromise=this.getIsConnectedPromise(),this.isAtScrollTop=!1,this.isAtScrollBottom=!1,this.nextClickIsFromContent=!1,this.hasHeadline=!1,this.hasActions=!1,this.hasIcon=!1,this.escapePressedWithoutCancel=!1,this.treewalker=document.createTreeWalker(this,NodeFilter.SHOW_ELEMENT),this.addEventListener("submit",this.handleSubmit)}async show(){this.isOpening=!0,await this.isConnectedPromise,await this.updateComplete;const t=this.dialog;if(t.open||!this.isOpening)return void(this.isOpening=!1);if(!this.dispatchEvent(new Event("open",{cancelable:!0})))return this.open=!1,void(this.isOpening=!1);t.showModal(),this.open=!0,this.scroller&&(this.scroller.scrollTop=0),this.querySelector("[autofocus]")?.focus(),await this.animateDialog(this.getOpenAnimation()),this.dispatchEvent(new Event("opened")),this.isOpening=!1}async close(t=this.returnValue){if(this.isOpening=!1,!this.isConnected)return void(this.open=!1);await this.updateComplete;const e=this.dialog;if(!e.open||this.isOpening)return void(this.open=!1);const i=this.returnValue;this.returnValue=t;this.dispatchEvent(new Event("close",{cancelable:!0}))?(await this.animateDialog(this.getCloseAnimation()),e.close(t),this.open=!1,this.dispatchEvent(new Event("closed"))):this.returnValue=i}connectedCallback(){super.connectedCallback(),this.isConnectedPromiseResolve()}disconnectedCallback(){super.disconnectedCallback(),this.isConnectedPromise=this.getIsConnectedPromise()}render(){const t=this.open&&!(this.isAtScrollTop&&this.isAtScrollBottom),e={"has-headline":this.hasHeadline,"has-actions":this.hasActions,"has-icon":this.hasIcon,scrollable:t,"show-top-divider":t&&!this.isAtScrollTop,"show-bottom-divider":t&&!this.isAtScrollBottom},i=this.open&&!this.noFocusTrap,s=o`
+class T extends t{get open(){return this.isOpen}set open(t){t!==this.isOpen&&(this.isOpen=t,t?(this.setAttribute("open",""),this.show()):(this.removeAttribute("open"),this.close()))}constructor(){super(),this.quick=!1,this.returnValue="",this.noFocusTrap=!1,this.getOpenAnimation=()=>B,this.getCloseAnimation=()=>j,this.isOpen=!1,this.isOpening=!1,this.isConnectedPromise=this.getIsConnectedPromise(),this.isAtScrollTop=!1,this.isAtScrollBottom=!1,this.nextClickIsFromContent=!1,this.hasHeadline=!1,this.hasActions=!1,this.hasIcon=!1,this.escapePressedWithoutCancel=!1,this.treewalker=document.createTreeWalker(this,NodeFilter.SHOW_ELEMENT),this.addEventListener("submit",this.handleSubmit)}async show(){this.isOpening=!0,await this.isConnectedPromise,await this.updateComplete;const t=this.dialog;if(t.open||!this.isOpening)return void(this.isOpening=!1);if(!this.dispatchEvent(new Event("open",{cancelable:!0})))return this.open=!1,void(this.isOpening=!1);t.showModal(),this.open=!0,this.scroller&&(this.scroller.scrollTop=0),this.querySelector("[autofocus]")?.focus(),await this.animateDialog(this.getOpenAnimation()),this.dispatchEvent(new Event("opened")),this.isOpening=!1}async close(t=this.returnValue){if(this.isOpening=!1,!this.isConnected)return void(this.open=!1);await this.updateComplete;const e=this.dialog;if(!e.open||this.isOpening)return void(this.open=!1);const i=this.returnValue;this.returnValue=t;this.dispatchEvent(new Event("close",{cancelable:!0}))?(await this.animateDialog(this.getCloseAnimation()),e.close(t),this.open=!1,this.dispatchEvent(new Event("closed"))):this.returnValue=i}connectedCallback(){super.connectedCallback(),this.isConnectedPromiseResolve()}disconnectedCallback(){super.disconnectedCallback(),this.isConnectedPromise=this.getIsConnectedPromise()}render(){const t=this.open&&!(this.isAtScrollTop&&this.isAtScrollBottom),e={"has-headline":this.hasHeadline,"has-actions":this.hasActions,"has-icon":this.hasIcon,scrollable:t,"show-top-divider":t&&!this.isAtScrollTop,"show-bottom-divider":t&&!this.isAtScrollBottom},i=this.open&&!this.noFocusTrap,s=o`
       <div
         class="focus-trap"
         tabindex="0"
@@ -89,18 +89,18 @@ class M extends t{get open(){return this.isOpen}set open(t){t!==this.isOpen&&(th
         </div>
         ${i?s:a}
       </dialog>
-    `}firstUpdated(){this.intersectionObserver=new IntersectionObserver((t=>{for(const e of t)this.handleAnchorIntersection(e)}),{root:this.scroller}),this.intersectionObserver.observe(this.topAnchor),this.intersectionObserver.observe(this.bottomAnchor)}handleDialogClick(){if(this.nextClickIsFromContent)return void(this.nextClickIsFromContent=!1);!this.dispatchEvent(new Event("cancel",{cancelable:!0}))||this.close()}handleContentClick(){this.nextClickIsFromContent=!0}handleSubmit(t){const e=t.target,{submitter:i}=t;"dialog"===e.method&&i&&this.close(i.getAttribute("value")??this.returnValue)}handleCancel(t){if(t.target!==this.dialog)return;this.escapePressedWithoutCancel=!1;const e=!y(this,t);t.preventDefault(),e||this.close()}handleClose(){this.escapePressedWithoutCancel&&(this.escapePressedWithoutCancel=!1,this.dialog?.dispatchEvent(new Event("cancel",{cancelable:!0})))}handleKeydown(t){"Escape"===t.key&&(this.escapePressedWithoutCancel=!0,setTimeout((()=>{this.escapePressedWithoutCancel=!1})))}async animateDialog(t){if(this.cancelAnimations?.abort(),this.cancelAnimations=new AbortController,this.quick)return;const{dialog:e,scrim:i,container:o,headline:a,content:s,actions:n}=this;if(!(e&&i&&o&&a&&s&&n))return;const{container:r,dialog:d,scrim:l,headline:h,content:c,actions:p}=t,m=[[e,d??[]],[i,l??[]],[o,r??[]],[a,h??[]],[s,c??[]],[n,p??[]]],v=[];for(const[t,e]of m)for(const i of e){const e=t.animate(...i);this.cancelAnimations.signal.addEventListener("abort",(()=>{e.cancel()})),v.push(e)}await Promise.all(v.map((t=>t.finished.catch((()=>{})))))}handleHeadlineChange(t){const e=t.target;this.hasHeadline=e.assignedElements().length>0}handleActionsChange(t){const e=t.target;this.hasActions=e.assignedElements().length>0}handleIconChange(t){const e=t.target;this.hasIcon=e.assignedElements().length>0}handleAnchorIntersection(t){const{target:e,isIntersecting:i}=t;e===this.topAnchor&&(this.isAtScrollTop=i),e===this.bottomAnchor&&(this.isAtScrollBottom=i)}getIsConnectedPromise(){return new Promise((t=>{this.isConnectedPromiseResolve=t}))}handleFocusTrapFocus(t){const[e,i]=this.getFirstAndLastFocusableChildren();if(!e||!i)return void this.dialog?.focus();const o=t.target===this.firstFocusTrap,a=!o,s=t.relatedTarget===e,n=t.relatedTarget===i,r=!s&&!n;if(a&&n||o&&r)return void e.focus();(o&&s||a&&r)&&i.focus()}getFirstAndLastFocusableChildren(){let t=null,e=null;for(this.treewalker.currentNode=this.treewalker.root;this.treewalker.nextNode();){const i=this.treewalker.currentNode;T(i)&&(t||(t=i),e=i)}return[t,e]}}function T(t){const e=":not(:disabled,[disabled])";if(t.matches(":is(button,input,select,textarea,object,:is(a,area)[href],[tabindex],[contenteditable=true])"+e+':not([tabindex^="-"])'))return!0;return!!t.localName.includes("-")&&(!!t.matches(e)&&(t.shadowRoot?.delegatesFocus??!1))}
+    `}firstUpdated(){this.intersectionObserver=new IntersectionObserver((t=>{for(const e of t)this.handleAnchorIntersection(e)}),{root:this.scroller}),this.intersectionObserver.observe(this.topAnchor),this.intersectionObserver.observe(this.bottomAnchor)}handleDialogClick(){if(this.nextClickIsFromContent)return void(this.nextClickIsFromContent=!1);!this.dispatchEvent(new Event("cancel",{cancelable:!0}))||this.close()}handleContentClick(){this.nextClickIsFromContent=!0}handleSubmit(t){const e=t.target,{submitter:i}=t;"dialog"===e.method&&i&&this.close(i.getAttribute("value")??this.returnValue)}handleCancel(t){if(t.target!==this.dialog)return;this.escapePressedWithoutCancel=!1;const e=!y(this,t);t.preventDefault(),e||this.close()}handleClose(){this.escapePressedWithoutCancel&&(this.escapePressedWithoutCancel=!1,this.dialog?.dispatchEvent(new Event("cancel",{cancelable:!0})))}handleKeydown(t){"Escape"===t.key&&(this.escapePressedWithoutCancel=!0,setTimeout((()=>{this.escapePressedWithoutCancel=!1})))}async animateDialog(t){if(this.cancelAnimations?.abort(),this.cancelAnimations=new AbortController,this.quick)return;const{dialog:e,scrim:i,container:o,headline:a,content:s,actions:n}=this;if(!(e&&i&&o&&a&&s&&n))return;const{container:r,dialog:d,scrim:l,headline:c,content:h,actions:m}=t,p=[[e,d??[]],[i,l??[]],[o,r??[]],[a,c??[]],[s,h??[]],[n,m??[]]],u=[];for(const[t,e]of p)for(const i of e){const e=t.animate(...i);this.cancelAnimations.signal.addEventListener("abort",(()=>{e.cancel()})),u.push(e)}await Promise.all(u.map((t=>t.finished.catch((()=>{})))))}handleHeadlineChange(t){const e=t.target;this.hasHeadline=e.assignedElements().length>0}handleActionsChange(t){const e=t.target;this.hasActions=e.assignedElements().length>0}handleIconChange(t){const e=t.target;this.hasIcon=e.assignedElements().length>0}handleAnchorIntersection(t){const{target:e,isIntersecting:i}=t;e===this.topAnchor&&(this.isAtScrollTop=i),e===this.bottomAnchor&&(this.isAtScrollBottom=i)}getIsConnectedPromise(){return new Promise((t=>{this.isConnectedPromiseResolve=t}))}handleFocusTrapFocus(t){const[e,i]=this.getFirstAndLastFocusableChildren();if(!e||!i)return void this.dialog?.focus();const o=t.target===this.firstFocusTrap,a=!o,s=t.relatedTarget===e,n=t.relatedTarget===i,r=!s&&!n;if(a&&n||o&&r)return void e.focus();(o&&s||a&&r)&&i.focus()}getFirstAndLastFocusableChildren(){let t=null,e=null;for(this.treewalker.currentNode=this.treewalker.root;this.treewalker.nextNode();){const i=this.treewalker.currentNode;M(i)&&(t||(t=i),e=i)}return[t,e]}}function M(t){const e=":not(:disabled,[disabled])";if(t.matches(":is(button,input,select,textarea,object,:is(a,area)[href],[tabindex],[contenteditable=true])"+e+':not([tabindex^="-"])'))return!0;return!!t.localName.includes("-")&&(!!t.matches(e)&&(t.shadowRoot?.delegatesFocus??!1))}
 /**
  * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
- */u(M),s([n({type:Boolean})],M.prototype,"open",null),s([n({type:Boolean})],M.prototype,"quick",void 0),s([n({attribute:!1})],M.prototype,"returnValue",void 0),s([n()],M.prototype,"type",void 0),s([n({type:Boolean,attribute:"no-focus-trap"})],M.prototype,"noFocusTrap",void 0),s([b("dialog")],M.prototype,"dialog",void 0),s([b(".scrim")],M.prototype,"scrim",void 0),s([b(".container")],M.prototype,"container",void 0),s([b(".headline")],M.prototype,"headline",void 0),s([b(".content")],M.prototype,"content",void 0),s([b(".actions")],M.prototype,"actions",void 0),s([r()],M.prototype,"isAtScrollTop",void 0),s([r()],M.prototype,"isAtScrollBottom",void 0),s([b(".scroller")],M.prototype,"scroller",void 0),s([b(".top.anchor")],M.prototype,"topAnchor",void 0),s([b(".bottom.anchor")],M.prototype,"bottomAnchor",void 0),s([b(".focus-trap")],M.prototype,"firstFocusTrap",void 0),s([r()],M.prototype,"hasHeadline",void 0),s([r()],M.prototype,"hasActions",void 0),s([r()],M.prototype,"hasIcon",void 0);const F=e`:host{border-start-start-radius:var(--md-dialog-container-shape-start-start, var(--md-dialog-container-shape, var(--md-sys-shape-corner-extra-large, 28px)));border-start-end-radius:var(--md-dialog-container-shape-start-end, var(--md-dialog-container-shape, var(--md-sys-shape-corner-extra-large, 28px)));border-end-end-radius:var(--md-dialog-container-shape-end-end, var(--md-dialog-container-shape, var(--md-sys-shape-corner-extra-large, 28px)));border-end-start-radius:var(--md-dialog-container-shape-end-start, var(--md-dialog-container-shape, var(--md-sys-shape-corner-extra-large, 28px)));display:contents;margin:auto;max-height:min(560px,100% - 48px);max-width:min(560px,100% - 48px);min-height:140px;min-width:280px;position:fixed;height:fit-content;width:fit-content}dialog{background:rgba(0,0,0,0);border:none;border-radius:inherit;flex-direction:column;height:inherit;margin:inherit;max-height:inherit;max-width:inherit;min-height:inherit;min-width:inherit;outline:none;overflow:visible;padding:0;width:inherit}dialog[open]{display:flex}::backdrop{background:none}.scrim{background:var(--md-sys-color-scrim, #000);display:none;inset:0;opacity:32%;pointer-events:none;position:fixed;z-index:1}:host([open]) .scrim{display:flex}h2{all:unset;align-self:stretch}.headline{align-items:center;color:var(--md-dialog-headline-color, var(--md-sys-color-on-surface, #1d1b20));display:flex;flex-direction:column;font-family:var(--md-dialog-headline-font, var(--md-sys-typescale-headline-small-font, var(--md-ref-typeface-brand, Roboto)));font-size:var(--md-dialog-headline-size, var(--md-sys-typescale-headline-small-size, 1.5rem));line-height:var(--md-dialog-headline-line-height, var(--md-sys-typescale-headline-small-line-height, 2rem));font-weight:var(--md-dialog-headline-weight, var(--md-sys-typescale-headline-small-weight, var(--md-ref-typeface-weight-regular, 400)));position:relative}slot[name=headline]::slotted(*){align-items:center;align-self:stretch;box-sizing:border-box;display:flex;gap:8px;padding:24px 24px 0}.icon{display:flex}slot[name=icon]::slotted(*){color:var(--md-dialog-icon-color, var(--md-sys-color-secondary, #625b71));fill:currentColor;font-size:var(--md-dialog-icon-size, 24px);margin-top:24px;height:var(--md-dialog-icon-size, 24px);width:var(--md-dialog-icon-size, 24px)}.has-icon slot[name=headline]::slotted(*){justify-content:center;padding-top:16px}.scrollable slot[name=headline]::slotted(*){padding-bottom:16px}.scrollable.has-headline slot[name=content]::slotted(*){padding-top:8px}.container{border-radius:inherit;display:flex;flex-direction:column;flex-grow:1;overflow:hidden;position:relative;transform-origin:top}.container::before{background:var(--md-dialog-container-color, var(--md-sys-color-surface-container-high, #ece6f0));border-radius:inherit;content:"";inset:0;position:absolute}.scroller{display:flex;flex:1;flex-direction:column;overflow:hidden;z-index:1}.scrollable .scroller{overflow-y:scroll}.content{color:var(--md-dialog-supporting-text-color, var(--md-sys-color-on-surface-variant, #49454f));font-family:var(--md-dialog-supporting-text-font, var(--md-sys-typescale-body-medium-font, var(--md-ref-typeface-plain, Roboto)));font-size:var(--md-dialog-supporting-text-size, var(--md-sys-typescale-body-medium-size, 0.875rem));line-height:var(--md-dialog-supporting-text-line-height, var(--md-sys-typescale-body-medium-line-height, 1.25rem));flex:1;font-weight:var(--md-dialog-supporting-text-weight, var(--md-sys-typescale-body-medium-weight, var(--md-ref-typeface-weight-regular, 400)));height:min-content;position:relative}slot[name=content]::slotted(*){box-sizing:border-box;padding:24px}.anchor{position:absolute}.top.anchor{top:0}.bottom.anchor{bottom:0}.actions{position:relative}slot[name=actions]::slotted(*){box-sizing:border-box;display:flex;gap:8px;justify-content:flex-end;padding:16px 24px 24px}.has-actions slot[name=content]::slotted(*){padding-bottom:8px}md-divider{display:none;position:absolute}.has-headline.show-top-divider .headline md-divider,.has-actions.show-bottom-divider .actions md-divider{display:flex}.headline md-divider{bottom:0}.actions md-divider{top:0}@media(forced-colors: active){dialog{outline:2px solid WindowText}}
+ */v(T),s([n({type:Boolean})],T.prototype,"open",null),s([n({type:Boolean})],T.prototype,"quick",void 0),s([n({attribute:!1})],T.prototype,"returnValue",void 0),s([n()],T.prototype,"type",void 0),s([n({type:Boolean,attribute:"no-focus-trap"})],T.prototype,"noFocusTrap",void 0),s([b("dialog")],T.prototype,"dialog",void 0),s([b(".scrim")],T.prototype,"scrim",void 0),s([b(".container")],T.prototype,"container",void 0),s([b(".headline")],T.prototype,"headline",void 0),s([b(".content")],T.prototype,"content",void 0),s([b(".actions")],T.prototype,"actions",void 0),s([r()],T.prototype,"isAtScrollTop",void 0),s([r()],T.prototype,"isAtScrollBottom",void 0),s([b(".scroller")],T.prototype,"scroller",void 0),s([b(".top.anchor")],T.prototype,"topAnchor",void 0),s([b(".bottom.anchor")],T.prototype,"bottomAnchor",void 0),s([b(".focus-trap")],T.prototype,"firstFocusTrap",void 0),s([r()],T.prototype,"hasHeadline",void 0),s([r()],T.prototype,"hasActions",void 0),s([r()],T.prototype,"hasIcon",void 0);const F=e`:host{border-start-start-radius:var(--md-dialog-container-shape-start-start, var(--md-dialog-container-shape, var(--md-sys-shape-corner-extra-large, 28px)));border-start-end-radius:var(--md-dialog-container-shape-start-end, var(--md-dialog-container-shape, var(--md-sys-shape-corner-extra-large, 28px)));border-end-end-radius:var(--md-dialog-container-shape-end-end, var(--md-dialog-container-shape, var(--md-sys-shape-corner-extra-large, 28px)));border-end-start-radius:var(--md-dialog-container-shape-end-start, var(--md-dialog-container-shape, var(--md-sys-shape-corner-extra-large, 28px)));display:contents;margin:auto;max-height:min(560px,100% - 48px);max-width:min(560px,100% - 48px);min-height:140px;min-width:280px;position:fixed;height:fit-content;width:fit-content}dialog{background:rgba(0,0,0,0);border:none;border-radius:inherit;flex-direction:column;height:inherit;margin:inherit;max-height:inherit;max-width:inherit;min-height:inherit;min-width:inherit;outline:none;overflow:visible;padding:0;width:inherit}dialog[open]{display:flex}::backdrop{background:none}.scrim{background:var(--md-sys-color-scrim, #000);display:none;inset:0;opacity:32%;pointer-events:none;position:fixed;z-index:1}:host([open]) .scrim{display:flex}h2{all:unset;align-self:stretch}.headline{align-items:center;color:var(--md-dialog-headline-color, var(--md-sys-color-on-surface, #1d1b20));display:flex;flex-direction:column;font-family:var(--md-dialog-headline-font, var(--md-sys-typescale-headline-small-font, var(--md-ref-typeface-brand, Roboto)));font-size:var(--md-dialog-headline-size, var(--md-sys-typescale-headline-small-size, 1.5rem));line-height:var(--md-dialog-headline-line-height, var(--md-sys-typescale-headline-small-line-height, 2rem));font-weight:var(--md-dialog-headline-weight, var(--md-sys-typescale-headline-small-weight, var(--md-ref-typeface-weight-regular, 400)));position:relative}slot[name=headline]::slotted(*){align-items:center;align-self:stretch;box-sizing:border-box;display:flex;gap:8px;padding:24px 24px 0}.icon{display:flex}slot[name=icon]::slotted(*){color:var(--md-dialog-icon-color, var(--md-sys-color-secondary, #625b71));fill:currentColor;font-size:var(--md-dialog-icon-size, 24px);margin-top:24px;height:var(--md-dialog-icon-size, 24px);width:var(--md-dialog-icon-size, 24px)}.has-icon slot[name=headline]::slotted(*){justify-content:center;padding-top:16px}.scrollable slot[name=headline]::slotted(*){padding-bottom:16px}.scrollable.has-headline slot[name=content]::slotted(*){padding-top:8px}.container{border-radius:inherit;display:flex;flex-direction:column;flex-grow:1;overflow:hidden;position:relative;transform-origin:top}.container::before{background:var(--md-dialog-container-color, var(--md-sys-color-surface-container-high, #ece6f0));border-radius:inherit;content:"";inset:0;position:absolute}.scroller{display:flex;flex:1;flex-direction:column;overflow:hidden;z-index:1}.scrollable .scroller{overflow-y:scroll}.content{color:var(--md-dialog-supporting-text-color, var(--md-sys-color-on-surface-variant, #49454f));font-family:var(--md-dialog-supporting-text-font, var(--md-sys-typescale-body-medium-font, var(--md-ref-typeface-plain, Roboto)));font-size:var(--md-dialog-supporting-text-size, var(--md-sys-typescale-body-medium-size, 0.875rem));line-height:var(--md-dialog-supporting-text-line-height, var(--md-sys-typescale-body-medium-line-height, 1.25rem));flex:1;font-weight:var(--md-dialog-supporting-text-weight, var(--md-sys-typescale-body-medium-weight, var(--md-ref-typeface-weight-regular, 400)));height:min-content;position:relative}slot[name=content]::slotted(*){box-sizing:border-box;padding:24px}.anchor{position:absolute}.top.anchor{top:0}.bottom.anchor{bottom:0}.actions{position:relative}slot[name=actions]::slotted(*){box-sizing:border-box;display:flex;gap:8px;justify-content:flex-end;padding:16px 24px 24px}.has-actions slot[name=content]::slotted(*){padding-bottom:8px}md-divider{display:none;position:absolute}.has-headline.show-top-divider .headline md-divider,.has-actions.show-bottom-divider .actions md-divider{display:flex}.headline md-divider{bottom:0}.actions md-divider{top:0}@media(forced-colors: active){dialog{outline:2px solid WindowText}}
 `
 /**
  * @license
  * Copyright 2023 Google LLC
  * SPDX-License-Identifier: Apache-2.0
- */;let Y=class extends M{};Y.styles=[F],Y=s([i("md-dialog")],Y);var I=function(t,e,i,o){for(var a,s=arguments.length,n=s<3?e:null===o?o=Object.getOwnPropertyDescriptor(e,i):o,r=t.length-1;r>=0;r--)(a=t[r])&&(n=(s<3?a(n):s>3?a(e,i,n):a(e,i))||n);return s>3&&n&&Object.defineProperty(e,i,n),n};let H=class extends t{render(){return o`
+ */;let I=class extends T{};I.styles=[F],I=s([i("md-dialog")],I);var Y=function(t,e,i,o){for(var a,s=arguments.length,n=s<3?e:null===o?o=Object.getOwnPropertyDescriptor(e,i):o,r=t.length-1;r>=0;r--)(a=t[r])&&(n=(s<3?a(n):s>3?a(e,i,n):a(e,i))||n);return s>3&&n&&Object.defineProperty(e,i,n),n};let L=class extends t{render(){return o`
       <h1>今日の成績</h1>
 
       <md-outlined-select required id="gameType" @change="${this._changeGame}">
@@ -153,22 +153,6 @@ class M extends t{get open(){return this.isOpen}set open(t){t!==this.isOpen&&(th
                         />
                       </svg>
                     </md-icon-button>
-                    <md-icon-button
-                      type="button"
-                      aria-label="削除して再入力"
-                      @click=${t=>{t.stopPropagation(),this._openDeleteDialog(e)}}
-                    >
-                      <svg
-                        class="edit-icon-svg"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                      >
-                        <path
-                          d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
-                        />
-                      </svg>
-                    </md-icon-button>
                   </td>
                 </tr>
               </tbody>
@@ -180,11 +164,27 @@ class M extends t{get open(){return this.isOpen}set open(t){t!==this.isOpen&&(th
         quick
         @closed=${this._onEditDialogClosed}
       >
-        <div slot="headline">チョンボ・役満の修正</div>
+        <div slot="headline">
+          ${"delete-confirm"===this._editMode?"削除して再入力":"チョンボ・役満の修正"}
+        </div>
         <div slot="content" class="edit-dialog-content">
           <p>${this._editHeadline}</p>
-          ${this._editError?o`<p class="edit-dialog-error">${this._editError}</p>`:""}
-          <h3>チョンボ</h3>
+          ${"delete-confirm"===this._editMode?o`
+                <div class="delete-warning">
+                  ⚠
+                  このゲームを削除して点数計算画面で再入力します。この操作は取り消せません。
+                </div>
+                <md-outlined-text-field
+                  class="width-50"
+                  label="確認のため「削除」と入力"
+                  type="text"
+                  .value=${this._deleteConfirmInput}
+                  @input=${t=>{const e=t.currentTarget;this._deleteConfirmInput=e.value}}
+                ></md-outlined-text-field>
+                ${this._editError?o`<p class="edit-dialog-error">${this._editError}</p>`:""}
+              `:o`
+                ${this._editError?o`<p class="edit-dialog-error">${this._editError}</p>`:""}
+                <h3>チョンボ</h3>
           ${x(this._editChonboRows,((t,e)=>o`
               <div class="dialog-row-actions">
                 <md-outlined-text-field
@@ -286,46 +286,41 @@ class M extends t{get open(){return this.isOpen}set open(t){t!==this.isOpen&&(th
               <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
             </svg>
           </md-icon-button>
+          <div class="delete-section">
+            <p class="delete-section-label">危険な操作</p>
+            <md-text-button
+              class="danger-text-button"
+              type="button"
+              @click=${this._enterDeleteConfirm}
+            >削除して再入力</md-text-button>
+          </div>
+        `}
         </div>
         <div slot="actions">
-          <md-text-button
-            @click=${this._closeEditDialog}
-            ?disabled=${this._editSaving}
-            >キャンセル</md-text-button
-          >
-          <md-filled-button
-            @click=${this._saveEditDialog}
-            ?disabled=${this._editSaving}
-            >保存</md-filled-button
-          >
-        </div>
-      </md-dialog>
-
-      <md-dialog
-        ?open=${this._deleteDialogOpen}
-        quick
-        @closed=${this._onDeleteDialogClosed}
-      >
-        <div slot="headline">削除して再入力</div>
-        <div slot="content" class="edit-dialog-content">
-          <p>
-            ${this._deletingGame?.date} · 順序 ${this._deletingGame?.order}
-            のデータを削除して点数計算画面に移動します。
-          </p>
-          <p>得点が入力済みの状態で点数計算画面が開きます。</p>
-          ${this._deleteError?o`<p class="edit-dialog-error">${this._deleteError}</p>`:""}
-        </div>
-        <div slot="actions">
-          <md-text-button
-            @click=${this._closeDeleteDialog}
-            ?disabled=${this._deleteConfirming}
-            >キャンセル</md-text-button
-          >
-          <md-filled-button
-            @click=${this._confirmDelete}
-            ?disabled=${this._deleteConfirming}
-            >削除して再入力</md-filled-button
-          >
+          ${"delete-confirm"===this._editMode?o`
+                <md-text-button
+                  @click=${this._cancelDeleteConfirm}
+                  ?disabled=${this._deleteExecuting}
+                  >戻る</md-text-button
+                >
+                <md-filled-button
+                  class="danger-filled-button"
+                  @click=${this._executeDelete}
+                  ?disabled=${"削除"!==this._deleteConfirmInput||this._deleteExecuting}
+                  >削除を実行</md-filled-button
+                >
+              `:o`
+                <md-text-button
+                  @click=${this._closeEditDialog}
+                  ?disabled=${this._editSaving}
+                  >キャンセル</md-text-button
+                >
+                <md-filled-button
+                  @click=${this._saveEditDialog}
+                  ?disabled=${this._editSaving}
+                  >保存</md-filled-button
+                >
+              `}
         </div>
       </md-dialog>
 
@@ -378,7 +373,7 @@ class M extends t{get open(){return this.isOpen}set open(t){t!==this.isOpen&&(th
             </tbody>
           </table>
         `})()}
-    `}constructor(){super(),this.distinctDates=[],this.todaysResultsList=[],this.playerPoints=new Map,this.todaysChonbo=[],this.todaysYakuman=[],this._editDialogOpen=!1,this._editDocId=null,this._editHeadline="",this._editChonboRows=[],this._editYakumanRows=[],this._editSaving=!1,this._editError="",this._deletingGame=null,this._deleteDialogOpen=!1,this._deleteError="",this._deleteConfirming=!1,this.startup()}async startup(){await this._loadData();const t=(new Date).getFullYear().toString(),e=this.distinctDates[0]===t?this.distinctDates[1]:this.distinctDates[0];this._date.selectedIndex=this.distinctDates.indexOf(e),this._date.displayText=e}async _changeGame(){await this._loadData(!0)}async _changeDate(){await this._loadData()}async _loadData(t=!1){this.todaysResultsList=[],this.todaysChonbo=[],this.todaysYakuman=[];const e=(await d(l(h,"results"))).docs,i=this._gameType.value||"四麻";this._setDistinctDates(e,i);const o=(new Date).getFullYear().toString(),a=this.distinctDates[0]===o?this.distinctDates[1]:this.distinctDates[0],s=this._date.value,n=!t&&s?s:a;this._date.value=n,this._date.selectedIndex=this.distinctDates.indexOf(n),this._date.displayText=n,e.sort(((t,e)=>{const i=t.data().gameInfo.date,o=e.data().gameInfo.date;return i!==o?i<o?-1:1:t.data().gameInfo.order-e.data().gameInfo.order}));const r=new Map;e.forEach((t=>{if(t.data().gameInfo.gameType!==i)return;if(n!==o&&t.data().gameInfo.date!==n||n===o&&!t.data().gameInfo.date.startsWith(o))return;const e=[...t.data().results].sort(((t,e)=>t.player<e.player?-1:1)),a=[...t.data().chonbo??[]].sort(((t,e)=>t.player<e.player?-1:1)),s=[...t.data().yakuman??[]].sort(((t,e)=>t.player<e.player?-1:1));this.todaysResultsList.push({docId:t.id,date:t.data().gameInfo.date,order:String(t.data().gameInfo.order??""),gameType:t.data().gameInfo.gameType,results:e,chonbo:a,yakuman:s}),e.forEach((t=>{const e=r.get(t.player)||0;r.set(t.player,e+t.point)})),a.length>0&&this.todaysChonbo.push(a),s.length>0&&this.todaysYakuman.push(s)})),this.playerPoints=new Map(Array.from(r).sort(((t,e)=>t[1]<e[1]?1:-1)))}_openEditDialog(t){this._editError="",this._editDocId=t.docId,this._editHeadline=`${t.date} · 順序 ${t.order}`,this._editChonboRows=t.chonbo.length>0?t.chonbo.map((t=>({player:t.player,point:String(t.point)}))):[{player:"",point:"-20"}],this._editYakumanRows=t.yakuman.length>0?t.yakuman.map((t=>({player:t.player,yakuman:t.yakuman}))):[{player:"",yakuman:""}],this._editDialogOpen=!0}_closeEditDialog(){this._editSaving||(this._editDialogOpen=!1)}_onEditDialogClosed(){this._editDialogOpen=!1,this._editDocId=null,this._editError="",this._editSaving=!1}_patchChonboRow(t,e,i){this._editChonboRows=this._editChonboRows.map(((o,a)=>a===t?{...o,[e]:i}:o))}_patchYakumanRow(t,e,i){this._editYakumanRows=this._editYakumanRows.map(((o,a)=>a===t?{...o,[e]:i}:o))}_addChonboRow(){this._editChonboRows=[...this._editChonboRows,{player:"",point:"-20"}]}_removeChonboRow(t){this._editChonboRows=this._editChonboRows.filter(((e,i)=>i!==t))}_addYakumanRow(){this._editYakumanRows=[...this._editYakumanRows,{player:"",yakuman:""}]}_removeYakumanRow(t){this._editYakumanRows=this._editYakumanRows.filter(((e,i)=>i!==t))}_chonboFromEditRows(){const t=[];for(const e of this._editChonboRows){if(""===e.player.trim())continue;const i=Number(e.point);t.push({player:e.player.trim(),point:Number.isFinite(i)?i:0})}return t}_yakumanFromEditRows(){const t=[];for(const e of this._editYakumanRows)""!==e.player.trim()&&t.push({player:e.player.trim(),yakuman:e.yakuman.trim()});return t}async _saveEditDialog(){if(this._editDocId&&!this._editSaving){this._editSaving=!0,this._editError="";try{const t=this._chonboFromEditRows(),e=this._yakumanFromEditRows();await c(p(h,"results",this._editDocId),{chonbo:t,yakuman:e}),this._editDialogOpen=!1,await this._loadData()}catch(t){console.error(t),this._editError="保存に失敗しました。もう一度お試しください。"}finally{this._editSaving=!1}}}_openDeleteDialog(t){this._deletingGame=t,this._deleteError="",this._deleteDialogOpen=!0}_closeDeleteDialog(){this._deleteConfirming||(this._deleteDialogOpen=!1)}_onDeleteDialogClosed(){this._deleteDialogOpen=!1,this._deletingGame=null,this._deleteError="",this._deleteConfirming=!1}async _confirmDelete(){if(this._deletingGame&&!this._deleteConfirming){this._deleteConfirming=!0,this._deleteError="";try{await m(p(h,"results",this._deletingGame.docId));const t=[...this._deletingGame.results].sort(((t,e)=>e.score-t.score));this.dispatchEvent(new CustomEvent("delete-and-recalc",{bubbles:!0,composed:!0,detail:{gameType:this._deletingGame.gameType,results:t}})),this._deleteDialogOpen=!1}catch(t){console.error(t),this._deleteError="削除に失敗しました。もう一度お試しください。"}finally{this._deleteConfirming=!1}}}_setDistinctDates(t,e){this.distinctDates=[];const i=t.map((t=>t.data().gameInfo.gameType!==e?"":t.data().gameInfo.date)),o=w(i).filter((t=>t));o.sort(((t,e)=>t<e?1:-1));const a=(new Date).getFullYear().toString();this.distinctDates=[a,...o]}};H.styles=[k,e`
+    `}constructor(){super(),this.distinctDates=[],this.todaysResultsList=[],this.playerPoints=new Map,this.todaysChonbo=[],this.todaysYakuman=[],this._editDialogOpen=!1,this._editDocId=null,this._editHeadline="",this._editChonboRows=[],this._editYakumanRows=[],this._editSaving=!1,this._editError="",this._editGame=null,this._editMode="edit",this._deleteConfirmInput="",this._deleteExecuting=!1,this.startup()}async startup(){await this._loadData();const t=(new Date).getFullYear().toString(),e=this.distinctDates[0]===t?this.distinctDates[1]:this.distinctDates[0];this._date.selectedIndex=this.distinctDates.indexOf(e),this._date.displayText=e}async _changeGame(){await this._loadData(!0)}async _changeDate(){await this._loadData()}async _loadData(t=!1){this.todaysResultsList=[],this.todaysChonbo=[],this.todaysYakuman=[];const e=(await d(l(c,"results"))).docs,i=this._gameType.value||"四麻";this._setDistinctDates(e,i);const o=(new Date).getFullYear().toString(),a=this.distinctDates[0]===o?this.distinctDates[1]:this.distinctDates[0],s=this._date.value,n=!t&&s?s:a;this._date.value=n,this._date.selectedIndex=this.distinctDates.indexOf(n),this._date.displayText=n,e.sort(((t,e)=>{const i=t.data().gameInfo.date,o=e.data().gameInfo.date;return i!==o?i<o?-1:1:t.data().gameInfo.order-e.data().gameInfo.order}));const r=new Map;e.forEach((t=>{if(t.data().gameInfo.gameType!==i)return;if(n!==o&&t.data().gameInfo.date!==n||n===o&&!t.data().gameInfo.date.startsWith(o))return;const e=[...t.data().results].sort(((t,e)=>t.player<e.player?-1:1)),a=[...t.data().chonbo??[]].sort(((t,e)=>t.player<e.player?-1:1)),s=[...t.data().yakuman??[]].sort(((t,e)=>t.player<e.player?-1:1));this.todaysResultsList.push({docId:t.id,date:t.data().gameInfo.date,order:String(t.data().gameInfo.order??""),gameType:t.data().gameInfo.gameType,results:e,chonbo:a,yakuman:s}),e.forEach((t=>{const e=r.get(t.player)||0;r.set(t.player,e+t.point)})),a.length>0&&this.todaysChonbo.push(a),s.length>0&&this.todaysYakuman.push(s)})),this.playerPoints=new Map(Array.from(r).sort(((t,e)=>t[1]<e[1]?1:-1)))}_openEditDialog(t){this._editError="",this._editDocId=t.docId,this._editGame=t,this._editHeadline=`${t.date} · 順序 ${t.order}`,this._editChonboRows=t.chonbo.length>0?t.chonbo.map((t=>({player:t.player,point:String(t.point)}))):[{player:"",point:"-20"}],this._editYakumanRows=t.yakuman.length>0?t.yakuman.map((t=>({player:t.player,yakuman:t.yakuman}))):[{player:"",yakuman:""}],this._editDialogOpen=!0}_closeEditDialog(){this._editSaving||(this._editDialogOpen=!1)}_onEditDialogClosed(){this._editDialogOpen=!1,this._editDocId=null,this._editGame=null,this._editError="",this._editSaving=!1,this._editMode="edit",this._deleteConfirmInput="",this._deleteExecuting=!1}_patchChonboRow(t,e,i){this._editChonboRows=this._editChonboRows.map(((o,a)=>a===t?{...o,[e]:i}:o))}_patchYakumanRow(t,e,i){this._editYakumanRows=this._editYakumanRows.map(((o,a)=>a===t?{...o,[e]:i}:o))}_addChonboRow(){this._editChonboRows=[...this._editChonboRows,{player:"",point:"-20"}]}_removeChonboRow(t){this._editChonboRows=this._editChonboRows.filter(((e,i)=>i!==t))}_addYakumanRow(){this._editYakumanRows=[...this._editYakumanRows,{player:"",yakuman:""}]}_removeYakumanRow(t){this._editYakumanRows=this._editYakumanRows.filter(((e,i)=>i!==t))}_chonboFromEditRows(){const t=[];for(const e of this._editChonboRows){if(""===e.player.trim())continue;const i=Number(e.point);t.push({player:e.player.trim(),point:Number.isFinite(i)?i:0})}return t}_yakumanFromEditRows(){const t=[];for(const e of this._editYakumanRows)""!==e.player.trim()&&t.push({player:e.player.trim(),yakuman:e.yakuman.trim()});return t}async _saveEditDialog(){if(this._editDocId&&!this._editSaving){this._editSaving=!0,this._editError="";try{const t=this._chonboFromEditRows(),e=this._yakumanFromEditRows();await h(m(c,"results",this._editDocId),{chonbo:t,yakuman:e}),this._editDialogOpen=!1,await this._loadData()}catch(t){console.error(t),this._editError="保存に失敗しました。もう一度お試しください。"}finally{this._editSaving=!1}}}_enterDeleteConfirm(){this._editMode="delete-confirm",this._deleteConfirmInput="",this._editError=""}_cancelDeleteConfirm(){this._editMode="edit",this._deleteConfirmInput="",this._editError=""}async _executeDelete(){if(this._editGame&&!this._deleteExecuting){this._deleteExecuting=!0,this._editError="";try{await p(m(c,"results",this._editGame.docId));const t=[...this._editGame.results].sort(((t,e)=>e.score-t.score));this._editDialogOpen=!1,this.dispatchEvent(new CustomEvent("delete-and-recalc",{bubbles:!0,composed:!0,detail:{gameType:this._editGame.gameType,results:t}}))}catch(t){console.error(t),this._editError="削除に失敗しました。もう一度お試しください。"}finally{this._deleteExecuting=!1}}}_setDistinctDates(t,e){this.distinctDates=[];const i=t.map((t=>t.data().gameInfo.gameType!==e?"":t.data().gameInfo.date)),o=w(i).filter((t=>t));o.sort(((t,e)=>t<e?1:-1));const a=(new Date).getFullYear().toString();this.distinctDates=[a,...o]}};L.styles=[k,e`
       md-outlined-select {
         min-width: calc(50% - 1rem);
       }
@@ -461,6 +456,38 @@ class M extends t{get open(){return this.isOpen}set open(t){t!==this.isOpen&&(th
         font-size: 0.875rem;
       }
 
+      .delete-section {
+        margin-top: 1.25rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e0e0e0;
+      }
+
+      .delete-section-label {
+        font-size: 0.75rem;
+        color: #49454f;
+        margin: 0 0 0.5rem;
+      }
+
+      .delete-warning {
+        background-color: #fceceb;
+        border-radius: 4px;
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+        font-size: 0.875rem;
+        color: #410e0b;
+      }
+
+      .danger-text-button {
+        --md-text-button-label-text-color: #b3261e;
+        --md-text-button-hover-label-text-color: #8c1d18;
+        --md-text-button-hover-state-layer-color: #b3261e;
+      }
+
+      .danger-filled-button {
+        --md-filled-button-container-color: #b3261e;
+        --md-filled-button-hover-container-elevation: 2;
+      }
+
       .dialog-row-actions {
         display: flex;
         align-items: center;
@@ -476,4 +503,4 @@ class M extends t{get open(){return this.isOpen}set open(t){t!==this.isOpen&&(th
         height: 20px;
         fill: currentColor;
       }
-    `],I([n({type:Array})],H.prototype,"distinctDates",void 0),I([n({type:Array})],H.prototype,"todaysResultsList",void 0),I([n({attribute:!1})],H.prototype,"playerPoints",void 0),I([n({type:Array})],H.prototype,"todaysChonbo",void 0),I([n({type:Array})],H.prototype,"todaysYakuman",void 0),I([r()],H.prototype,"_editDialogOpen",void 0),I([r()],H.prototype,"_editDocId",void 0),I([r()],H.prototype,"_editHeadline",void 0),I([r()],H.prototype,"_editChonboRows",void 0),I([r()],H.prototype,"_editYakumanRows",void 0),I([r()],H.prototype,"_editSaving",void 0),I([r()],H.prototype,"_editError",void 0),I([r()],H.prototype,"_deletingGame",void 0),I([r()],H.prototype,"_deleteDialogOpen",void 0),I([r()],H.prototype,"_deleteError",void 0),I([r()],H.prototype,"_deleteConfirming",void 0),I([b("#gameType")],H.prototype,"_gameType",void 0),I([b("#date")],H.prototype,"_date",void 0),H=I([i("mahjong-today")],H);export{H as MahjongToday};
+    `],Y([n({type:Array})],L.prototype,"distinctDates",void 0),Y([n({type:Array})],L.prototype,"todaysResultsList",void 0),Y([n({attribute:!1})],L.prototype,"playerPoints",void 0),Y([n({type:Array})],L.prototype,"todaysChonbo",void 0),Y([n({type:Array})],L.prototype,"todaysYakuman",void 0),Y([r()],L.prototype,"_editDialogOpen",void 0),Y([r()],L.prototype,"_editDocId",void 0),Y([r()],L.prototype,"_editHeadline",void 0),Y([r()],L.prototype,"_editChonboRows",void 0),Y([r()],L.prototype,"_editYakumanRows",void 0),Y([r()],L.prototype,"_editSaving",void 0),Y([r()],L.prototype,"_editError",void 0),Y([r()],L.prototype,"_editGame",void 0),Y([r()],L.prototype,"_editMode",void 0),Y([r()],L.prototype,"_deleteConfirmInput",void 0),Y([r()],L.prototype,"_deleteExecuting",void 0),Y([b("#gameType")],L.prototype,"_gameType",void 0),Y([b("#date")],L.prototype,"_date",void 0),L=Y([i("mahjong-today")],L);export{L as MahjongToday};
