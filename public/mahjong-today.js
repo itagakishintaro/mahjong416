@@ -175,7 +175,7 @@ class T extends t{get open(){return this.isOpen}set open(t){t!==this.isOpen&&(th
                   このゲームを削除して点数計算画面で再入力します。この操作は取り消せません。
                 </div>
                 <md-outlined-text-field
-                  class="width-50"
+                  style="width: 100%"
                   label="確認のため「削除」と入力"
                   type="text"
                   .value=${this._deleteConfirmInput}
