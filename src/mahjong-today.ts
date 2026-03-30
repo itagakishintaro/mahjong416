@@ -142,6 +142,22 @@ export class MahjongToday extends LitElement {
         margin: 0.5rem 0 0;
         font-size: 0.875rem;
       }
+
+      .dialog-row-actions {
+        display: flex;
+        align-items: center;
+      }
+
+      .dialog-row-actions md-icon-button {
+        --md-icon-button-icon-size: 20px;
+      }
+
+      .dialog-row-icon-svg {
+        display: block;
+        width: 20px;
+        height: 20px;
+        fill: currentColor;
+      }
     `,
   ];
 
@@ -234,7 +250,7 @@ export class MahjongToday extends LitElement {
           <h3>チョンボ</h3>
           ${map(this._editChonboRows, (row, i) => {
             return html`
-              <div>
+              <div class="dialog-row-actions">
                 <md-outlined-text-field
                   class="width-50"
                   label="プレイヤー"
@@ -255,13 +271,47 @@ export class MahjongToday extends LitElement {
                     this._patchChonboRow(i, 'point', field.value);
                   }}
                 ></md-outlined-text-field>
+                ${this._editChonboRows.length > 1
+                  ? html`
+                      <md-icon-button
+                        type="button"
+                        aria-label="行を削除"
+                        @click=${() => this._removeChonboRow(i)}
+                      >
+                        <svg
+                          class="dialog-row-icon-svg"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                          />
+                        </svg>
+                      </md-icon-button>
+                    `
+                  : ''}
               </div>
             `;
           })}
+          <md-icon-button
+            type="button"
+            aria-label="チョンボ行を追加"
+            @click=${this._addChonboRow}
+          >
+            <svg
+              class="dialog-row-icon-svg"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+            </svg>
+          </md-icon-button>
           <h3>役満</h3>
           ${map(this._editYakumanRows, (row, i) => {
             return html`
-              <div>
+              <div class="dialog-row-actions">
                 <md-outlined-text-field
                   class="width-50"
                   label="プレイヤー"
@@ -282,9 +332,43 @@ export class MahjongToday extends LitElement {
                     this._patchYakumanRow(i, 'yakuman', field.value);
                   }}
                 ></md-outlined-text-field>
+                ${this._editYakumanRows.length > 1
+                  ? html`
+                      <md-icon-button
+                        type="button"
+                        aria-label="行を削除"
+                        @click=${() => this._removeYakumanRow(i)}
+                      >
+                        <svg
+                          class="dialog-row-icon-svg"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                          />
+                        </svg>
+                      </md-icon-button>
+                    `
+                  : ''}
               </div>
             `;
           })}
+          <md-icon-button
+            type="button"
+            aria-label="役満行を追加"
+            @click=${this._addYakumanRow}
+          >
+            <svg
+              class="dialog-row-icon-svg"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+            </svg>
+          </md-icon-button>
         </div>
         <div slot="actions">
           <md-text-button
@@ -491,18 +575,14 @@ export class MahjongToday extends LitElement {
     this._editError = '';
     this._editDocId = game.docId;
     this._editHeadline = `${game.date} · 順序 ${game.order}`;
-    this._editChonboRows = [0, 1, 2, 3].map((i) => {
-      const c = game.chonbo[i];
-      return c
-        ? {player: c.player, point: String(c.point)}
-        : {player: '', point: '-20'};
-    });
-    this._editYakumanRows = [0, 1, 2, 3].map((i) => {
-      const y = game.yakuman[i];
-      return y
-        ? {player: y.player, yakuman: y.yakuman}
-        : {player: '', yakuman: ''};
-    });
+    this._editChonboRows =
+      game.chonbo.length > 0
+        ? game.chonbo.map((c) => ({player: c.player, point: String(c.point)}))
+        : [{player: '', point: '-20'}];
+    this._editYakumanRows =
+      game.yakuman.length > 0
+        ? game.yakuman.map((y) => ({player: y.player, yakuman: y.yakuman}))
+        : [{player: '', yakuman: ''}];
     this._editDialogOpen = true;
   }
 
@@ -534,6 +614,22 @@ export class MahjongToday extends LitElement {
     this._editYakumanRows = this._editYakumanRows.map((row, j) =>
       j === index ? {...row, [field]: value} : row
     );
+  }
+
+  private _addChonboRow() {
+    this._editChonboRows = [...this._editChonboRows, {player: '', point: '-20'}];
+  }
+
+  private _removeChonboRow(index: number) {
+    this._editChonboRows = this._editChonboRows.filter((_, i) => i !== index);
+  }
+
+  private _addYakumanRow() {
+    this._editYakumanRows = [...this._editYakumanRows, {player: '', yakuman: ''}];
+  }
+
+  private _removeYakumanRow(index: number) {
+    this._editYakumanRows = this._editYakumanRows.filter((_, i) => i !== index);
   }
 
   private _chonboFromEditRows(): Chonbo[] {

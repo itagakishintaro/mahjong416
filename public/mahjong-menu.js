@@ -1,4 +1,4 @@
-import{b as t,A as e,i as a,a as r,t as o}from"./custom-element-BXQNS_jb.js";import{_ as i,n as s,r as c}from"./firestore-BEkXhs6K.js";import"./mahjong-today.js";import{e as n,n as l,o as d,a as h,E as v}from"./select-option-BZcZE8K1.js";import"./mahjong-calc.js";import"./mahjong-stats.js";import"./mahjong-individual.js";import"./mahjong-title.js";import"./mahjong-rule.js";import"./utils-D4GKOtwe.js";import"./calc-sub-styles-C9XBvYLz.js";import"./pf-accordion-Bi6UiB7j.js";
+import{b as t,A as e,i as a,a as r,t as o}from"./custom-element-BXQNS_jb.js";import{_ as i,n as s,r as c}from"./firestore-BEkXhs6K.js";import"./mahjong-today.js";import{e as n,n as l,o as d,a as h,E as v}from"./select-option-BZcZE8K1.js";import"./mahjong-calc.js";import"./mahjong-stats.js";import"./mahjong-individual.js";import"./mahjong-title.js";import"./mahjong-rule.js";import"./utils-D4GKOtwe.js";import"./calc-sub-styles-TXa5v11K.js";import"./pf-accordion-Bi6UiB7j.js";
 /**
  * @license
  * Copyright 2021 Google LLC
