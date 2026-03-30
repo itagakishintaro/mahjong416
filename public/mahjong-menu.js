@@ -1,4 +1,4 @@
-import{b as t,A as e,i as a,a as r,t as o}from"./custom-element-BXQNS_jb.js";import{_ as i,n as s,r as c}from"./firestore-BEkXhs6K.js";import"./mahjong-today.js";import{e as n,n as l,o as d,a as h,E as v}from"./select-option-BZcZE8K1.js";import"./mahjong-calc.js";import"./mahjong-stats.js";import"./mahjong-individual.js";import"./mahjong-title.js";import"./mahjong-rule.js";import"./utils-D4GKOtwe.js";import"./calc-sub-styles-TXa5v11K.js";import"./pf-accordion-Bi6UiB7j.js";
+import{b as t,A as e,i as a,a as r,t as o}from"./custom-element-BXQNS_jb.js";import{_ as i,n as s,r as c}from"./firestore-D58uvr3k.js";import"./mahjong-today.js";import{e as n,n as l,o as d,a as h,E as v}from"./select-option-BinNGx14.js";import"./mahjong-calc.js";import"./mahjong-stats.js";import"./mahjong-individual.js";import"./mahjong-title.js";import"./mahjong-rule.js";import"./utils-D4GKOtwe.js";import"./calc-sub-styles-DMQCouV8.js";import"./pf-accordion-2H0RkR96.js";
 /**
  * @license
  * Copyright 2021 Google LLC
@@ -78,9 +78,9 @@ const C=r`:host{--_active-indicator-color: var(--md-primary-tab-active-indicator
  * Copyright 2023 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-let S=class extends k{};S.styles=[I,C],S=i([o("md-primary-tab")],S);var $=function(t,e,a,r){for(var o,i=arguments.length,s=i<3?e:null===r?r=Object.getOwnPropertyDescriptor(e,a):r,c=t.length-1;c>=0;c--)(o=t[c])&&(s=(i<3?o(s):i>3?o(e,a,s):o(e,a))||s);return i>3&&s&&Object.defineProperty(e,a,s),s};let B=class extends a{render(){return t`
+let $=class extends k{};$.styles=[I,C],$=i([o("md-primary-tab")],$);var S=function(t,e,a,r){for(var o,i=arguments.length,s=i<3?e:null===r?r=Object.getOwnPropertyDescriptor(e,a):r,c=t.length-1;c>=0;c--)(o=t[c])&&(s=(i<3?o(s):i>3?o(e,a,s):o(e,a))||s);return i>3&&s&&Object.defineProperty(e,a,s),s};let B=class extends a{render(){return t`
       <md-tabs @change="${this._changed}">
-        <md-primary-tab>点数計算</md-primary-tab>
+        <md-primary-tab id="calc">点数計算</md-primary-tab>
         <md-primary-tab id="today">今日の成績</md-primary-tab>
         <md-primary-tab>総合成績</md-primary-tab>
         <md-primary-tab>個人成績</md-primary-tab>
@@ -88,6 +88,6 @@ let S=class extends k{};S.styles=[I,C],S=i([o("md-primary-tab")],S);var $=functi
         <md-primary-tab>ルール</md-primary-tab>
       </md-tabs>
       <main>
-        ${((t,e,a)=>{for(const a of e)if(a[0]===t)return(0,a[1])();return a?.()})(this._activeTab,[[0,()=>t`<mahjong-calc></mahjong-calc>`],[1,()=>t`<mahjong-today></mahjong-today>`],[2,()=>t`<mahjong-stats></mahjong-stats>`],[3,()=>t`<mahjong-individual></mahjong-individual>`],[4,()=>t`<mahjong-title></mahjong-title>`],[5,()=>t`<mahjong-rule></mahjong-rule>`]])}
+        ${((t,e,a)=>{for(const a of e)if(a[0]===t)return(0,a[1])();return a?.()})(this._activeTab,[[0,()=>t`<mahjong-calc .prefillData=${this._prefillData}></mahjong-calc>`],[1,()=>t`<mahjong-today></mahjong-today>`],[2,()=>t`<mahjong-stats></mahjong-stats>`],[3,()=>t`<mahjong-individual></mahjong-individual>`],[4,()=>t`<mahjong-title></mahjong-title>`],[5,()=>t`<mahjong-rule></mahjong-rule>`]])}
       </main>
-    `}constructor(){super(),this._activeTab=0,this.addEventListener("uploaded",this._uploaded)}_changed(t){const e=t.target;this._activeTab=e.activeTabIndex}_uploaded(){this.shadowRoot.querySelector("#today").click()}};$([c()],B.prototype,"_activeTab",void 0),B=$([o("mahjong-menu")],B);export{B as MahjongMenu};
+    `}constructor(){super(),this._activeTab=0,this._prefillData=null,this.addEventListener("uploaded",this._uploaded),this.addEventListener("delete-and-recalc",this._deleteAndRecalc)}_changed(t){const e=t.target;this._activeTab=e.activeTabIndex,this._prefillData=null}_uploaded(){this.shadowRoot.querySelector("#today").click()}_deleteAndRecalc(t){const e=t.detail;this._prefillData=e;this.shadowRoot.querySelector("#calc").click()}};S([c()],B.prototype,"_activeTab",void 0),S([c()],B.prototype,"_prefillData",void 0),B=S([o("mahjong-menu")],B);export{B as MahjongMenu};

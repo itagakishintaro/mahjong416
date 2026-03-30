@@ -42,3 +42,8 @@ interface VersusData {
   games: number;
   pointDiff: number;
 }
+
+interface PrefillData {
+  gameType: string;
+  results: Result[];
+}

@@ -16,7 +16,7 @@ import '@patternfly/elements/pf-accordion/pf-accordion.js';
 import {calcSubStyles} from './calc-sub-styles';
 import {roundTo1, distinct} from './utils';
 import {db} from './firestore';
-import {collection, doc, getDocs, updateDoc} from 'firebase/firestore/lite';
+import {collection, doc, getDocs, updateDoc, deleteDoc} from 'firebase/firestore/lite';
 import {QueryDocumentSnapshot} from 'firebase/firestore/lite';
 import {OutlinedSelect} from '@material/web/select/internal/outlined-select';
 
@@ -25,6 +25,7 @@ export interface TodayGameRow {
   docId: string;
   date: string;
   order: string;
+  gameType: string;
   results: Result[];
   chonbo: Chonbo[];
   yakuman: Yakuman[];
@@ -57,6 +58,15 @@ export class MahjongToday extends LitElement {
   private _editSaving = false;
   @state()
   private _editError = '';
+
+  @state()
+  private _deletingGame: TodayGameRow | null = null;
+  @state()
+  private _deleteDialogOpen = false;
+  @state()
+  private _deleteError = '';
+  @state()
+  private _deleteConfirming = false;
 
   static override styles = [
     calcSubStyles,
@@ -228,6 +238,25 @@ export class MahjongToday extends LitElement {
                         />
                       </svg>
                     </md-icon-button>
+                    <md-icon-button
+                      type="button"
+                      aria-label="削除して再入力"
+                      @click=${(e: Event) => {
+                        e.stopPropagation();
+                        this._openDeleteDialog(game);
+                      }}
+                    >
+                      <svg
+                        class="edit-icon-svg"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                        />
+                      </svg>
+                    </md-icon-button>
                   </td>
                 </tr>
               </tbody>
@@ -380,6 +409,36 @@ export class MahjongToday extends LitElement {
             @click=${this._saveEditDialog}
             ?disabled=${this._editSaving}
             >保存</md-filled-button
+          >
+        </div>
+      </md-dialog>
+
+      <md-dialog
+        ?open=${this._deleteDialogOpen}
+        quick
+        @closed=${this._onDeleteDialogClosed}
+      >
+        <div slot="headline">削除して再入力</div>
+        <div slot="content" class="edit-dialog-content">
+          <p>
+            ${this._deletingGame?.date} · 順序 ${this._deletingGame?.order}
+            のデータを削除して点数計算画面に移動します。
+          </p>
+          <p>得点が入力済みの状態で点数計算画面が開きます。</p>
+          ${this._deleteError
+            ? html`<p class="edit-dialog-error">${this._deleteError}</p>`
+            : ''}
+        </div>
+        <div slot="actions">
+          <md-text-button
+            @click=${this._closeDeleteDialog}
+            ?disabled=${this._deleteConfirming}
+            >キャンセル</md-text-button
+          >
+          <md-filled-button
+            @click=${this._confirmDelete}
+            ?disabled=${this._deleteConfirming}
+            >削除して再入力</md-filled-button
           >
         </div>
       </md-dialog>
@@ -545,6 +604,7 @@ export class MahjongToday extends LitElement {
         docId: doc.id,
         date: doc.data().gameInfo.date,
         order: String(doc.data().gameInfo.order ?? ''),
+        gameType: doc.data().gameInfo.gameType,
         results,
         chonbo,
         yakuman,
@@ -678,6 +738,49 @@ export class MahjongToday extends LitElement {
       this._editError = '保存に失敗しました。もう一度お試しください。';
     } finally {
       this._editSaving = false;
+    }
+  }
+
+  private _openDeleteDialog(game: TodayGameRow) {
+    this._deletingGame = game;
+    this._deleteError = '';
+    this._deleteDialogOpen = true;
+  }
+
+  private _closeDeleteDialog() {
+    if (this._deleteConfirming) return;
+    this._deleteDialogOpen = false;
+  }
+
+  private _onDeleteDialogClosed() {
+    this._deleteDialogOpen = false;
+    this._deletingGame = null;
+    this._deleteError = '';
+    this._deleteConfirming = false;
+  }
+
+  private async _confirmDelete() {
+    if (!this._deletingGame || this._deleteConfirming) return;
+    this._deleteConfirming = true;
+    this._deleteError = '';
+    try {
+      await deleteDoc(doc(db, 'results', this._deletingGame.docId));
+      const prefillResults = [...this._deletingGame.results].sort(
+        (a, b) => b.score - a.score
+      );
+      this.dispatchEvent(
+        new CustomEvent('delete-and-recalc', {
+          bubbles: true,
+          composed: true,
+          detail: {gameType: this._deletingGame.gameType, results: prefillResults},
+        })
+      );
+      this._deleteDialogOpen = false;
+    } catch (e) {
+      console.error(e);
+      this._deleteError = '削除に失敗しました。もう一度お試しください。';
+    } finally {
+      this._deleteConfirming = false;
     }
   }
 

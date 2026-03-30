@@ -15,11 +15,13 @@ import './mahjong-rule';
 export class MahjongMenu extends LitElement {
   @state()
   private _activeTab = 0;
+  @state()
+  private _prefillData: PrefillData | null = null;
 
   override render() {
     return html`
       <md-tabs @change="${this._changed}">
-        <md-primary-tab>点数計算</md-primary-tab>
+        <md-primary-tab id="calc">点数計算</md-primary-tab>
         <md-primary-tab id="today">今日の成績</md-primary-tab>
         <md-primary-tab>総合成績</md-primary-tab>
         <md-primary-tab>個人成績</md-primary-tab>
@@ -28,7 +30,7 @@ export class MahjongMenu extends LitElement {
       </md-tabs>
       <main>
         ${choose(this._activeTab, [
-          [0, () => html`<mahjong-calc></mahjong-calc>`],
+          [0, () => html`<mahjong-calc .prefillData=${this._prefillData}></mahjong-calc>`],
           [1, () => html`<mahjong-today></mahjong-today>`],
           [2, () => html`<mahjong-stats></mahjong-stats>`],
           [3, () => html`<mahjong-individual></mahjong-individual>`],
@@ -42,17 +44,26 @@ export class MahjongMenu extends LitElement {
   constructor() {
     super();
     this.addEventListener('uploaded', this._uploaded);
+    this.addEventListener('delete-and-recalc', this._deleteAndRecalc);
   }
 
   private _changed(event: CustomEvent) {
     const tabsElement = event.target as HTMLElementTagNameMap['md-tabs'];
     this._activeTab = tabsElement.activeTabIndex;
+    this._prefillData = null;
   }
 
   private _uploaded() {
     // click() → _changed() → this._activeTab = 1 の流れでタブ切り替えと再描画を行う
     const todayButton = this.shadowRoot!.querySelector('#today') as HTMLElement;
     todayButton.click();
+  }
+
+  private _deleteAndRecalc(event: Event) {
+    const detail = (event as CustomEvent<PrefillData>).detail;
+    this._prefillData = detail;
+    const calcButton = this.shadowRoot!.querySelector('#calc') as HTMLElement;
+    calcButton.click();
   }
 }
 

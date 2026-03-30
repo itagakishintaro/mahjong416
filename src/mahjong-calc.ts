@@ -266,6 +266,9 @@ export class MahjongCalc extends LitElement {
   @property({type: Boolean})
   isPointCheckError = true;
 
+  @property({attribute: false})
+  prefillData: PrefillData | null = null;
+
   @query('#gameType')
   gameTypeElement!: HTMLSelectElement;
 
@@ -311,6 +314,40 @@ export class MahjongCalc extends LitElement {
 
   @query('#progress')
   progressElement!: HTMLElement;
+
+  override updated(changedProperties: Map<string, unknown>) {
+    if (changedProperties.has('prefillData') && this.prefillData) {
+      this._applyPrefillData(this.prefillData);
+    }
+  }
+
+  private _applyPrefillData(data: PrefillData) {
+    // ゲームタイプを設定してリセット
+    this.gameTypeElement.value = data.gameType;
+    this._changeGame();
+
+    // score 降順（高得点順）でプレイヤー・得点をセット
+    const sorted = [...data.results].sort((a, b) => b.score - a.score);
+    const playerFields = [
+      this.firstPlayerElement,
+      this.secondPlayerElement,
+      this.thirdPlayerElement,
+      this.fourthPlayerElement,
+    ];
+    const scoreFields = [
+      this.firstScoreElement,
+      this.secondScoreElement,
+      this.thirdScoreElement,
+      this.fourthScoreElement,
+    ];
+    sorted.forEach((result, i) => {
+      playerFields[i].value = result.player;
+      scoreFields[i].value = String(result.score);
+    });
+
+    // ポイントを再計算
+    this._calcPoint();
+  }
 
   private _calcPoint() {
     if (this.gameTypeElement.value === '三麻') {
