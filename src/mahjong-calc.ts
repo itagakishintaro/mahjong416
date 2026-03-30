@@ -345,6 +345,16 @@ export class MahjongCalc extends LitElement {
       scoreFields[i].value = String(result.score);
     });
 
+    // チョンボ・役満を復元
+    const chonboEl = this.renderRoot?.querySelector(
+      'mahjong-calc-chonbo'
+    ) as MahjongCalcChonbo;
+    chonboEl?.setRows(data.chonbo);
+    const yakumanEl = this.renderRoot?.querySelector(
+      'mahjong-calc-yakuman'
+    ) as MahjongCalcYakuman;
+    yakumanEl?.setRows(data.yakuman);
+
     // ポイントを再計算
     this._calcPoint();
   }

@@ -56,6 +56,13 @@ export class MahjongCalcYakuman extends LitElement {
     this._rows = [{player: '', yakuman: ''}];
   }
 
+  setRows(yakuman: Yakuman[]) {
+    this._rows =
+      yakuman.length > 0
+        ? yakuman.map((y) => ({player: y.player, yakuman: y.yakuman}))
+        : [{player: '', yakuman: ''}];
+  }
+
   override render() {
     return html`
       <pf-accordion>

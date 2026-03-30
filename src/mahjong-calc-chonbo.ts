@@ -56,6 +56,13 @@ export class MahjongCalcChonbo extends LitElement {
     this._rows = [{player: '', point: '-20'}];
   }
 
+  setRows(chonbo: Chonbo[]) {
+    this._rows =
+      chonbo.length > 0
+        ? chonbo.map((c) => ({player: c.player, point: String(c.point)}))
+        : [{player: '', point: '-20'}];
+  }
+
   override render() {
     return html`
       <pf-accordion>

@@ -46,4 +46,6 @@ interface VersusData {
 interface PrefillData {
   gameType: string;
   results: Result[];
+  chonbo: Chonbo[];
+  yakuman: Yakuman[];
 }

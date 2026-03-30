@@ -806,7 +806,12 @@ export class MahjongToday extends LitElement {
         new CustomEvent('delete-and-recalc', {
           bubbles: true,
           composed: true,
-          detail: {gameType: this._editGame.gameType, results: prefillResults},
+          detail: {
+            gameType: this._editGame.gameType,
+            results: prefillResults,
+            chonbo: this._editGame.chonbo,
+            yakuman: this._editGame.yakuman,
+          },
         })
       );
     } catch (e) {
