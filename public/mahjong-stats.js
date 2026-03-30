@@ -1,4 +1,4 @@
-import{a as t,t as e,i as s,b as r}from"./custom-element-BXQNS_jb.js";import{n as i,g as a,c as o,d as n}from"./firestore-BEkXhs6K.js";import{e as h}from"./select-option-BZcZE8K1.js";import{o as d,d as l,r as c}from"./utils-D4GKOtwe.js";var p=function(t,e,s,r){for(var i,a=arguments.length,o=a<3?e:null===r?r=Object.getOwnPropertyDescriptor(e,s):r,n=t.length-1;n>=0;n--)(i=t[n])&&(o=(a<3?i(o):a>3?i(e,s,o):i(e,s))||o);return a>3&&o&&Object.defineProperty(e,s,o),o};let u=class extends s{render(){return r`
+import{a as t,t as e,i as s,b as r}from"./custom-element-BXQNS_jb.js";import{n as i,g as a,c as o,d as n}from"./firestore-D58uvr3k.js";import{e as h}from"./select-option-BinNGx14.js";import{o as d,d as l,r as c}from"./utils-D4GKOtwe.js";var p=function(t,e,s,r){for(var i,a=arguments.length,o=a<3?e:null===r?r=Object.getOwnPropertyDescriptor(e,s):r,n=t.length-1;n>=0;n--)(i=t[n])&&(o=(a<3?i(o):a>3?i(e,s,o):i(e,s))||o);return a>3&&o&&Object.defineProperty(e,s,o),o};let u=class extends s{render(){return r`
       <h2>対戦成績</h2>
       <div class="table-container">
         <table class="versus-table">
