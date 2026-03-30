@@ -1,5 +1,5 @@
 import {LitElement, html, css} from 'lit';
-import {query, property} from 'lit/decorators.js';
+import {query, property, state} from 'lit/decorators.js';
 import {customElement} from 'lit/decorators.js';
 import {map} from 'lit/directives/map.js';
 import '@material/web/textfield/outlined-text-field.js';
@@ -8,20 +8,34 @@ import '@material/web/select/outlined-select.js';
 import '@material/web/select/select-option.js';
 import '@material/web/button/filled-tonal-button.js';
 import '@material/web/button/filled-button.js';
+import '@material/web/button/text-button.js';
+import '@material/web/iconbutton/icon-button.js';
+import '@material/web/dialog/dialog.js';
 import '@material/web/progress/circular-progress.js';
 import '@patternfly/elements/pf-accordion/pf-accordion.js';
+import {calcSubStyles} from './calc-sub-styles';
 import {roundTo1, distinct} from './utils';
 import {db} from './firestore';
-import {collection, getDocs} from 'firebase/firestore/lite';
+import {collection, doc, getDocs, updateDoc} from 'firebase/firestore/lite';
 import {QueryDocumentSnapshot} from 'firebase/firestore/lite';
 import {OutlinedSelect} from '@material/web/select/internal/outlined-select';
+
+/** 今日の成績テーブル1行分（1 Firestore ドキュメントに対応） */
+export interface TodayGameRow {
+  docId: string;
+  date: string;
+  order: string;
+  results: Result[];
+  chonbo: Chonbo[];
+  yakuman: Yakuman[];
+}
 
 @customElement('mahjong-today')
 export class MahjongToday extends LitElement {
   @property({type: Array})
   distinctDates: string[] = [];
   @property({type: Array})
-  todaysResultsList: {date: string, order: number, results: Result[]}[] = [];
+  todaysResultsList: TodayGameRow[] = [];
   @property({attribute: false})
   playerPoints: Map<string, number> = new Map();
   @property({type: Array})
@@ -29,7 +43,23 @@ export class MahjongToday extends LitElement {
   @property({type: Array})
   todaysYakuman: Yakuman[][] = [];
 
+  @state()
+  private _editDialogOpen = false;
+  @state()
+  private _editDocId: string | null = null;
+  @state()
+  private _editHeadline = '';
+  @state()
+  private _editChonboRows: {player: string; point: string}[] = [];
+  @state()
+  private _editYakumanRows: {player: string; yakuman: string}[] = [];
+  @state()
+  private _editSaving = false;
+  @state()
+  private _editError = '';
+
   static override styles = [
+    calcSubStyles,
     css`
       md-outlined-select {
         min-width: calc(50% - 1rem);
@@ -57,6 +87,10 @@ export class MahjongToday extends LitElement {
         background-color: #d4f0fd;
       }
 
+      table.game-results tbody tr {
+        cursor: default;
+      }
+
       table th {
         background-color: #eee;
       }
@@ -66,6 +100,47 @@ export class MahjongToday extends LitElement {
         text-align: center;
         padding: 0.5em 0;
         min-width: 4em;
+      }
+
+      table.game-results th.edit-col-header,
+      table.game-results td.edit-cell {
+        width: 1%;
+        min-width: unset;
+        padding: 0.25em 0.1em;
+        vertical-align: middle;
+        text-align: center;
+      }
+
+      .edit-cell md-icon-button {
+        --md-icon-button-icon-size: 20px;
+      }
+
+      .edit-icon-svg {
+        display: block;
+        width: 20px;
+        height: 20px;
+        fill: currentColor;
+      }
+
+      .edit-dialog-content {
+        box-sizing: border-box;
+        padding: 0.25rem 1.5rem 0.75rem;
+      }
+
+      .edit-dialog-content > p:first-of-type {
+        margin: 0 0 0.5rem;
+      }
+
+      .edit-dialog-content h3 {
+        margin: 0.75rem 0 0.25rem;
+        font-size: 1rem;
+        font-weight: 600;
+      }
+
+      .edit-dialog-error {
+        color: #b3261e;
+        margin: 0.5rem 0 0;
+        font-size: 0.875rem;
       }
     `,
   ];
@@ -92,7 +167,7 @@ export class MahjongToday extends LitElement {
       </md-outlined-select>
 
       <h2>ゲームごとのポイント</h2>
-      <table>
+      <table class="game-results">
         ${(() => {
           let prevMembers = '';
           return this.todaysResultsList.map((game) => {
@@ -100,7 +175,16 @@ export class MahjongToday extends LitElement {
             const showHeader = members !== prevMembers;
             prevMembers = members;
             return html`
-              ${showHeader ? html`<thead><tr>${game.results.map((result: Result) => html`<th>${result.player}</th>`)}</tr></thead>` : ''}
+              ${showHeader
+                ? html`<thead><tr>
+                    ${game.results.map((result: Result) => html`<th>${result.player}</th>`)}
+                    <th
+                      class="edit-col-header"
+                      scope="col"
+                      aria-label="チョンボ・役満の編集"
+                    ></th>
+                  </tr></thead>`
+                : ''}
               <tbody>
                 <tr>
                   ${game.results.map((result) => html`
@@ -108,12 +192,113 @@ export class MahjongToday extends LitElement {
                       ${roundTo1(result.point)}(${result.rank})
                     </td>
                   `)}
+                  <td class="edit-cell">
+                    <md-icon-button
+                      type="button"
+                      aria-label="チョンボ・役満を編集"
+                      @click=${(e: Event) => {
+                        e.stopPropagation();
+                        this._openEditDialog(game);
+                      }}
+                    >
+                      <svg
+                        class="edit-icon-svg"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                        />
+                      </svg>
+                    </md-icon-button>
+                  </td>
                 </tr>
               </tbody>
             `;
           });
         })()}
       </table>
+
+      <md-dialog
+        ?open=${this._editDialogOpen}
+        quick
+        @closed=${this._onEditDialogClosed}
+      >
+        <div slot="headline">チョンボ・役満の修正</div>
+        <div slot="content" class="edit-dialog-content">
+          <p>${this._editHeadline}</p>
+          ${this._editError
+            ? html`<p class="edit-dialog-error">${this._editError}</p>`
+            : ''}
+          <h3>チョンボ</h3>
+          ${map(this._editChonboRows, (row, i) => {
+            return html`
+              <div>
+                <md-outlined-text-field
+                  class="width-50"
+                  label="プレイヤー"
+                  type="text"
+                  .value=${row.player}
+                  @input=${(e: Event) => {
+                    const field = e.currentTarget as unknown as {value: string};
+                    this._patchChonboRow(i, 'player', field.value);
+                  }}
+                ></md-outlined-text-field>
+                <md-outlined-text-field
+                  class="width-30"
+                  label="罰符"
+                  type="number"
+                  .value=${row.point}
+                  @input=${(e: Event) => {
+                    const field = e.currentTarget as unknown as {value: string};
+                    this._patchChonboRow(i, 'point', field.value);
+                  }}
+                ></md-outlined-text-field>
+              </div>
+            `;
+          })}
+          <h3>役満</h3>
+          ${map(this._editYakumanRows, (row, i) => {
+            return html`
+              <div>
+                <md-outlined-text-field
+                  class="width-50"
+                  label="プレイヤー"
+                  type="text"
+                  .value=${row.player}
+                  @input=${(e: Event) => {
+                    const field = e.currentTarget as unknown as {value: string};
+                    this._patchYakumanRow(i, 'player', field.value);
+                  }}
+                ></md-outlined-text-field>
+                <md-outlined-text-field
+                  class="width-30"
+                  label="役満"
+                  type="text"
+                  .value=${row.yakuman}
+                  @input=${(e: Event) => {
+                    const field = e.currentTarget as unknown as {value: string};
+                    this._patchYakumanRow(i, 'yakuman', field.value);
+                  }}
+                ></md-outlined-text-field>
+              </div>
+            `;
+          })}
+        </div>
+        <div slot="actions">
+          <md-text-button
+            @click=${this._closeEditDialog}
+            ?disabled=${this._editSaving}
+            >キャンセル</md-text-button
+          >
+          <md-filled-button
+            @click=${this._saveEditDialog}
+            ?disabled=${this._editSaving}
+            >保存</md-filled-button
+          >
+        </div>
+      </md-dialog>
 
       <h2>合計</h2>
       <div class="table-box">
@@ -262,32 +447,35 @@ export class MahjongToday extends LitElement {
       ) {
         return;
       }
-      const results = doc.data().results.sort((a: Result, b: Result) => {
+      const results = [...doc.data().results].sort((a: Result, b: Result) => {
+        return a.player < b.player ? -1 : 1;
+      });
+      const chonbo = [...(doc.data().chonbo ?? [])].sort((a: Chonbo, b: Chonbo) => {
+        return a.player < b.player ? -1 : 1;
+      });
+      const yakuman = [...(doc.data().yakuman ?? [])].sort((a: Yakuman, b: Yakuman) => {
         return a.player < b.player ? -1 : 1;
       });
       // 配列に格納
       this.todaysResultsList.push({
+        docId: doc.id,
         date: doc.data().gameInfo.date,
-        order: doc.data().gameInfo.order,
-        results
+        order: String(doc.data().gameInfo.order ?? ''),
+        results,
+        chonbo,
+        yakuman,
       });
       // プレイヤーごとのポイントを計算
       results.forEach((result: Result) => {
         const point = playerPoints.get(result.player) || 0;
         playerPoints.set(result.player, point + result.point);
       });
-      // チョンボ
-      const chonbo = doc.data().chonbo?.sort((a: Chonbo, b: Chonbo) => {
-        return a.player < b.player ? -1 : 1;
-      });
-      if (chonbo?.length > 0) {
+      // チョンボ（表示用）
+      if (chonbo.length > 0) {
         this.todaysChonbo.push(chonbo);
       }
-      // 役満
-      const yakuman = doc.data().yakuman?.sort((a: Yakuman, b: Yakuman) => {
-        return a.player < b.player ? -1 : 1;
-      });
-      if (yakuman?.length > 0) {
+      // 役満（表示用）
+      if (yakuman.length > 0) {
         this.todaysYakuman.push(yakuman);
       }
     });
@@ -297,6 +485,104 @@ export class MahjongToday extends LitElement {
         return a[1] < b[1] ? 1 : -1;
       })
     );
+  }
+
+  private _openEditDialog(game: TodayGameRow) {
+    this._editError = '';
+    this._editDocId = game.docId;
+    this._editHeadline = `${game.date} · 順序 ${game.order}`;
+    this._editChonboRows = [0, 1, 2, 3].map((i) => {
+      const c = game.chonbo[i];
+      return c
+        ? {player: c.player, point: String(c.point)}
+        : {player: '', point: '-20'};
+    });
+    this._editYakumanRows = [0, 1, 2, 3].map((i) => {
+      const y = game.yakuman[i];
+      return y
+        ? {player: y.player, yakuman: y.yakuman}
+        : {player: '', yakuman: ''};
+    });
+    this._editDialogOpen = true;
+  }
+
+  private _closeEditDialog() {
+    if (this._editSaving) {
+      return;
+    }
+    this._editDialogOpen = false;
+  }
+
+  private _onEditDialogClosed() {
+    this._editDialogOpen = false;
+    this._editDocId = null;
+    this._editError = '';
+    this._editSaving = false;
+  }
+
+  private _patchChonboRow(index: number, field: 'player' | 'point', value: string) {
+    this._editChonboRows = this._editChonboRows.map((row, j) =>
+      j === index ? {...row, [field]: value} : row
+    );
+  }
+
+  private _patchYakumanRow(
+    index: number,
+    field: 'player' | 'yakuman',
+    value: string
+  ) {
+    this._editYakumanRows = this._editYakumanRows.map((row, j) =>
+      j === index ? {...row, [field]: value} : row
+    );
+  }
+
+  private _chonboFromEditRows(): Chonbo[] {
+    const chonbo: Chonbo[] = [];
+    for (const row of this._editChonboRows) {
+      if (row.player.trim() === '') {
+        continue;
+      }
+      const pt = Number(row.point);
+      chonbo.push({
+        player: row.player.trim(),
+        point: Number.isFinite(pt) ? pt : 0,
+      });
+    }
+    return chonbo;
+  }
+
+  private _yakumanFromEditRows(): Yakuman[] {
+    const yakuman: Yakuman[] = [];
+    for (const row of this._editYakumanRows) {
+      if (row.player.trim() === '') {
+        continue;
+      }
+      yakuman.push({
+        player: row.player.trim(),
+        yakuman: row.yakuman.trim(),
+      });
+    }
+    return yakuman;
+  }
+
+  private async _saveEditDialog() {
+    if (!this._editDocId || this._editSaving) {
+      return;
+    }
+    this._editSaving = true;
+    this._editError = '';
+    try {
+      const chonbo = this._chonboFromEditRows();
+      const yakuman = this._yakumanFromEditRows();
+      await updateDoc(doc(db, 'results', this._editDocId), {chonbo, yakuman});
+      this._editDialogOpen = false;
+      await this._loadData();
+    } catch (e) {
+      console.error(e);
+      this._editError = '保存に失敗しました。もう一度お試しください。';
+    } finally {
+      this._editSaving = false;
+    }
   }
 
   private _setDistinctDates(docs: QueryDocumentSnapshot[], gameType: string) {
