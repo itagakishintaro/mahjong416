@@ -1,5 +1,5 @@
 import {LitElement, html, css} from 'lit';
-import {property, query} from 'lit/decorators.js';
+import {property, query, state} from 'lit/decorators.js';
 import {customElement} from 'lit/decorators.js';
 import '@material/web/textfield/outlined-text-field.js';
 import '@material/web/textfield/filled-text-field.js';
@@ -7,15 +7,17 @@ import '@material/web/select/outlined-select.js';
 import '@material/web/select/select-option.js';
 import '@material/web/button/filled-tonal-button.js';
 import '@material/web/button/filled-button.js';
+import '@material/web/button/text-button.js';
 import '@material/web/progress/circular-progress.js';
 import '@patternfly/elements/pf-accordion/pf-accordion.js';
 import {db} from './firestore';
-import {collection, addDoc} from 'firebase/firestore/lite';
+import {collection, addDoc, doc, setDoc} from 'firebase/firestore/lite';
 import './mahjong-calc-chonbo.js';
 import './mahjong-calc-yakuman.js';
 import {MahjongCalcChonbo} from './mahjong-calc-chonbo.js';
 import {MahjongCalcYakuman} from './mahjong-calc-yakuman.js';
 import './mahjong-calc-date-and-key.js';
+import {MahjongCalcDateAndKey} from './mahjong-calc-date-and-key.js';
 
 @customElement('mahjong-calc')
 export class MahjongCalc extends LitElement {
@@ -39,12 +41,33 @@ export class MahjongCalc extends LitElement {
       md-outlined-text-field {
         --md-outlined-field-disabled-content-opacity: 1;
       }
+      .edit-banner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #e8f0fe;
+        border-radius: 4px;
+        padding: 0.5rem 0.75rem;
+        margin-bottom: 1em;
+        font-size: 0.875rem;
+      }
     `,
   ];
 
   override render() {
     return html`
       <h1>点数計算</h1>
+
+      ${this._editDocId
+        ? html`
+            <div class="edit-banner">
+              <span>編集中: ${this._editLabel}</span>
+              <md-text-button @click="${this._cancelEdit}"
+                >編集をキャンセル</md-text-button
+              >
+            </div>
+          `
+        : ''}
 
       <md-outlined-select required id="gameType" @change="${this._changeGame}">
         <md-select-option selected value="四麻">
@@ -251,7 +274,7 @@ export class MahjongCalc extends LitElement {
           <md-filled-button
             @click="${this._uploadResults}"
             ?disabled="${this.isPointCheckError}"
-            >登録</md-filled-button
+            >${this._editDocId ? '更新' : '登録'}</md-filled-button
           >
           <md-circular-progress
             indeterminate
@@ -268,6 +291,11 @@ export class MahjongCalc extends LitElement {
 
   @property({attribute: false})
   prefillData: PrefillData | null = null;
+
+  @state()
+  private _editDocId: string | null = null;
+  @state()
+  private _editLabel = '';
 
   @query('#gameType')
   gameTypeElement!: HTMLSelectElement;
@@ -315,16 +343,36 @@ export class MahjongCalc extends LitElement {
   @query('#progress')
   progressElement!: HTMLElement;
 
+  @query('mahjong-calc-date-and-key')
+  private _dateAndKeyElement!: MahjongCalcDateAndKey;
+
+  override willUpdate(changedProperties: Map<string, unknown>) {
+    // docId があれば編集モード（保存時に既存ドキュメントを上書き）
+    if (changedProperties.has('prefillData') && this.prefillData) {
+      this._editDocId = this.prefillData.docId ?? null;
+      this._editLabel = this.prefillData.date
+        ? `${this.prefillData.date} のゲーム`
+        : '';
+    }
+  }
+
   override updated(changedProperties: Map<string, unknown>) {
     if (changedProperties.has('prefillData') && this.prefillData) {
       this._applyPrefillData(this.prefillData);
     }
   }
 
-  private _applyPrefillData(data: PrefillData) {
+  private async _applyPrefillData(data: PrefillData) {
     // ゲームタイプを設定してリセット
     this.gameTypeElement.value = data.gameType;
     this._changeGame();
+
+    // 日付・順序キーを復元（編集時は元の時系列位置を保つ）
+    // 子コンポーネントの初回描画前に呼ばれることがあるため updateComplete を待つ
+    if (data.date && data.order && this._dateAndKeyElement) {
+      await this._dateAndKeyElement.updateComplete;
+      this._dateAndKeyElement.setValues(data.date, data.order);
+    }
 
     // score 降順（高得点順）でプレイヤー・得点をセット
     const sorted = [...data.results].sort((a, b) => b.score - a.score);
@@ -357,6 +405,15 @@ export class MahjongCalc extends LitElement {
 
     // ポイントを再計算
     this._calcPoint();
+  }
+
+  private _cancelEdit() {
+    this._editDocId = null;
+    this._editLabel = '';
+    this._resetResults();
+    this.dispatchEvent(
+      new CustomEvent('edit-cancelled', {bubbles: true, composed: true})
+    );
   }
 
   private _calcPoint() {
@@ -678,21 +735,10 @@ export class MahjongCalc extends LitElement {
     ) as MahjongCalcYakuman;
     yakuman.push(...(yakumanElement?.getYakuman() ?? []));
 
-    // 日付、順序キー
-    const dateAndKeyElement = this.renderRoot?.querySelector(
-      'mahjong-calc-date-and-key'
-    ) as LitElement;
-    const dateElement = dateAndKeyElement?.renderRoot?.querySelector(
-      '#date'
-    ) as HTMLInputElement;
-    const orderElement = dateAndKeyElement?.renderRoot?.querySelector(
-      '#order'
-    ) as HTMLInputElement;
-
     const data = {
       gameInfo: {
-        date: dateElement?.value,
-        order: orderElement?.value,
+        date: this._dateAndKeyElement?.getDate(),
+        order: this._dateAndKeyElement?.getOrder(),
         gameType: this.gameTypeElement.value,
         players: players,
       },
@@ -701,7 +747,12 @@ export class MahjongCalc extends LitElement {
       yakuman: yakuman,
     };
     try {
-      await addDoc(collection(db, 'results'), data);
+      if (this._editDocId) {
+        // 編集モード: 既存ドキュメントを全フィールド上書き
+        await setDoc(doc(db, 'results', this._editDocId), data);
+      } else {
+        await addDoc(collection(db, 'results'), data);
+      }
       this.dispatchEvent(
         new CustomEvent('uploaded', {bubbles: true, composed: true})
       );

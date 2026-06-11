@@ -44,7 +44,8 @@ export class MahjongMenu extends LitElement {
   constructor() {
     super();
     this.addEventListener('uploaded', this._uploaded);
-    this.addEventListener('delete-and-recalc', this._deleteAndRecalc);
+    this.addEventListener('edit-game', this._editGame);
+    this.addEventListener('edit-cancelled', this._uploaded);
   }
 
   private _changed(event: CustomEvent) {
@@ -63,7 +64,7 @@ export class MahjongMenu extends LitElement {
     todayButton.click();
   }
 
-  private _deleteAndRecalc(event: Event) {
+  private _editGame(event: Event) {
     const detail = (event as CustomEvent<PrefillData>).detail;
     this._prefillData = detail;
     const calcButton = this.shadowRoot!.querySelector('#calc') as HTMLElement;

@@ -16,7 +16,7 @@ import '@patternfly/elements/pf-accordion/pf-accordion.js';
 import {calcSubStyles} from './calc-sub-styles';
 import {roundTo1, distinct} from './utils';
 import {db} from './firestore';
-import {collection, doc, getDocs, updateDoc, deleteDoc} from 'firebase/firestore/lite';
+import {collection, doc, getDocs, deleteDoc} from 'firebase/firestore/lite';
 import {QueryDocumentSnapshot} from 'firebase/firestore/lite';
 import {OutlinedSelect} from '@material/web/select/internal/outlined-select';
 
@@ -47,22 +47,14 @@ export class MahjongToday extends LitElement {
   @state()
   private _editDialogOpen = false;
   @state()
-  private _editDocId: string | null = null;
-  @state()
   private _editHeadline = '';
-  @state()
-  private _editChonboRows: {player: string; point: string}[] = [];
-  @state()
-  private _editYakumanRows: {player: string; yakuman: string}[] = [];
-  @state()
-  private _editSaving = false;
   @state()
   private _editError = '';
 
   @state()
   private _editGame: TodayGameRow | null = null;
   @state()
-  private _editMode: 'edit' | 'delete-confirm' = 'edit';
+  private _editMode: 'menu' | 'delete-confirm' = 'menu';
   @state()
   private _deleteConfirmInput = '';
   @state()
@@ -141,12 +133,6 @@ export class MahjongToday extends LitElement {
         margin: 0 0 0.5rem;
       }
 
-      .edit-dialog-content h3 {
-        margin: 0.75rem 0 0.25rem;
-        font-size: 1rem;
-        font-weight: 600;
-      }
-
       .edit-dialog-error {
         color: #b3261e;
         margin: 0.5rem 0 0;
@@ -183,22 +169,6 @@ export class MahjongToday extends LitElement {
       .danger-filled-button {
         --md-filled-button-container-color: #b3261e;
         --md-filled-button-hover-container-elevation: 2;
-      }
-
-      .dialog-row-actions {
-        display: flex;
-        align-items: center;
-      }
-
-      .dialog-row-actions md-icon-button {
-        --md-icon-button-icon-size: 20px;
-      }
-
-      .dialog-row-icon-svg {
-        display: block;
-        width: 20px;
-        height: 20px;
-        fill: currentColor;
       }
     `,
   ];
@@ -239,7 +209,7 @@ export class MahjongToday extends LitElement {
                     <th
                       class="edit-col-header"
                       scope="col"
-                      aria-label="チョンボ・役満の編集"
+                      aria-label="ゲームの編集"
                     ></th>
                   </tr></thead>`
                 : ''}
@@ -253,7 +223,7 @@ export class MahjongToday extends LitElement {
                   <td class="edit-cell">
                     <md-icon-button
                       type="button"
-                      aria-label="チョンボ・役満を編集"
+                      aria-label="ゲームを編集"
                       @click=${(e: Event) => {
                         e.stopPropagation();
                         this._openEditDialog(game);
@@ -284,17 +254,14 @@ export class MahjongToday extends LitElement {
         @closed=${this._onEditDialogClosed}
       >
         <div slot="headline">
-          ${this._editMode === 'delete-confirm'
-            ? '削除して再入力'
-            : 'チョンボ・役満の修正'}
+          ${this._editMode === 'delete-confirm' ? '削除' : 'ゲームの編集'}
         </div>
         <div slot="content" class="edit-dialog-content">
           <p>${this._editHeadline}</p>
           ${this._editMode === 'delete-confirm'
             ? html`
                 <div class="delete-warning">
-                  ⚠
-                  このゲームを削除して点数計算画面で再入力します。この操作は取り消せません。
+                  ⚠ このゲームを削除します。この操作は取り消せません。
                 </div>
                 <md-outlined-text-field
                   style="width: 100%"
@@ -314,137 +281,19 @@ export class MahjongToday extends LitElement {
                 ${this._editError
                   ? html`<p class="edit-dialog-error">${this._editError}</p>`
                   : ''}
-                <h3>チョンボ</h3>
-          ${map(this._editChonboRows, (row, i) => {
-            return html`
-              <div class="dialog-row-actions">
-                <md-outlined-text-field
-                  class="width-50"
-                  label="プレイヤー"
-                  type="text"
-                  .value=${row.player}
-                  @input=${(e: Event) => {
-                    const field = e.currentTarget as unknown as {value: string};
-                    this._patchChonboRow(i, 'player', field.value);
-                  }}
-                ></md-outlined-text-field>
-                <md-outlined-text-field
-                  class="width-30"
-                  label="罰符"
-                  type="number"
-                  .value=${row.point}
-                  @input=${(e: Event) => {
-                    const field = e.currentTarget as unknown as {value: string};
-                    this._patchChonboRow(i, 'point', field.value);
-                  }}
-                ></md-outlined-text-field>
-                ${this._editChonboRows.length > 1
-                  ? html`
-                      <md-icon-button
-                        type="button"
-                        aria-label="行を削除"
-                        @click=${() => this._removeChonboRow(i)}
-                      >
-                        <svg
-                          class="dialog-row-icon-svg"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          aria-hidden="true"
-                        >
-                          <path
-                            d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                          />
-                        </svg>
-                      </md-icon-button>
-                    `
-                  : ''}
-              </div>
-            `;
-          })}
-          <md-icon-button
-            type="button"
-            aria-label="チョンボ行を追加"
-            @click=${this._addChonboRow}
-          >
-            <svg
-              class="dialog-row-icon-svg"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-            </svg>
-          </md-icon-button>
-          <h3>役満</h3>
-          ${map(this._editYakumanRows, (row, i) => {
-            return html`
-              <div class="dialog-row-actions">
-                <md-outlined-text-field
-                  class="width-50"
-                  label="プレイヤー"
-                  type="text"
-                  .value=${row.player}
-                  @input=${(e: Event) => {
-                    const field = e.currentTarget as unknown as {value: string};
-                    this._patchYakumanRow(i, 'player', field.value);
-                  }}
-                ></md-outlined-text-field>
-                <md-outlined-text-field
-                  class="width-30"
-                  label="役満"
-                  type="text"
-                  .value=${row.yakuman}
-                  @input=${(e: Event) => {
-                    const field = e.currentTarget as unknown as {value: string};
-                    this._patchYakumanRow(i, 'yakuman', field.value);
-                  }}
-                ></md-outlined-text-field>
-                ${this._editYakumanRows.length > 1
-                  ? html`
-                      <md-icon-button
-                        type="button"
-                        aria-label="行を削除"
-                        @click=${() => this._removeYakumanRow(i)}
-                      >
-                        <svg
-                          class="dialog-row-icon-svg"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          aria-hidden="true"
-                        >
-                          <path
-                            d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                          />
-                        </svg>
-                      </md-icon-button>
-                    `
-                  : ''}
-              </div>
-            `;
-          })}
-          <md-icon-button
-            type="button"
-            aria-label="役満行を追加"
-            @click=${this._addYakumanRow}
-          >
-            <svg
-              class="dialog-row-icon-svg"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-            </svg>
-          </md-icon-button>
-          <div class="delete-section">
-            <p class="delete-section-label">危険な操作</p>
-            <md-text-button
-              class="danger-text-button"
-              type="button"
-              @click=${this._enterDeleteConfirm}
-            >削除して再入力</md-text-button>
-          </div>
-        `}
+                <p>
+                  このゲームの全項目（プレイヤー・得点・チョンボ・役満）を点数計算画面で編集します。
+                </p>
+                <div class="delete-section">
+                  <p class="delete-section-label">危険な操作</p>
+                  <md-text-button
+                    class="danger-text-button"
+                    type="button"
+                    @click=${this._enterDeleteConfirm}
+                    >削除</md-text-button
+                  >
+                </div>
+              `}
         </div>
         <div slot="actions">
           ${this._editMode === 'delete-confirm'
@@ -463,15 +312,11 @@ export class MahjongToday extends LitElement {
                 >
               `
             : html`
-                <md-text-button
-                  @click=${this._closeEditDialog}
-                  ?disabled=${this._editSaving}
+                <md-text-button @click=${this._closeEditDialog}
                   >キャンセル</md-text-button
                 >
-                <md-filled-button
-                  @click=${this._saveEditDialog}
-                  ?disabled=${this._editSaving}
-                  >保存</md-filled-button
+                <md-filled-button @click=${this._startEdit}
+                  >編集する</md-filled-button
                 >
               `}
         </div>
@@ -667,117 +512,46 @@ export class MahjongToday extends LitElement {
 
   private _openEditDialog(game: TodayGameRow) {
     this._editError = '';
-    this._editDocId = game.docId;
     this._editGame = game;
     this._editHeadline = `${game.date} · 順序 ${game.order}`;
-    this._editChonboRows =
-      game.chonbo.length > 0
-        ? game.chonbo.map((c) => ({player: c.player, point: String(c.point)}))
-        : [{player: '', point: '-20'}];
-    this._editYakumanRows =
-      game.yakuman.length > 0
-        ? game.yakuman.map((y) => ({player: y.player, yakuman: y.yakuman}))
-        : [{player: '', yakuman: ''}];
     this._editDialogOpen = true;
   }
 
   private _closeEditDialog() {
-    if (this._editSaving) {
-      return;
-    }
     this._editDialogOpen = false;
   }
 
   private _onEditDialogClosed() {
     this._editDialogOpen = false;
-    this._editDocId = null;
     this._editGame = null;
     this._editError = '';
-    this._editSaving = false;
-    this._editMode = 'edit';
+    this._editMode = 'menu';
     this._deleteConfirmInput = '';
     this._deleteExecuting = false;
   }
 
-  private _patchChonboRow(index: number, field: 'player' | 'point', value: string) {
-    this._editChonboRows = this._editChonboRows.map((row, j) =>
-      j === index ? {...row, [field]: value} : row
-    );
-  }
-
-  private _patchYakumanRow(
-    index: number,
-    field: 'player' | 'yakuman',
-    value: string
-  ) {
-    this._editYakumanRows = this._editYakumanRows.map((row, j) =>
-      j === index ? {...row, [field]: value} : row
-    );
-  }
-
-  private _addChonboRow() {
-    this._editChonboRows = [...this._editChonboRows, {player: '', point: '-20'}];
-  }
-
-  private _removeChonboRow(index: number) {
-    this._editChonboRows = this._editChonboRows.filter((_, i) => i !== index);
-  }
-
-  private _addYakumanRow() {
-    this._editYakumanRows = [...this._editYakumanRows, {player: '', yakuman: ''}];
-  }
-
-  private _removeYakumanRow(index: number) {
-    this._editYakumanRows = this._editYakumanRows.filter((_, i) => i !== index);
-  }
-
-  private _chonboFromEditRows(): Chonbo[] {
-    const chonbo: Chonbo[] = [];
-    for (const row of this._editChonboRows) {
-      if (row.player.trim() === '') {
-        continue;
-      }
-      const pt = Number(row.point);
-      chonbo.push({
-        player: row.player.trim(),
-        point: Number.isFinite(pt) ? pt : 0,
-      });
-    }
-    return chonbo;
-  }
-
-  private _yakumanFromEditRows(): Yakuman[] {
-    const yakuman: Yakuman[] = [];
-    for (const row of this._editYakumanRows) {
-      if (row.player.trim() === '') {
-        continue;
-      }
-      yakuman.push({
-        player: row.player.trim(),
-        yakuman: row.yakuman.trim(),
-      });
-    }
-    return yakuman;
-  }
-
-  private async _saveEditDialog() {
-    if (!this._editDocId || this._editSaving) {
+  /** 点数計算画面に既存値をプリフィルして編集モードで開く */
+  private _startEdit() {
+    if (!this._editGame) {
       return;
     }
-    this._editSaving = true;
-    this._editError = '';
-    try {
-      const chonbo = this._chonboFromEditRows();
-      const yakuman = this._yakumanFromEditRows();
-      await updateDoc(doc(db, 'results', this._editDocId), {chonbo, yakuman});
-      this._editDialogOpen = false;
-      await this._loadData();
-    } catch (e) {
-      console.error(e);
-      this._editError = '保存に失敗しました。もう一度お試しください。';
-    } finally {
-      this._editSaving = false;
-    }
+    const game = this._editGame;
+    this._editDialogOpen = false;
+    this.dispatchEvent(
+      new CustomEvent<PrefillData>('edit-game', {
+        bubbles: true,
+        composed: true,
+        detail: {
+          gameType: game.gameType,
+          results: [...game.results].sort((a, b) => b.score - a.score),
+          chonbo: game.chonbo,
+          yakuman: game.yakuman,
+          docId: game.docId,
+          date: game.date,
+          order: game.order,
+        },
+      })
+    );
   }
 
   private _enterDeleteConfirm() {
@@ -787,7 +561,7 @@ export class MahjongToday extends LitElement {
   }
 
   private _cancelDeleteConfirm() {
-    this._editMode = 'edit';
+    this._editMode = 'menu';
     this._deleteConfirmInput = '';
     this._editError = '';
   }
@@ -798,22 +572,8 @@ export class MahjongToday extends LitElement {
     this._editError = '';
     try {
       await deleteDoc(doc(db, 'results', this._editGame.docId));
-      const prefillResults = [...this._editGame.results].sort(
-        (a, b) => b.score - a.score
-      );
       this._editDialogOpen = false;
-      this.dispatchEvent(
-        new CustomEvent('delete-and-recalc', {
-          bubbles: true,
-          composed: true,
-          detail: {
-            gameType: this._editGame.gameType,
-            results: prefillResults,
-            chonbo: this._editGame.chonbo,
-            yakuman: this._editGame.yakuman,
-          },
-        })
-      );
+      await this._loadData();
     } catch (e) {
       console.error(e);
       this._editError = '削除に失敗しました。もう一度お試しください。';

@@ -1,5 +1,5 @@
 import {LitElement, html, css} from 'lit';
-import {customElement} from 'lit/decorators.js';
+import {customElement, query} from 'lit/decorators.js';
 
 import '@material/web/textfield/filled-text-field.js';
 import '@patternfly/elements/pf-accordion/pf-accordion.js';
@@ -41,5 +41,23 @@ export class MahjongCalcDateAndKey extends LitElement {
         </pf-accordion-panel>
       </pf-accordion>
     `;
+  }
+
+  @query('#date')
+  private _dateElement!: HTMLInputElement;
+  @query('#order')
+  private _orderElement!: HTMLInputElement;
+
+  getDate(): string {
+    return this._dateElement?.value ?? '';
+  }
+
+  getOrder(): string {
+    return this._orderElement?.value ?? '';
+  }
+
+  setValues(date: string, order: string) {
+    this._dateElement.value = date;
+    this._orderElement.value = order;
   }
 }

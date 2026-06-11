@@ -48,4 +48,8 @@ interface PrefillData {
   results: Result[];
   chonbo: Chonbo[];
   yakuman: Yakuman[];
+  /** 指定された場合は既存ドキュメントの編集（上書き保存）になる */
+  docId?: string;
+  date?: string;
+  order?: string;
 }
