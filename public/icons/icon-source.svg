@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#127a51"/>
+      <stop offset="1" stop-color="#0c6342"/>
+    </linearGradient>
+    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#efe9d6"/>
+    </linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1ea567"/>
+      <stop offset="1" stop-color="#0e7a4c"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 背景 -->
+  <rect width="512" height="512" fill="url(#bg)"/>
+
+  <!-- 麻雀牌 -->
+  <rect x="118" y="58" width="276" height="396" rx="34" fill="#cdbf93"/>
+  <rect x="118" y="52" width="276" height="396" rx="34" fill="url(#tile)"/>
+  <rect x="134" y="68" width="244" height="364" rx="24" fill="none" stroke="#e6dcbf" stroke-width="3"/>
+
+  <!-- 一索：鳥の図柄 -->
+  <g transform="translate(250 250)">
+    <!-- 尾羽（扇状に3枚） -->
+    <g fill="url(#body)" stroke="#0c6342" stroke-width="3">
+      <path d="M30 50 C110 30 150 70 150 130 C120 110 70 90 35 75 Z"/>
+    </g>
+    <g fill="#1ea567">
+      <path d="M40 36 C120 6 168 36 178 96 C140 84 86 76 46 66 Z"/>
+    </g>
+    <!-- 尾の目玉模様（赤） -->
+    <circle cx="150" cy="80" r="17" fill="#d8332a"/>
+    <circle cx="150" cy="80" r="8" fill="#f7f3e6"/>
+
+    <!-- 胴体 -->
+    <ellipse cx="-4" cy="44" rx="62" ry="76" fill="url(#body)"/>
+    <ellipse cx="-12" cy="50" rx="40" ry="56" fill="#27b274"/>
+
+    <!-- 首・頭 -->
+    <circle cx="-34" cy="-56" r="44" fill="url(#body)"/>
+    <circle cx="-42" cy="-58" r="26" fill="#27b274"/>
+
+    <!-- 冠羽 -->
+    <path d="M-46 -98 q-2 -40 18 -62" stroke="#0e7a4c" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <circle cx="-26" cy="-166" r="11" fill="#d8332a"/>
+
+    <!-- くちばし -->
+    <path d="M-74 -56 L-116 -46 L-74 -36 Z" fill="#e8a02e"/>
+    <!-- 目 -->
+    <circle cx="-50" cy="-62" r="9" fill="#16322a"/>
+    <circle cx="-47" cy="-65" r="3" fill="#ffffff"/>
+
+    <!-- 脚と止まり木 -->
+    <path d="M-12 116 L-12 150 M16 116 L16 150" stroke="#e8a02e" stroke-width="9" stroke-linecap="round"/>
+    <rect x="-78" y="148" width="150" height="18" rx="9" fill="#0e7a4c"/>
+  </g>
+</svg>

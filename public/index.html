@@ -4,6 +4,18 @@
   <head>
     <meta charset="utf-8" />
     <title>麻雀416</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.webmanifest" />
+    <meta name="theme-color" content="#0c6342" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="麻雀416" />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+    <link rel="icon" href="favicon.ico" sizes="any" />
+    <link rel="icon" type="image/svg+xml" href="icons/icon-source.svg" />
+
     <script type="module" src="mahjong-menu.js"></script>
     <script type="module" src="mahjong-calc.js"></script>
     <script type="module" src="mahjong-today.js"></script>
@@ -12,9 +24,23 @@
     <script type="module" src="mahjong-rule.js"></script>
     <script type="module" src="mahjong-title.js"></script>
 
-    <meta name="viewport" content="width=device-width" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
   </head>
   <body>
     <mahjong-menu></mahjong-menu>
+
+    <script>
+      // Service Worker 登録（PWA）
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('sw.js').catch((err) => {
+            console.error('SW registration failed:', err);
+          });
+        });
+      }
+    </script>
   </body>
 </html>
