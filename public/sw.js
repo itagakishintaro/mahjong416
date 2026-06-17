@@ -1,14 +1,15 @@
 // 麻雀416 Service Worker
 // キャッシュバージョン。アセット更新時はここを上げる。
-const CACHE = 'mahjong416-v1';
+const CACHE = 'mahjong416-v2';
 
 // 最低限のアプリシェルを事前キャッシュ
+// アイコン更新時は ?v= を上げてブラウザ／OSに再取得させる
 const CORE = [
   './',
   './index.html',
   './manifest.webmanifest',
-  './icons/icon-192.png',
-  './icons/icon-512.png',
+  './icons/icon-192.png?v=2',
+  './icons/icon-512.png?v=2',
 ];
 
 self.addEventListener('install', (event) => {
