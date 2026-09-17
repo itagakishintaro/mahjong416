@@ -1,22 +1,11 @@
 import {describe, expect, it} from 'vitest';
-import {parseTiles} from './tile.js';
-import {regularShanten} from './shanten.js';
-
-/**
- * '123m456p東東' のような麻雀の略記をパースする（テスト専用）。
- * 赤ドラは '赤5m' のように単独で書く。
- */
-function tiles(notation: string) {
-  const tokens = notation.match(/赤[1-9][mps]|[1-9]+[mps]|[東南西北白発中]/g) ?? [];
-  const expanded = tokens.flatMap((token) => {
-    if (token.startsWith('赤') || /^[東南西北白発中]$/.test(token)) {
-      return [token];
-    }
-    const suit = token.slice(-1);
-    return [...token.slice(0, -1)].map((rank) => `${rank}${suit}`);
-  });
-  return parseTiles(expanded);
-}
+import {
+  regularShanten,
+  sevenPairsShanten,
+  shanten,
+  thirteenOrphansShanten,
+} from './shanten.js';
+import {tiles} from './testing.js';
 
 describe('regularShanten: 和了形', () => {
   it('4面子1雀頭は -1', () => {
@@ -90,5 +79,75 @@ describe('regularShanten: 副露の扱い', () => {
     const withoutMeld = regularShanten(tiles('123m456m789m東東1p5s'));
     const withMeld = regularShanten(tiles('123m456m東東1p5s'), 1);
     expect(withMeld).toBe(withoutMeld);
+  });
+});
+
+describe('sevenPairsShanten', () => {
+  it('7対子は -1', () => {
+    expect(sevenPairsShanten(tiles('11m22m33p44p55s66s東東'))).toBe(-1);
+  });
+
+  it('6対子 + 浮き牌1枚は 0', () => {
+    expect(sevenPairsShanten(tiles('11m22m33p44p55s66s東'))).toBe(0);
+  });
+
+  it('4対子は 2', () => {
+    expect(sevenPairsShanten(tiles('11m22m33p44p5s東南西北'))).toBe(2);
+  });
+
+  it('同じ牌4枚は1対子としてしか数えない', () => {
+    // 1m×4 2p×4 3s×4 東 → 対子3つ・種類4つ。種類不足の補正が入る
+    expect(sevenPairsShanten(tiles('1111m2222p3333s東'))).toBe(6);
+  });
+
+  it('副露があれば成立しない', () => {
+    expect(sevenPairsShanten(tiles('11m22m33p44p5s'), 1)).toBe(
+      Number.POSITIVE_INFINITY,
+    );
+  });
+});
+
+describe('thirteenOrphansShanten', () => {
+  it('13面待ちは 0', () => {
+    expect(thirteenOrphansShanten(tiles('19m19p19s東南西北白発中'))).toBe(0);
+  });
+
+  it('雀頭のある和了形は -1', () => {
+    expect(thirteenOrphansShanten(tiles('19m19p19s東南西北白発中中'))).toBe(-1);
+  });
+
+  it('単騎テンパイは 0', () => {
+    expect(thirteenOrphansShanten(tiles('19m19p19s東南西北白発発'))).toBe(0);
+  });
+
+  it('面子手は大きな値になる', () => {
+    expect(thirteenOrphansShanten(tiles('123m456m789m123s東東'))).toBe(8);
+  });
+
+  it('副露があれば成立しない', () => {
+    expect(thirteenOrphansShanten(tiles('19m19p19s東南西北'), 1)).toBe(
+      Number.POSITIVE_INFINITY,
+    );
+  });
+});
+
+describe('shanten: 3つの形の最小値', () => {
+  it('対子が多い手は七対子として評価する', () => {
+    const hand = tiles('11m22p33s東東南南西西北');
+    expect(regularShanten(hand)).toBe(3);
+    expect(shanten(hand)).toBe(0);
+  });
+
+  it('么九牌ばかりの手は国士として評価する', () => {
+    const hand = tiles('19m19p19s東南西北白発中');
+    expect(shanten(hand)).toBe(0);
+  });
+
+  it('面子手が最良ならその値を返す', () => {
+    expect(shanten(tiles('123m456m789m12s東東'))).toBe(0);
+  });
+
+  it('副露があれば面子手としてのみ評価する', () => {
+    expect(shanten(tiles('123m456m東東12p'), 1)).toBe(0);
   });
 });

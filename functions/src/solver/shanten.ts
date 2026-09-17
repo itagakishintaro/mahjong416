@@ -142,3 +142,88 @@ function evaluate(melds: number, partials: number, pairs: number): number {
   }
   return shanten;
 }
+
+/** 七対子に必要な対子の数 */
+const PAIRS_FOR_SEVEN_PAIRS = 7;
+/** 国士無双に必要な么九牌の種類数 */
+const KINDS_FOR_THIRTEEN_ORPHANS = 13;
+
+/** 么九牌（老頭牌 + 字牌）のインデックス */
+const TERMINAL_INDEXES: readonly number[] = [
+  SUIT_OFFSET.m + 0,
+  SUIT_OFFSET.m + 8,
+  SUIT_OFFSET.p + 0,
+  SUIT_OFFSET.p + 8,
+  SUIT_OFFSET.s + 0,
+  SUIT_OFFSET.s + 8,
+  ...Array.from({length: 7}, (_, i) => SUIT_OFFSET.z + i),
+];
+
+/**
+ * 七対子のシャンテン数。副露があると成立しないため Infinity を返す。
+ *
+ * 同じ牌が4枚あっても対子は1つとしか数えられないため、
+ * 対子の数だけでなく牌の種類数も見る必要がある。
+ */
+export function sevenPairsShanten(
+  tiles: readonly Tile[],
+  meldCount = 0,
+): number {
+  if (meldCount > 0) {
+    return Number.POSITIVE_INFINITY;
+  }
+  const counts = toCounts(tiles);
+  let pairs = 0;
+  let kinds = 0;
+  for (const count of counts) {
+    if (count > 0) {
+      kinds += 1;
+    }
+    if (count >= 2) {
+      pairs += 1;
+    }
+  }
+
+  let shantenValue = PAIRS_FOR_SEVEN_PAIRS - 1 - pairs;
+  if (kinds < PAIRS_FOR_SEVEN_PAIRS) {
+    // 種類が足りない分は、余った牌を切って別の種類を引き直す必要がある
+    shantenValue += PAIRS_FOR_SEVEN_PAIRS - kinds;
+  }
+  return shantenValue;
+}
+
+/**
+ * 国士無双のシャンテン数。副露があると成立しないため Infinity を返す。
+ */
+export function thirteenOrphansShanten(
+  tiles: readonly Tile[],
+  meldCount = 0,
+): number {
+  if (meldCount > 0) {
+    return Number.POSITIVE_INFINITY;
+  }
+  const counts = toCounts(tiles);
+  let kinds = 0;
+  let hasPair = false;
+  for (const index of TERMINAL_INDEXES) {
+    const count = counts[index] ?? 0;
+    if (count > 0) {
+      kinds += 1;
+    }
+    if (count >= 2) {
+      hasPair = true;
+    }
+  }
+  return KINDS_FOR_THIRTEEN_ORPHANS - kinds - (hasPair ? 1 : 0);
+}
+
+/**
+ * 面子手・七対子・国士無双のうち最も進んでいる形のシャンテン数を返す。
+ */
+export function shanten(tiles: readonly Tile[], meldCount = 0): number {
+  return Math.min(
+    regularShanten(tiles, meldCount),
+    sevenPairsShanten(tiles, meldCount),
+    thirteenOrphansShanten(tiles, meldCount),
+  );
+}
