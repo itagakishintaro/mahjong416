@@ -7,17 +7,40 @@
 - git user: `itagakishintaro` / `itagaki.shintaro@gmail.com`（リポジトリローカル設定済み）
 - Firebase / GCP プロジェクト: `mahjong416`（`.firebaserc` の default）
 
+## ブランチ運用
+
+Issue・PR は使わない。**変更の種類でコミット先を分ける**。
+
+| 変更の種類 | コミット先 |
+| --- | --- |
+| **何切るAIの開発**（`functions/` `data/` `src/components/mahjong-nanikiru.ts`） | `feature/nanikiru-ai` |
+| 既存アプリの修正・ドキュメント・ハーネス設定 | `main` に直接 |
+
+### feature/nanikiru-ai の扱い
+
+- **長命ブランチ**。何切るAIが完成し、成功基準（テスト30問で厳格正解率90%）を満たすまで main へマージしない
+- ステップごとにこのブランチへコミット＆push する。レビューはコミット単位で受ける
+- main に変更が入ったら、随時 `git merge main`（または rebase）で追従し、乖離を溜めない
+- マージのタイミングは**ユーザーが判断する**。AI側から勝手にマージしない
+
+```bash
+git switch -c feature/nanikiru-ai        # 初回のみ
+git switch feature/nanikiru-ai           # 以降
+git push -u origin feature/nanikiru-ai   # 初回のpush
+```
+
 ## 開発サイクル
 
-**main直コミット運用**。Issue・PR・feature ブランチは使わない。代わりに**作業単位を小さく切り、1単位ごとにレビューとコミットを行う**ことで進行を管理する。
+作業単位を小さく切り、**1単位ごとにレビューとコミットを行う**ことで進行を管理する。
 
-1. **作業単位の合意** — 着手前に「今回やること／やらないこと」をユーザーに提示して合意を取る
-2. **仕様確認** — 不明点があればこの時点で質問する。推測で進めない
-3. **Red** — ユニットテストを書く。この時点では落ちることを確認する
-4. **Green** — プロダクションコードを実装し、テストを通す
-5. **リファクタリング** — テストが通る状態を保ったまま整える
-6. **レビュー依頼** — 変更点・確認手順・判断を仰ぎたい点を提示する
-7. **コミット** — ユーザーの承認後に main へコミット＆push
+1. **ブランチの確認** — 何切るAIの作業なら `feature/nanikiru-ai` にいることを `git branch --show-current` で確認する
+2. **作業単位の合意** — 着手前に「今回やること／やらないこと」をユーザーに提示して合意を取る
+3. **仕様確認** — 不明点があればこの時点で質問する。推測で進めない
+4. **Red** — ユニットテストを書く。この時点では落ちることを確認する
+5. **Green** — プロダクションコードを実装し、テストを通す
+6. **リファクタリング** — テストが通る状態を保ったまま整える
+7. **レビュー依頼** — 変更点・確認手順・判断を仰ぎたい点を提示する
+8. **コミット** — ユーザーの承認後にコミット＆push
 
 ### 作業単位の粒度
 
@@ -28,6 +51,7 @@
 
 ## コミット規約
 
+- ブランチ名: 何切るAIは `feature/nanikiru-ai` の1本のみ。ステップごとにブランチを切らない
 - [Conventional Commits](https://www.conventionalcommits.org/ja/)（`feat:` `fix:` `test:` `docs:` `chore:` `refactor:`）。本文は日本語
 - スコープを付ける: `feat(solver):` `feat(nanikiru):` `docs(nanikiru):` `chore(harness):`
 - コミット末尾に `Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>` を付ける
