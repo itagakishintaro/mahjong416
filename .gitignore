@@ -1,3 +1,14 @@
 /node_modules/
 /dist/
 custom-elements.json
+
+# functions（何切るAIバックエンド）
+/functions/node_modules/
+/functions/lib/
+
+# 学習データの生成物（正本は data/problems/）
+/data/build/
+
+# ツールの作業ディレクトリ
+/.playwright-mcp/
+/.firebase/

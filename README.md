@@ -1,154 +1,103 @@
-# LitElement TypeScript starter
+# mahjong416
 
-This project includes a sample component using LitElement with TypeScript.
+麻雀のスコア管理Webアプリ。対局結果を記録し、成績・統計・称号を集計して表示する。
 
-This template is generated from the `lit-starter-ts` package in [the main Lit
-repo](https://github.com/lit/lit). Issues and PRs for this template should be
-filed in that repo.
+## 機能
 
-## About this release
+### スコア管理（既存）
 
-This is a pre-release of Lit 3.0, the next major version of Lit.
+- **スコア計算** — 四人麻雀・三人麻雀の対局結果を入力して収支を計算する。チョンボ・役満の加減算に対応
+- **今日の成績** — 当日の対局一覧と収支。ゲームの全項目（プレイヤー・得点・日付）を後から編集できる
+- **全体統計** — 通算の成績集計
+- **個人成績** — プレイヤーごとの成績推移をグラフ表示
+- **称号・実績** — 集計結果から称号を判定して表示
+- **対面統計** — プレイヤー同士の対戦成績
+- **ルール管理** — 適用ルールの設定
+- **PWA** — ホーム画面に追加して利用できる
 
-Lit 3.0 has very few breaking changes from Lit 2.0:
+### 何切るAI（開発中）
 
-- Drops support for IE11
-- Published as ES2021
-- Removes a couple of deprecated Lit 1.x APIs
+手牌と局面を入力すると、切るべき牌とその理由を提示する。設計は [nanikiru-ai-design-doc.md](./nanikiru-ai-design-doc.md) を参照。
 
-Lit 3.0 should require no changes to upgrade from Lit 2.0 for the vast majority of users. Once the full release is published, most apps and libraries will be able to extend their npm version ranges to include both 2.x and 3.x, like `"^2.7.0 || ^3.0.0"`.
+- シャンテン数・受入枚数は自実装のソルバーで厳密に計算する（LLMに計算させない）
+- 打牌の判断は、何切る問題300問を学習させた Gemini（プリファレンスチューニング）が担当する
+- 入力: 局・自風・巡目・ドラ・手牌・自分の副露（捨て牌は対象外）
+- 前提ルール: 半荘戦・Mリーグルール（赤あり、一発裏あり）
 
-Lit 2.x and 3.0 are _interoperable_: templates, base classes, directives, decorators, etc., from one version of Lit will work with those from another.
+## 技術スタック
 
-Please file any issues you find on our [issue tracker](https://github.com/lit/lit/issues).
+| 分類 | 技術 |
+| --- | --- |
+| フロントエンド | Lit 3 + TypeScript（Web Components） |
+| UIコンポーネント | Material Web 1.2 |
+| グラフ | Chart.js 4 |
+| データベース | Firebase Firestore |
+| バックエンドAPI | Cloud Functions (2nd gen) / TypeScript |
+| LLM | Vertex AI Gemini 2.5 Flash（プリファレンスチューニング） |
+| バンドル | Rollup + Terser |
+| ユニットテスト | Vitest |
+| ブラウザテスト | @web/test-runner |
+| ホスティング | Firebase Hosting |
 
-## Setup
+## アーキテクチャ
 
-Install dependencies:
+### コンポーネント構成
 
-```bash
-npm i
-```
+`mahjong-menu` がタブナビゲーションの親コンポーネントで、以下の子を持つ。
 
-## Build
+- `mahjong-calc` — スコア計算（四麻/三麻対応）
+  - `mahjong-calc-chonbo` — チョンボ計算
+  - `mahjong-calc-yakuman` — 役満計算
+  - `mahjong-calc-date-and-key` — 日付・キー管理
+- `mahjong-today` — 今日の成績
+- `mahjong-stats` — 全体統計
+- `mahjong-individual` — 個人成績（Chart.js）
+- `mahjong-title` — 称号・実績
+- `mahjong-versus` — 対面統計
+- `mahjong-rule` — ルール管理
 
-This sample uses the TypeScript compiler to produce JavaScript that runs in modern browsers.
+### データフロー
 
-To build the JavaScript version of your component:
+1. 各コンポーネントが Firestore（プロジェクト `mahjong416`）からデータを取得する
+2. Firebase 設定は `src/firestore.ts` に集約
+3. コアの型定義は `src/@types/index.d.ts`（`Result`, `GameInfo`, `Chonbo`, `Yakuman`）
 
-```bash
-npm run build
-```
+何切るAIのみ、フロントエンドから Cloud Functions のAPIを呼ぶ構成を取る。推論ロジック・ソルバー・Vertex AI 呼び出しはすべてバックエンドに閉じる。
 
-To watch files and rebuild when the files are modified, run the following command in a separate shell:
+### ビルドフロー
 
-```bash
-npm run build:watch
-```
+1. `tsc` が `.js` / `.d.ts` / ソースマップを出力する
+2. Rollup が複数エントリーポイントを `public/` にバンドルする
+3. Terser で最小化（`__` プレフィックスのプライベートフィールドをプロパティマングル）
 
-Both the TypeScript compiler and lit-analyzer are configured to be very strict. You may want to change `tsconfig.json` to make them less strict.
+出力は `public/` に配置し、Firebase Hosting からサーブする。
 
-## Testing
+### TypeScript設定
 
-This sample uses modern-web.dev's
-[@web/test-runner](https://www.npmjs.com/package/@web/test-runner) for testing. See the
-[modern-web.dev testing documentation](https://modern-web.dev/docs/test-runner/overview) for
-more information.
+`strict: true` に加え、`noUnusedLocals` / `noUnusedParameters` / `noImplicitReturns` を有効にしている。
 
-Tests can be run with the `test` script, which will run your tests against Lit's development mode (with more verbose errors) as well as against Lit's production mode:
+## ドキュメント
 
-```bash
-npm test
-```
+| ファイル | 役割 |
+| --- | --- |
+| [AGENTS.md](./AGENTS.md) | AI向けグラウンドルール + 参照マップ |
+| [DEVELOPMENT.md](./DEVELOPMENT.md) | 開発手順・規約・インフラ操作 |
+| [nanikiru-ai-design-doc.md](./nanikiru-ai-design-doc.md) | 何切るAIの設計書 |
 
-For local testing during development, the `test:dev:watch` command will run your tests in Lit's development mode (with verbose errors) on every change to your source files:
-
-```bash
-npm test:watch
-```
-
-Alternatively the `test:prod` and `test:prod:watch` commands will run your tests in Lit's production mode.
-
-## Dev Server
-
-This sample uses modern-web.dev's [@web/dev-server](https://www.npmjs.com/package/@web/dev-server) for previewing the project without additional build steps. Web Dev Server handles resolving Node-style "bare" import specifiers, which aren't supported in browsers. It also automatically transpiles JavaScript and adds polyfills to support older browsers. See [modern-web.dev's Web Dev Server documentation](https://modern-web.dev/docs/dev-server/overview/) for more information.
-
-To run the dev server and open the project in a new browser tab:
-
-```bash
-npm run serve
-```
-
-There is a development HTML file located at `/dev/index.html` that you can view at http://localhost:8000/dev/index.html. Note that this command will serve your code using Lit's development mode (with more verbose errors). To serve your code against Lit's production mode, use `npm run serve:prod`.
-
-## Editing
-
-If you use VS Code, we highly recommend the [lit-plugin extension](https://marketplace.visualstudio.com/items?itemName=runem.lit-plugin), which enables some extremely useful features for lit-html templates:
-
-- Syntax highlighting
-- Type-checking
-- Code completion
-- Hover-over docs
-- Jump to definition
-- Linting
-- Quick Fixes
-
-The project is setup to recommend lit-plugin to VS Code users if they don't already have it installed.
-
-## Linting
-
-Linting of TypeScript files is provided by [ESLint](eslint.org) and [TypeScript ESLint](https://github.com/typescript-eslint/typescript-eslint). In addition, [lit-analyzer](https://www.npmjs.com/package/lit-analyzer) is used to type-check and lint lit-html templates with the same engine and rules as lit-plugin.
-
-The rules are mostly the recommended rules from each project, but some have been turned off to make LitElement usage easier. The recommended rules are pretty strict, so you may want to relax them by editing `.eslintrc.json` and `tsconfig.json`.
-
-To lint the project run:
+## セットアップ
 
 ```bash
-npm run lint
+npm install
+npm run serve   # http://localhost:8000
 ```
 
-## Formatting
-
-[Prettier](https://prettier.io/) is used for code formatting. It has been pre-configured according to the Lit's style. You can change this in `.prettierrc.json`.
-
-Prettier has not been configured to run when committing files, but this can be added with Husky and `pretty-quick`. See the [prettier.io](https://prettier.io/) site for instructions.
-
-## Static Site
-
-This project includes a simple website generated with the [eleventy](https://11ty.dev) static site generator and the templates and pages in `/docs-src`. The site is generated to `/docs` and intended to be checked in so that GitHub pages can serve the site [from `/docs` on the master branch](https://help.github.com/en/github/working-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site).
-
-To enable the site go to the GitHub settings and change the GitHub Pages &quot;Source&quot; setting to &quot;master branch /docs folder&quot;.</p>
-
-To build the site, run:
+何切るAIのバックエンドは `functions/` 配下で独立した依存管理を持つ。
 
 ```bash
-npm run docs
+cd functions && npm install
+npm test        # ユニットテスト（ウォッチは npm run test:watch）
 ```
 
-To serve the site locally, run:
+## ライセンス
 
-```bash
-npm run docs:serve
-```
-
-To watch the site files, and re-build automatically, run:
-
-```bash
-npm run docs:watch
-```
-
-The site will usually be served at http://localhost:8000.
-
-**Note**: The project uses Rollup to bundle and minify the source code for the docs site and not to publish to NPM. For bundling and minification, check the [Bundling and minification](#bundling-and-minification) section.
-
-## Bundling and minification
-
-As stated in the [static site generation](#static-site) section, the bundling and minification setup in the Rollup configuration in this project is there specifically for the docs generation.
-
-We recommend publishing components as unoptimized JavaScript modules and performing build-time optimizations at the application level. This gives build tools the best chance to deduplicate code, remove dead code, and so on.
-
-Please check the [Publishing best practices](https://lit.dev/docs/tools/publishing/#publishing-best-practices) for information on publishing reusable Web Components, and [Build for production](https://lit.dev/docs/tools/production/) for building application projects that include LitElement components, on the Lit site.
-
-## More information
-
-See [Get started](https://lit.dev/docs/getting-started/) on the Lit site for more information.
+[BSD-3-Clause](./LICENSE)（Lit starter テンプレート由来）
