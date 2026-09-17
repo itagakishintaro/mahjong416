@@ -111,3 +111,17 @@ export function compareTiles(a: Tile, b: Tile): number {
 export function sortTiles(tiles: readonly Tile[]): Tile[] {
   return [...tiles].sort(compareTiles);
 }
+
+/** 34種すべての牌（赤ドラを除く）を正規順で返す */
+export function allTileKinds(): Tile[] {
+  const kinds: Tile[] = [];
+  for (const suit of ['m', 'p', 's'] as const) {
+    for (let rank = 1; rank <= 9; rank++) {
+      kinds.push({suit, rank, red: false});
+    }
+  }
+  for (let rank = 1; rank <= 7; rank++) {
+    kinds.push({suit: 'z', rank, red: false});
+  }
+  return kinds;
+}
