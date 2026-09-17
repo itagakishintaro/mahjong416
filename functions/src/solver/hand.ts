@@ -38,7 +38,8 @@ export type MeldInput = {
 
 export type HandInput = {
   readonly hand: readonly string[];
-  readonly draw?: string;
+  /** JSONから渡るため、キーの省略と undefined の両方を受け付ける */
+  readonly draw?: string | undefined;
   readonly melds: readonly MeldInput[];
 };
 
