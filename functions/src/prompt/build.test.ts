@@ -1,5 +1,7 @@
 import {describe, expect, it} from 'vitest';
-import {buildSystemInstruction, buildUserPrompt} from './build.js';
+import {buildSystemInstruction, buildUserPrompt, formatAnswer} from './build.js';
+import {parseModelResponse} from './parse.js';
+import {formatTile, parseTile} from '../solver/tile.js';
 import {evaluateCandidates} from '../solver/candidates.js';
 import {parseSituation, type SituationInput} from '../situation.js';
 
@@ -116,5 +118,70 @@ describe('buildSystemInstruction', () => {
   it('次善手は出力させない', () => {
     // 次善手はソルバーから機械的に付加するため、モデルには書かせない
     expect(buildSystemInstruction()).not.toContain('【次善手】');
+  });
+});
+
+describe('formatAnswer', () => {
+  const answer = {
+    discard: parseTile('9m'),
+    shanten: 1,
+    ukeire: [
+      {tile: parseTile('1m'), count: 3},
+      {tile: parseTile('東'), count: 2},
+    ],
+    ukeireTotal: 5,
+    reason: '9mは孤立牌のため。\n東は自風で価値がある。',
+    avoid: [{discard: parseTile('東'), reason: '自風を軽視している。'}],
+  };
+
+  it('出力フォーマットどおりに整形する', () => {
+    expect(formatAnswer(answer)).toBe(
+      [
+        '【推奨打牌】9m',
+        '【シャンテン数】1シャンテン',
+        '【受入】5枚（1m:3 東:2）',
+        '【理由】',
+        '9mは孤立牌のため。',
+        '東は自風で価値がある。',
+        '',
+        '【避けるべき打牌】東',
+        '【避けるべき理由】',
+        '自風を軽視している。',
+      ].join('\n'),
+    );
+  });
+
+  it('パーサで読み戻せる', () => {
+    const parsed = parseModelResponse(formatAnswer(answer));
+    expect(formatTile(parsed.discard)).toBe('9m');
+    expect(parsed.shanten).toBe(1);
+    expect(parsed.ukeireTotal).toBe(5);
+    expect(parsed.reason).toBe(answer.reason);
+    expect(parsed.avoid).toHaveLength(1);
+    expect(formatTile(parsed.avoid[0]!.discard)).toBe('東');
+    expect(parsed.avoid[0]!.reason).toBe('自風を軽視している。');
+  });
+
+  it('避けるべき打牌が無ければその節を書かない', () => {
+    const text = formatAnswer({...answer, avoid: []});
+    expect(text).not.toContain('【避けるべき打牌】');
+    expect(parseModelResponse(text).avoid).toEqual([]);
+  });
+
+  it('避けるべき打牌が複数あれば並べる', () => {
+    const text = formatAnswer({
+      ...answer,
+      avoid: [
+        {discard: parseTile('東'), reason: '理由1'},
+        {discard: parseTile('1p'), reason: '理由2'},
+      ],
+    });
+    expect(parseModelResponse(text).avoid.map(({reason}) => reason)).toEqual(['理由1', '理由2']);
+  });
+
+  it('受入が無ければ内訳を書かない', () => {
+    const text = formatAnswer({...answer, ukeire: [], ukeireTotal: 0});
+    expect(text).toContain('【受入】0枚');
+    expect(text).not.toContain('（）');
   });
 });

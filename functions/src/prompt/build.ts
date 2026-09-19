@@ -8,7 +8,7 @@
 
 import {formatMelds} from '../solver/hand.js';
 import {type Candidate} from '../solver/candidates.js';
-import {formatTile, formatTiles} from '../solver/tile.js';
+import {formatTile, formatTiles, type Tile} from '../solver/tile.js';
 import {type Situation} from '../situation.js';
 
 /**
@@ -82,4 +82,43 @@ function formatCandidate(candidate: Candidate): string {
     .join(' ');
   const detail = breakdown === '' ? '' : `（${breakdown}）`;
   return `${formatTile(candidate.discard)}: ${candidate.shanten}シャンテン 受入${candidate.ukeireTotal}枚${detail}`;
+}
+
+export type AnswerParts = {
+  readonly discard: Tile;
+  readonly shanten: number;
+  readonly ukeire: readonly {readonly tile: Tile; readonly count: number}[];
+  readonly ukeireTotal: number;
+  readonly reason: string;
+  readonly avoid: readonly {readonly discard: Tile; readonly reason: string}[];
+};
+
+/**
+ * 回答を出力フォーマットに整形する（design doc §6.6）。
+ *
+ * 学習データ（DPO）の preferred / dispreferred 双方をこの関数で作る。
+ * 推論時のモデル出力と同じ形になっていなければチューニングの効果が出ない
+ * ため、parse.ts で読み戻せることをテストで担保している。
+ */
+export function formatAnswer(answer: AnswerParts): string {
+  const breakdown = answer.ukeire
+    .map(({tile, count}) => `${formatTile(tile)}:${count}`)
+    .join(' ');
+  const lines = [
+    `【推奨打牌】${formatTile(answer.discard)}`,
+    `【シャンテン数】${answer.shanten}シャンテン`,
+    `【受入】${answer.ukeireTotal}枚${breakdown === '' ? '' : `（${breakdown}）`}`,
+    '【理由】',
+    answer.reason,
+  ];
+
+  for (const avoided of answer.avoid) {
+    lines.push(
+      '',
+      `【避けるべき打牌】${formatTile(avoided.discard)}`,
+      '【避けるべき理由】',
+      avoided.reason,
+    );
+  }
+  return lines.join('\n');
 }
