@@ -40,6 +40,7 @@
 | `functions/src/api/` | HTTPハンドラ・入力バリデーション | |
 | `functions/src/prompt/` | プロンプト構築・LLM出力のパース | |
 | `functions/src/vertex/` | Vertex AI クライアント | |
+| `functions/src/data/` | 問題マスタのスキーマ・悪手の抽出・学習データ生成 | |
 | `functions/src/eval/` | 評価ハーネス（精度測定CLI） | |
 | `data/problems/` | 何切る問題マスタ（1問1 JSON）。**正本なのでコミットする** | |
 | `data/build/` | JSONL等の生成物 | gitignore |
