@@ -20,6 +20,7 @@
 
 | 状況 | 参照先 |
 | --- | --- |
+| **作業の再開・現状把握・残タスク** | [HANDOFF.md](./HANDOFF.md) |
 | 機能・仕様・技術スタック | [README.md](./README.md) |
 | 何切るAIの設計（入出力仕様・データ形式・評価設計・フェーズ） | [nanikiru-ai-design-doc.md](./nanikiru-ai-design-doc.md) |
 | 実装作業（開発サイクル、TDDの手順、テストの配置） | [DEVELOPMENT.md](./DEVELOPMENT.md)「開発サイクル」「テスト」 |
