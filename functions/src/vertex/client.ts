@@ -12,6 +12,13 @@ import {type ModelClient} from '../api/nanikiru.js';
 const DEFAULT_ATTEMPTS = 3;
 /** 再試行の待ち時間の基準。試行ごとに倍にする */
 const DEFAULT_RETRY_DELAY_MS = 1000;
+/**
+ * 1回の呼び出しの制限時間。
+ *
+ * fetch には既定のタイムアウトが無く、接続が死んでも例外が飛ばずに
+ * 永久に待ち続けることがある（実際にベースライン測定が43分ハングした）。
+ */
+const DEFAULT_TIMEOUT_MS = 180_000;
 
 /** チューニング済みモデルが未指定のときに使う素のモデル */
 export const MODEL_FALLBACK = 'gemini-2.5-flash';
@@ -30,7 +37,11 @@ export type GenerateContentSdk = {
     generateContent(params: {
       model: string;
       contents: string;
-      config?: {systemInstruction?: string; temperature?: number};
+      config?: {
+      systemInstruction?: string;
+      temperature?: number;
+      abortSignal?: AbortSignal;
+    };
     }): Promise<{text?: string | undefined}>;
   };
 };
@@ -55,6 +66,8 @@ export function resolveModelConfig(
 export type RetryOptions = {
   readonly attempts?: number;
   readonly delayMs?: number;
+  /** 1回の呼び出しの制限時間 */
+  readonly timeoutMs?: number;
 };
 
 /**
@@ -70,13 +83,20 @@ export function createModelClient(
 ): ModelClient {
   const attempts = retry.attempts ?? DEFAULT_ATTEMPTS;
   const delayMs = retry.delayMs ?? DEFAULT_RETRY_DELAY_MS;
+  const timeoutMs = retry.timeoutMs ?? DEFAULT_TIMEOUT_MS;
 
   return {
     async generate(systemInstruction, userPrompt) {
       let lastError: unknown;
       for (let attempt = 0; attempt < attempts; attempt++) {
         try {
-          return await callOnce(sdk, config, systemInstruction, userPrompt);
+          return await callOnce(
+            sdk,
+            config,
+            systemInstruction,
+            userPrompt,
+            timeoutMs,
+          );
         } catch (error) {
           if (!isTransient(error)) {
             throw error;
@@ -99,6 +119,7 @@ async function callOnce(
   config: ModelConfig,
   systemInstruction: string,
   userPrompt: string,
+  timeoutMs: number,
 ): Promise<string> {
   const response = await sdk.models.generateContent({
     model: config.model,
@@ -107,6 +128,7 @@ async function callOnce(
       systemInstruction,
       // 同じ局面には同じ答えを返してほしいため、揺らぎを抑える
       temperature: 0,
+      abortSignal: AbortSignal.timeout(timeoutMs),
     },
   });
   if (response.text === undefined || response.text === '') {
@@ -130,6 +152,9 @@ function isTransient(error: unknown): boolean {
   }
   const text = describe(error).toLowerCase();
   return [
+    'aborted',
+    'timeouterror',
+    'the operation was aborted',
     'econnreset',
     'etimedout',
     'econnrefused',

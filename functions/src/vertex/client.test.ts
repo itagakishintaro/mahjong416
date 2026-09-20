@@ -134,3 +134,42 @@ describe('createModelClient: 一時的な失敗の再試行', () => {
     expect(sdk.models.generateContent).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('createModelClient: タイムアウト', () => {
+  const config = {project: 'mahjong416', location: 'us-central1', model: 'gemini-2.5-flash'};
+  type Params = Parameters<GenerateContentSdk['models']['generateContent']>[0];
+
+  it('制限時間つきの AbortSignal を渡す', async () => {
+    const sdk = {
+      models: {
+        generateContent: vi.fn(async (_params: Params) => ({text: 'ok'})),
+      },
+    };
+    await createModelClient(config, sdk).generate('s', 'u');
+    const [params] = vi.mocked(sdk.models.generateContent).mock.calls[0]!;
+    expect(params.config?.abortSignal).toBeInstanceOf(AbortSignal);
+  });
+
+  it('応答が返らない場合は中断して再試行する', async () => {
+    let calls = 0;
+    const sdk = {
+      models: {
+        generateContent: vi.fn(async (params: Params) => {
+          calls += 1;
+          if (calls === 1) {
+            // 応答せず、中断されるまで待つ
+            return await new Promise<{text?: string}>((_resolve, reject) => {
+              params.config?.abortSignal?.addEventListener('abort', () => {
+                reject(new Error('The operation was aborted'));
+              });
+            });
+          }
+          return {text: '【推奨打牌】9m'};
+        }),
+      },
+    };
+    const client = createModelClient(config, sdk, {delayMs: 0, timeoutMs: 20});
+    expect(await client.generate('s', 'u')).toBe('【推奨打牌】9m');
+    expect(sdk.models.generateContent).toHaveBeenCalledTimes(2);
+  });
+});
