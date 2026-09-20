@@ -182,3 +182,30 @@ describe('withSolver: false（ベースライン測定用）', () => {
     expect(text).toContain('【推奨打牌】');
   });
 });
+
+describe('buildUserPrompt: ドラ枚数', () => {
+  it('打牌後に残るドラの枚数を添える', () => {
+    // ドラ5s、ツモ5s。5sを切ればドラ0枚、他を切ればドラ1枚
+    const text = prompt();
+    expect(text).toContain('5s: 0シャンテン 受入4枚（3p:4） ドラ0枚');
+    expect(text).toMatch(/1p: 1シャンテン 受入\d+枚（[^）]*） ドラ1枚/);
+  });
+
+  it('赤ドラを含めて数える', () => {
+    const text = prompt({
+      ...INPUT,
+      dora: ['9p'],
+      hand: ['1m', '2m', '3m', '4m', '赤5m', '6m', '7m', '8m', '9m', '東', '東', '1p', '2p'],
+      draw: '5s',
+    });
+    expect(text).toContain('ドラ1枚');
+  });
+
+  it('システム指示でドラ枚数が与えられることを伝える', () => {
+    expect(buildSystemInstruction()).toContain('ドラ枚数');
+  });
+
+  it('役と翻数は与えられないと明示する', () => {
+    expect(buildSystemInstruction()).toContain('役の有無と翻数は与えられない');
+  });
+});

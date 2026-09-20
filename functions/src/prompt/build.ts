@@ -6,7 +6,8 @@
  * （nanikiru-ai-design-doc.md §1.1, §4.1）。
  */
 
-import {formatMelds} from '../solver/hand.js';
+import {allTiles, formatMelds} from '../solver/hand.js';
+import {countDora, doraValue} from '../solver/dora.js';
 import {type Candidate} from '../solver/candidates.js';
 import {formatTile, formatTiles, type Tile} from '../solver/tile.js';
 import {type Situation} from '../situation.js';
@@ -22,9 +23,11 @@ export function buildSystemInstruction(options: PromptOptions = {}): string {
   const givens = withSolver
     ? [
         '- 局・自風・巡目・ドラ・手牌・ツモ牌・副露',
-        '- 打牌候補ごとのシャンテン数と受け入れ枚数（計算済み。必ず正しい）',
+        '- 打牌候補ごとのシャンテン数・受け入れ枚数・打牌後のドラ枚数',
+        '  （計算済み。必ず正しい。ドラ枚数は赤ドラを含む）',
         '',
         '計算済みの数値は検算せず、そのまま使うこと。',
+        '役の有無と翻数は与えられないので、必要なら自分で判断すること。',
         '牌効率だけで決まらない部分（打点と速度の兼ね合い、字牌の価値、',
         'ドラの扱い）を判断し、その理由を述べること。',
       ]
@@ -90,21 +93,28 @@ export function buildUserPrompt(
   }
 
   if (options.withSolver ?? true) {
+    const totalDora = countDora(allTiles(situation.hand), situation.dora);
     lines.push('', '【打牌候補（計算済み）】');
     for (const candidate of candidates) {
-      lines.push(formatCandidate(candidate));
+      const dora = totalDora - doraValue(candidate.discard, situation.dora);
+      lines.push(formatCandidate(candidate, dora));
     }
   }
   return lines.join('\n');
 }
 
-/** 例: 5s: 0シャンテン 受入4枚（3p:4） */
-function formatCandidate(candidate: Candidate): string {
+/**
+ * 例: 5s: 0シャンテン 受入4枚（3p:4） ドラ0枚
+ *
+ * ドラ枚数はその打牌をした後に手元に残る枚数。打点判断の根拠になるため、
+ * モデルに数えさせずソルバーの計算値を渡す。
+ */
+function formatCandidate(candidate: Candidate, dora: number): string {
   const breakdown = candidate.ukeire
     .map(({tile, count}) => `${formatTile(tile)}:${count}`)
     .join(' ');
   const detail = breakdown === '' ? '' : `（${breakdown}）`;
-  return `${formatTile(candidate.discard)}: ${candidate.shanten}シャンテン 受入${candidate.ukeireTotal}枚${detail}`;
+  return `${formatTile(candidate.discard)}: ${candidate.shanten}シャンテン 受入${candidate.ukeireTotal}枚${detail} ドラ${dora}枚`;
 }
 
 export type AnswerParts = {

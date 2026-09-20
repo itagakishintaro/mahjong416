@@ -174,7 +174,7 @@ function validateTileCounts(hand: Hand): void {
 }
 
 /** 手牌・ツモ牌・副露のすべての牌 */
-function allTiles(hand: Hand): Tile[] {
+export function allTiles(hand: Hand): Tile[] {
   const tiles = [...hand.tiles, ...hand.melds.flatMap((meld) => [...meld.tiles])];
   if (hand.draw !== undefined) {
     tiles.push(hand.draw);
