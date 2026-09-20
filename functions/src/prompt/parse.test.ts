@@ -30,37 +30,27 @@ describe('parseModelResponse', () => {
     );
   });
 
-  it('避けるべき打牌と理由を対にして取り出す', () => {
+  it('仕様外の節（避けるべき打牌など）は無視する', () => {
+    // 出力仕様からは外れたが、モデルが書いてきても壊れないこと
     const parsed = parseModelResponse(FULL);
-    expect(parsed.avoid).toHaveLength(1);
-    expect(formatTile(parsed.avoid[0]!.discard)).toBe('白');
-    expect(parsed.avoid[0]!.reason).toContain('役牌として使える');
+    expect(formatTile(parsed.discard)).toBe('9m');
+    expect(parsed.reason).not.toContain('役牌として使える');
   });
 });
 
 describe('parseModelResponse: 揺らぎへの耐性', () => {
-  it('避けるべき打牌が無くても解釈できる', () => {
+  it('最小の応答を解釈できる', () => {
     const parsed = parseModelResponse('【推奨打牌】1m\n【理由】\n浮いているため。');
     expect(formatTile(parsed.discard)).toBe('1m');
-    expect(parsed.avoid).toEqual([]);
+    expect(parsed.reason).toBe('浮いているため。');
   });
 
-  it('避けるべき打牌が複数あっても対にできる', () => {
+  it('知らない見出しがあっても推奨打牌を読み取れる', () => {
     const parsed = parseModelResponse(
-      [
-        '【推奨打牌】1m',
-        '【理由】',
-        '浮いているため。',
-        '【避けるべき打牌】東',
-        '【避けるべき理由】',
-        '自風のため。',
-        '【避けるべき打牌】白',
-        '【避けるべき理由】',
-        '役牌のため。',
-      ].join('\n'),
+      ['【推奨打牌】1m', '【補足】', 'なにか。', '【理由】', '浮いているため。'].join('\n'),
     );
-    expect(parsed.avoid.map(({discard}) => formatTile(discard))).toEqual(['東', '白']);
-    expect(parsed.avoid[1]!.reason).toBe('役牌のため。');
+    expect(formatTile(parsed.discard)).toBe('1m');
+    expect(parsed.reason).toBe('浮いているため。');
   });
 
   it('赤ドラを推奨打牌にできる', () => {

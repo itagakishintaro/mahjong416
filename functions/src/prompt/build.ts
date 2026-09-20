@@ -42,10 +42,6 @@ export function buildSystemInstruction(): string {
     '【理由】',
     '<推奨打牌を選ぶ根拠>',
     '',
-    '【避けるべき打牌】<牌>',
-    '【避けるべき理由】',
-    '<その打牌が誤りである理由>',
-    '',
     '推奨打牌は必ず手牌またはツモ牌にある牌から選ぶこと。',
     'シャンテン数と受入は、与えられた打牌候補の数値をそのまま書くこと。',
   ].join('\n');
@@ -90,7 +86,6 @@ export type AnswerParts = {
   readonly ukeire: readonly {readonly tile: Tile; readonly count: number}[];
   readonly ukeireTotal: number;
   readonly reason: string;
-  readonly avoid: readonly {readonly discard: Tile; readonly reason: string}[];
 };
 
 /**
@@ -104,21 +99,11 @@ export function formatAnswer(answer: AnswerParts): string {
   const breakdown = answer.ukeire
     .map(({tile, count}) => `${formatTile(tile)}:${count}`)
     .join(' ');
-  const lines = [
+  return [
     `【推奨打牌】${formatTile(answer.discard)}`,
     `【シャンテン数】${answer.shanten}シャンテン`,
     `【受入】${answer.ukeireTotal}枚${breakdown === '' ? '' : `（${breakdown}）`}`,
     '【理由】',
     answer.reason,
-  ];
-
-  for (const avoided of answer.avoid) {
-    lines.push(
-      '',
-      `【避けるべき打牌】${formatTile(avoided.discard)}`,
-      '【避けるべき理由】',
-      avoided.reason,
-    );
-  }
-  return lines.join('\n');
+  ].join('\n');
 }

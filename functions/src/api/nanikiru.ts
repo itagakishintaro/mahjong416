@@ -82,6 +82,5 @@ function solverOnlyResponse(candidates: readonly Candidate[]): ModelResponse {
     shanten: undefined,
     ukeireTotal: undefined,
     reason: '',
-    avoid: [],
   };
 }

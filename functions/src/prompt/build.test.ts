@@ -111,13 +111,13 @@ describe('buildSystemInstruction', () => {
     expect(text).toContain('【シャンテン数】');
     expect(text).toContain('【受入】');
     expect(text).toContain('【理由】');
-    expect(text).toContain('【避けるべき打牌】');
-    expect(text).toContain('【避けるべき理由】');
   });
 
-  it('次善手は出力させない', () => {
-    // 次善手はソルバーから機械的に付加するため、モデルには書かせない
-    expect(buildSystemInstruction()).not.toContain('【次善手】');
+  it('次善手と避けるべき打牌は出力させない', () => {
+    // 次善手はソルバーから機械的に付加し、避けるべき打牌は出力仕様から外した
+    const text = buildSystemInstruction();
+    expect(text).not.toContain('【次善手】');
+    expect(text).not.toContain('【避けるべき打牌】');
   });
 });
 
@@ -131,7 +131,6 @@ describe('formatAnswer', () => {
     ],
     ukeireTotal: 5,
     reason: '9mは孤立牌のため。\n東は自風で価値がある。',
-    avoid: [{discard: parseTile('東'), reason: '自風を軽視している。'}],
   };
 
   it('出力フォーマットどおりに整形する', () => {
@@ -143,10 +142,6 @@ describe('formatAnswer', () => {
         '【理由】',
         '9mは孤立牌のため。',
         '東は自風で価値がある。',
-        '',
-        '【避けるべき打牌】東',
-        '【避けるべき理由】',
-        '自風を軽視している。',
       ].join('\n'),
     );
   });
@@ -157,26 +152,10 @@ describe('formatAnswer', () => {
     expect(parsed.shanten).toBe(1);
     expect(parsed.ukeireTotal).toBe(5);
     expect(parsed.reason).toBe(answer.reason);
-    expect(parsed.avoid).toHaveLength(1);
-    expect(formatTile(parsed.avoid[0]!.discard)).toBe('東');
-    expect(parsed.avoid[0]!.reason).toBe('自風を軽視している。');
   });
 
-  it('避けるべき打牌が無ければその節を書かない', () => {
-    const text = formatAnswer({...answer, avoid: []});
-    expect(text).not.toContain('【避けるべき打牌】');
-    expect(parseModelResponse(text).avoid).toEqual([]);
-  });
-
-  it('避けるべき打牌が複数あれば並べる', () => {
-    const text = formatAnswer({
-      ...answer,
-      avoid: [
-        {discard: parseTile('東'), reason: '理由1'},
-        {discard: parseTile('1p'), reason: '理由2'},
-      ],
-    });
-    expect(parseModelResponse(text).avoid.map(({reason}) => reason)).toEqual(['理由1', '理由2']);
+  it('避けるべき打牌の節は書かない', () => {
+    expect(formatAnswer(answer)).not.toContain('【避けるべき打牌】');
   });
 
   it('受入が無ければ内訳を書かない', () => {

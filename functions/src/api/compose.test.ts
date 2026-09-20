@@ -116,21 +116,6 @@ describe('composeResponse: 次善手', () => {
   });
 });
 
-describe('composeResponse: 避けるべき打牌', () => {
-  it('モデルが挙げた打牌と理由を返す', () => {
-    const result = response(MODEL);
-    expect(result.avoid).toEqual([{discard: '白', reason: '役牌のため。'}]);
-  });
-
-  it('手牌に無い牌は除外して警告を残す', () => {
-    const result = response(
-      '【推奨打牌】9m\n【理由】\n理由。\n【避けるべき打牌】5s\n【避けるべき理由】\nなし。',
-    );
-    expect(result.avoid).toEqual([]);
-    expect(result.warnings.join()).toContain('5s');
-  });
-});
-
 describe('composeResponse: ソルバーの計算結果', () => {
   it('全候補をそのまま返す', () => {
     const result = response(MODEL);

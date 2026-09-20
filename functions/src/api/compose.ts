@@ -34,10 +34,6 @@ export type NanikiruResponse = {
     /** 牌効率の差分を述べる定型コメント。自然文の理由ではない */
     readonly note: string;
   }[];
-  readonly avoid: readonly {
-    readonly discard: string;
-    readonly reason: string;
-  }[];
   readonly solver: {
     readonly candidates: readonly {
       readonly discard: string;
@@ -69,7 +65,6 @@ export function composeResponse(
       reason: model.reason,
     },
     alternatives: selectAlternatives(candidates, recommended),
-    avoid: collectAvoid(candidates, model, warnings),
     solver: {
       candidates: candidates.map((candidate) => ({
         discard: formatTile(candidate.discard),
@@ -151,29 +146,6 @@ function buildNote(candidate: Candidate, recommended: Candidate): string {
     return `推奨打牌と同じ${recommended.shanten}シャンテンで、受入も同じ`;
   }
   return `推奨打牌と同じ${recommended.shanten}シャンテンだが、受入が${difference}枚少ない`;
-}
-
-/** モデルが挙げた避けるべき打牌のうち、実際に手牌にあるものだけを残す */
-function collectAvoid(
-  candidates: readonly Candidate[],
-  model: ModelResponse,
-  warnings: string[],
-): NanikiruResponse['avoid'] {
-  const avoid: {discard: string; reason: string}[] = [];
-  for (const entry of model.avoid) {
-    const notation = formatTile(entry.discard);
-    const exists = candidates.some(
-      (candidate) => formatTile(candidate.discard) === notation,
-    );
-    if (!exists) {
-      warnings.push(
-        `避けるべき打牌「${notation}」は手牌にないため除外しました`,
-      );
-      continue;
-    }
-    avoid.push({discard: notation, reason: entry.reason});
-  }
-  return avoid;
 }
 
 function toUkeireDto(candidate: Candidate): UkeireDto {

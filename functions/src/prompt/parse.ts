@@ -6,14 +6,12 @@
  *
  * シャンテン数・受入枚数はモデルの申告値であり、API層でソルバーの値に
  * 上書きする（§8.5）。ここでは読み取るだけで検証しない。
+ *
+ * 出力は推奨打牌と理由のみで、「避けるべき打牌」は扱わない（§3.4）。
+ * 未知の見出しは無視するため、モデルが余分な節を書いても壊れない。
  */
 
 import {InvalidTileError, parseTile, type Tile} from '../solver/tile.js';
-
-export type AvoidedDiscard = {
-  readonly discard: Tile;
-  readonly reason: string;
-};
 
 export type ModelResponse = {
   readonly discard: Tile;
@@ -22,7 +20,6 @@ export type ModelResponse = {
   /** モデルが申告した受入枚数。書かれていなければ undefined */
   readonly ukeireTotal: number | undefined;
   readonly reason: string;
-  readonly avoid: readonly AvoidedDiscard[];
 };
 
 export class ResponseParseError extends Error {
@@ -56,7 +53,6 @@ export function parseModelResponse(text: string): ModelResponse {
     shanten: parseShanten(sections.find((s) => s.name === 'シャンテン数')),
     ukeireTotal: parseUkeireTotal(sections.find((s) => s.name === '受入')),
     reason: sections.find((s) => s.name === '理由')?.body ?? '',
-    avoid: collectAvoided(sections),
   };
 }
 
@@ -110,21 +106,4 @@ function parseShanten(section: Section | undefined): number | undefined {
 function parseUkeireTotal(section: Section | undefined): number | undefined {
   const matched = /(\d+)\s*枚/.exec(section?.inline ?? '');
   return matched === null ? undefined : Number(matched[1]);
-}
-
-/**
- * 【避けるべき打牌】と【避けるべき理由】を出現順に対にする。
- * 理由が無い打牌も、打牌だけを持つものとして拾う。
- */
-function collectAvoided(sections: readonly Section[]): AvoidedDiscard[] {
-  const avoided: AvoidedDiscard[] = [];
-  for (const [index, section] of sections.entries()) {
-    if (section.name !== '避けるべき打牌') {
-      continue;
-    }
-    const next = sections[index + 1];
-    const reason = next?.name === '避けるべき理由' ? next.body : '';
-    avoided.push({discard: toTile(section.inline), reason});
-  }
-  return avoided;
 }
