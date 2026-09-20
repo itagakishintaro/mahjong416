@@ -8,6 +8,11 @@
 import {GoogleGenAI} from '@google/genai';
 import {type ModelClient} from '../api/nanikiru.js';
 
+/** 一時的な失敗に対する試行回数（初回を含む） */
+const DEFAULT_ATTEMPTS = 3;
+/** 再試行の待ち時間の基準。試行ごとに倍にする */
+const DEFAULT_RETRY_DELAY_MS = 1000;
+
 /** チューニング済みモデルが未指定のときに使う素のモデル */
 export const MODEL_FALLBACK = 'gemini-2.5-flash';
 const DEFAULT_LOCATION = 'us-central1';
@@ -47,28 +52,113 @@ export function resolveModelConfig(
   };
 }
 
-/** Vertex AI を呼ぶ ModelClient を作る */
+export type RetryOptions = {
+  readonly attempts?: number;
+  readonly delayMs?: number;
+};
+
+/**
+ * Vertex AI を呼ぶ ModelClient を作る。
+ *
+ * 通信の一時的な失敗（ECONNRESET など）で評価の実行全体が落ちないよう、
+ * 短い間隔で再試行する。
+ */
 export function createModelClient(
   config: ModelConfig,
   sdk: GenerateContentSdk = createSdk(config),
+  retry: RetryOptions = {},
 ): ModelClient {
+  const attempts = retry.attempts ?? DEFAULT_ATTEMPTS;
+  const delayMs = retry.delayMs ?? DEFAULT_RETRY_DELAY_MS;
+
   return {
     async generate(systemInstruction, userPrompt) {
-      const response = await sdk.models.generateContent({
-        model: config.model,
-        contents: userPrompt,
-        config: {
-          systemInstruction,
-          // 同じ局面には同じ答えを返してほしいため、揺らぎを抑える
-          temperature: 0,
-        },
-      });
-      if (response.text === undefined || response.text === '') {
-        throw new Error('モデルから応答が返りませんでした');
+      let lastError: unknown;
+      for (let attempt = 0; attempt < attempts; attempt++) {
+        try {
+          return await callOnce(sdk, config, systemInstruction, userPrompt);
+        } catch (error) {
+          if (!isTransient(error)) {
+            throw error;
+          }
+          lastError = error;
+          if (attempt < attempts - 1) {
+            await delay(delayMs * 2 ** attempt);
+          }
+        }
       }
-      return response.text;
+      throw new Error(
+        `Vertex AI の呼び出しに${attempts}回失敗しました: ${describe(lastError)}`,
+      );
     },
   };
+}
+
+async function callOnce(
+  sdk: GenerateContentSdk,
+  config: ModelConfig,
+  systemInstruction: string,
+  userPrompt: string,
+): Promise<string> {
+  const response = await sdk.models.generateContent({
+    model: config.model,
+    contents: userPrompt,
+    config: {
+      systemInstruction,
+      // 同じ局面には同じ答えを返してほしいため、揺らぎを抑える
+      temperature: 0,
+    },
+  });
+  if (response.text === undefined || response.text === '') {
+    throw new EmptyResponseError();
+  }
+  return response.text;
+}
+
+/** 応答が空。一時的な失敗として再試行する */
+class EmptyResponseError extends Error {
+  constructor() {
+    super('モデルから応答が返りませんでした');
+    this.name = 'EmptyResponseError';
+  }
+}
+
+/** 通信の一時的な失敗か。恒久的な失敗（認証・不正な引数）は再試行しない */
+function isTransient(error: unknown): boolean {
+  if (error instanceof EmptyResponseError) {
+    return true;
+  }
+  const text = describe(error).toLowerCase();
+  return [
+    'econnreset',
+    'etimedout',
+    'econnrefused',
+    'eai_again',
+    'fetch failed',
+    'socket hang up',
+    'unavailable',
+    'deadline',
+    'resource_exhausted',
+    'too many requests',
+    'internal error',
+    '429',
+    '500',
+    '502',
+    '503',
+    '504',
+  ].some((marker) => text.includes(marker));
+}
+
+function describe(error: unknown): string {
+  if (error instanceof Error) {
+    const cause = error.cause === undefined ? '' : ` / ${String(error.cause)}`;
+    return `${error.message}${cause}`;
+  }
+  return String(error);
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function createSdk(config: ModelConfig): GenerateContentSdk {

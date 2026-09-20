@@ -97,10 +97,22 @@ async function main(): Promise<void> {
   console.log();
 
   const evaluations: Evaluation[] = [];
+  const failures: {problemId: string; reason: string}[] = [];
   for (const problem of problems) {
-    const response = await runNanikiruForSituation(problem.situation, client, {
-      withSolver: options.withSolver,
-    });
+    let response;
+    try {
+      response = await runNanikiruForSituation(problem.situation, client, {
+        withSolver: options.withSolver,
+      });
+    } catch (error) {
+      // 1問の失敗で測定全体を失わない
+      failures.push({
+        problemId: problem.id,
+        reason: error instanceof Error ? error.message : String(error),
+      });
+      process.stdout.write('x');
+      continue;
+    }
     evaluations.push({
       problemId: problem.id,
       expected: formatTile(problem.answer.discard),
@@ -123,7 +135,19 @@ async function main(): Promise<void> {
   }
   console.log('\n');
 
+  if (failures.length > 0) {
+    console.log(`## 失敗（${failures.length}件・指標から除外）`);
+    for (const failure of failures) {
+      console.log(`- ${failure.problemId}: ${failure.reason}`);
+    }
+    console.log();
+  }
+
   const metrics = summarize(evaluations);
+  if (metrics.total === 0) {
+    console.log('測定できた問題がありません');
+    return;
+  }
   console.log(`厳格正解率:   ${percent(metrics.strictAccuracy)}（${metrics.total}問中）`);
   console.log(`準最善一致率: ${percent(metrics.nearBestRate)}`);
   console.log(`悪手回答率:   ${percent(metrics.badDiscardRate)}`);

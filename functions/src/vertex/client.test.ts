@@ -74,3 +74,63 @@ describe('createModelClient', () => {
     await expect(client.generate('s', 'u')).rejects.toThrow(/応答/);
   });
 });
+
+describe('createModelClient: 一時的な失敗の再試行', () => {
+  const config = {project: 'mahjong416', location: 'us-central1', model: 'gemini-2.5-flash'};
+  type Params = Parameters<GenerateContentSdk['models']['generateContent']>[0];
+
+  /** 指定回数だけ失敗してから成功するSDK */
+  function flakySdk(failures: number, error: unknown) {
+    let calls = 0;
+    return {
+      models: {
+        generateContent: vi.fn(async (_params: Params) => {
+          calls += 1;
+          if (calls <= failures) {
+            throw error;
+          }
+          return {text: '【推奨打牌】9m'};
+        }),
+      },
+    };
+  }
+
+  const network = Object.assign(new TypeError('fetch failed'), {
+    cause: new Error('read ECONNRESET'),
+  });
+
+  it('通信エラーなら再試行して成功を返す', async () => {
+    const sdk = flakySdk(2, network);
+    const client = createModelClient(config, sdk, {delayMs: 0});
+    expect(await client.generate('s', 'u')).toBe('【推奨打牌】9m');
+    expect(sdk.models.generateContent).toHaveBeenCalledTimes(3);
+  });
+
+  it('試行回数を使い切れば失敗する', async () => {
+    const sdk = flakySdk(99, network);
+    const client = createModelClient(config, sdk, {attempts: 2, delayMs: 0});
+    await expect(client.generate('s', 'u')).rejects.toThrow(/2回失敗/);
+    expect(sdk.models.generateContent).toHaveBeenCalledTimes(2);
+  });
+
+  it('応答が空でも再試行する', async () => {
+    let calls = 0;
+    const sdk = {
+      models: {
+        generateContent: vi.fn(async (_params: Params) => {
+          calls += 1;
+          return calls === 1 ? {text: undefined} : {text: '【推奨打牌】1m'};
+        }),
+      },
+    };
+    const client = createModelClient(config, sdk, {delayMs: 0});
+    expect(await client.generate('s', 'u')).toBe('【推奨打牌】1m');
+  });
+
+  it('恒久的な失敗は再試行しない', async () => {
+    const sdk = flakySdk(99, new Error('PERMISSION_DENIED: 権限がありません'));
+    const client = createModelClient(config, sdk, {delayMs: 0});
+    await expect(client.generate('s', 'u')).rejects.toThrow(/PERMISSION_DENIED/);
+    expect(sdk.models.generateContent).toHaveBeenCalledTimes(1);
+  });
+});
