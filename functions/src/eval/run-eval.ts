@@ -7,6 +7,7 @@
  *   npm run eval -- --split train     # 対象の split を変える（既定: test）
  *   npm run eval -- --limit 5         # 件数を絞る（お試し用）
  *   npm run eval -- --dir <path>      # 問題ディレクトリを変える（動作確認用）
+ *   npm run eval -- --verbose         # 1問ごとに理由を表示する（誤答の調査用）
  *
  * 1→2 の差がソルバー導入の効果、2→3 の差がチューニングの効果になる
  * （nanikiru-ai-design-doc.md §7.4）。
@@ -30,6 +31,7 @@ type Options = {
   readonly withSolver: boolean;
   readonly model: string | undefined;
   readonly limit: number | undefined;
+  readonly verbose: boolean;
 };
 
 function parseArgs(argv: readonly string[]): Options {
@@ -43,6 +45,7 @@ function parseArgs(argv: readonly string[]): Options {
     dir: value('--dir') ?? PROBLEMS_DIR,
     split,
     withSolver: !argv.includes('--no-solver'),
+    verbose: argv.includes('--verbose'),
     model: value('--model'),
     limit: limit === undefined ? undefined : Number(limit),
   };
@@ -106,7 +109,17 @@ async function main(): Promise<void> {
       nearBest: nearBestDiscards(evaluateCandidates(problem.situation.hand)),
       numbersConsistent: response.numbersConsistent,
     });
-    process.stdout.write('.');
+    if (options.verbose) {
+      const mark = response.recommended.discard === formatTile(problem.answer.discard) ? 'OK' : 'NG';
+      console.log(`--- ${problem.id} [${mark}] 正解 ${formatTile(problem.answer.discard)} / 回答 ${response.recommended.discard}`);
+      console.log(`    ${response.recommended.shanten}シャンテン 受入${response.recommended.ukeire.total}枚`);
+      console.log(response.recommended.reason.replace(/^/gm, '    '));
+      if (response.warnings.length > 0) {
+        console.log(`    [補正] ${response.warnings.join(' / ')}`);
+      }
+    } else {
+      process.stdout.write('.');
+    }
   }
   console.log('\n');
 
