@@ -6,6 +6,7 @@
  *   npm run eval -- --model <id>      # チューニング済みモデル
  *   npm run eval -- --split train     # 対象の split を変える（既定: test）
  *   npm run eval -- --limit 5         # 件数を絞る（お試し用）
+ *   npm run eval -- --dir <path>      # 問題ディレクトリを変える（動作確認用）
  *
  * 1→2 の差がソルバー導入の効果、2→3 の差がチューニングの効果になる
  * （nanikiru-ai-design-doc.md §7.4）。
@@ -24,6 +25,7 @@ const REPO_ROOT = path.resolve(import.meta.dirname, '../../..');
 const PROBLEMS_DIR = path.join(REPO_ROOT, 'data', 'problems');
 
 type Options = {
+  readonly dir: string;
   readonly split: Split;
   readonly withSolver: boolean;
   readonly model: string | undefined;
@@ -38,6 +40,7 @@ function parseArgs(argv: readonly string[]): Options {
   const split = (value('--split') ?? 'test') as Split;
   const limit = value('--limit');
   return {
+    dir: value('--dir') ?? PROBLEMS_DIR,
     split,
     withSolver: !argv.includes('--no-solver'),
     model: value('--model'),
@@ -45,16 +48,16 @@ function parseArgs(argv: readonly string[]): Options {
   };
 }
 
-async function loadProblems(split: Split): Promise<Problem[]> {
+async function loadProblems(directory: string, split: Split): Promise<Problem[]> {
   let entries: string[];
   try {
-    entries = await readdir(PROBLEMS_DIR);
+    entries = await readdir(directory);
   } catch {
     return [];
   }
   const problems: Problem[] = [];
   for (const file of entries.filter((name) => name.endsWith('.json')).sort()) {
-    const raw = await readFile(path.join(PROBLEMS_DIR, file), 'utf8');
+    const raw = await readFile(path.join(directory, file), 'utf8');
     const problem = parseProblem(JSON.parse(raw));
     if (problem.meta.split === split) {
       problems.push(problem);
@@ -69,7 +72,7 @@ function percent(rate: number): string {
 
 async function main(): Promise<void> {
   const options = parseArgs(process.argv.slice(2));
-  const problems = (await loadProblems(options.split)).slice(
+  const problems = (await loadProblems(options.dir, options.split)).slice(
     0,
     options.limit ?? Number.POSITIVE_INFINITY,
   );
