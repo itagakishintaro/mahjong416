@@ -164,3 +164,21 @@ describe('formatAnswer', () => {
     expect(text).not.toContain('（）');
   });
 });
+
+describe('withSolver: false（ベースライン測定用）', () => {
+  it('打牌候補を渡さない', () => {
+    const situation = parseSituation(INPUT);
+    const text = buildUserPrompt(situation, evaluateCandidates(situation.hand), {
+      withSolver: false,
+    });
+    expect(text).toContain('【手牌】');
+    expect(text).not.toContain('【打牌候補（計算済み）】');
+  });
+
+  it('システム指示から計算済みの前提を外す', () => {
+    const text = buildSystemInstruction({withSolver: false});
+    expect(text).not.toContain('計算済み');
+    expect(text).toContain('自分で数えること');
+    expect(text).toContain('【推奨打牌】');
+  });
+});

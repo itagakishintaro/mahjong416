@@ -11,7 +11,8 @@ import {composeResponse, type NanikiruResponse} from './compose.js';
 import {buildSystemInstruction, buildUserPrompt} from '../prompt/build.js';
 import {evaluateCandidates, type Candidate} from '../solver/candidates.js';
 import {parseModelResponse, ResponseParseError, type ModelResponse} from '../prompt/parse.js';
-import {parseSituation, type SituationInput} from '../situation.js';
+import {parseSituation, type Situation, type SituationInput} from '../situation.js';
+import {type PromptOptions} from '../prompt/build.js';
 
 /** モデルへの問い合わせ。Vertex AI の実装と差し替えられるようにする */
 export type ModelClient = {
@@ -21,16 +22,25 @@ export type ModelClient = {
 /** 出力の解釈に失敗したときの再試行回数（初回を含めて2回まで呼ぶ） */
 const MAX_ATTEMPTS = 2;
 
-/** 局面を受け取り、推奨打牌とその理由を返す */
+/** 入力を検証し、推奨打牌とその理由を返す */
 export async function runNanikiru(
   input: SituationInput,
   client: ModelClient,
+  options: PromptOptions = {},
 ): Promise<NanikiruResponse> {
-  const situation = parseSituation(input);
+  return runNanikiruForSituation(parseSituation(input), client, options);
+}
+
+/** 検証済みの局面から実行する。評価ハーネスはこちらを使う */
+export async function runNanikiruForSituation(
+  situation: Situation,
+  client: ModelClient,
+  options: PromptOptions = {},
+): Promise<NanikiruResponse> {
   const candidates = evaluateCandidates(situation.hand);
 
-  const systemInstruction = buildSystemInstruction();
-  const userPrompt = buildUserPrompt(situation, candidates);
+  const systemInstruction = buildSystemInstruction(options);
+  const userPrompt = buildUserPrompt(situation, candidates, options);
 
   const warnings: string[] = [];
   const model = await requestModel(client, systemInstruction, userPrompt, candidates, warnings);

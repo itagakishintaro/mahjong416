@@ -17,7 +17,23 @@ import {type Situation} from '../situation.js';
  * 学習データ（DPO）と推論時で同一のものを使う。ずれるとチューニングの
  * 効果が出ないため、ここを唯一の定義とする。
  */
-export function buildSystemInstruction(): string {
+export function buildSystemInstruction(options: PromptOptions = {}): string {
+  const withSolver = options.withSolver ?? true;
+  const givens = withSolver
+    ? [
+        '- 局・自風・巡目・ドラ・手牌・ツモ牌・副露',
+        '- 打牌候補ごとのシャンテン数と受け入れ枚数（計算済み。必ず正しい）',
+        '',
+        '計算済みの数値は検算せず、そのまま使うこと。',
+        '牌効率だけで決まらない部分（打点と速度の兼ね合い、字牌の価値、',
+        'ドラの扱い）を判断し、その理由を述べること。',
+      ]
+    : [
+        '- 局・自風・巡目・ドラ・手牌・ツモ牌・副露',
+        '',
+        'シャンテン数と受け入れ枚数は自分で数えること。',
+      ];
+
   return [
     'あなたは麻雀の何切る問題に答える打ち手です。',
     '',
@@ -26,12 +42,7 @@ export function buildSystemInstruction(): string {
     '- 捨て牌・点棒状況・他家の情報は与えられない。手牌と局面だけで判断する',
     '',
     '# 与えられる情報',
-    '- 局・自風・巡目・ドラ・手牌・ツモ牌・副露',
-    '- 打牌候補ごとのシャンテン数と受け入れ枚数（計算済み。必ず正しい）',
-    '',
-    '計算済みの数値は検算せず、そのまま使うこと。',
-    '牌効率だけで決まらない部分（打点と速度の兼ね合い、字牌の価値、',
-    'ドラの扱い）を判断し、その理由を述べること。',
+    ...givens,
     '',
     '# 出力フォーマット',
     '以下の形式で、この順序どおりに出力すること。',
@@ -43,14 +54,28 @@ export function buildSystemInstruction(): string {
     '<推奨打牌を選ぶ根拠>',
     '',
     '推奨打牌は必ず手牌またはツモ牌にある牌から選ぶこと。',
-    'シャンテン数と受入は、与えられた打牌候補の数値をそのまま書くこと。',
+    ...(withSolver
+      ? ['シャンテン数と受入は、与えられた打牌候補の数値をそのまま書くこと。']
+      : []),
   ].join('\n');
 }
+
+/**
+ * プロンプトの組み立て方。
+ *
+ * withSolver を false にすると、ソルバーの計算結果を与えない形になる。
+ * ベースライン測定で「計算結果を渡す効果」を切り分けるために使う
+ * （design doc §7.4）。
+ */
+export type PromptOptions = {
+  readonly withSolver?: boolean;
+};
 
 /** 局面と打牌候補から、モデルへの入力を組み立てる */
 export function buildUserPrompt(
   situation: Situation,
   candidates: readonly Candidate[],
+  options: PromptOptions = {},
 ): string {
   const lines = [
     `【局】${situation.round}`,
@@ -64,9 +89,11 @@ export function buildUserPrompt(
     lines.push(`【ツモ】${formatTile(situation.hand.draw)}`);
   }
 
-  lines.push('', '【打牌候補（計算済み）】');
-  for (const candidate of candidates) {
-    lines.push(formatCandidate(candidate));
+  if (options.withSolver ?? true) {
+    lines.push('', '【打牌候補（計算済み）】');
+    for (const candidate of candidates) {
+      lines.push(formatCandidate(candidate));
+    }
   }
   return lines.join('\n');
 }

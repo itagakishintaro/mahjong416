@@ -12,7 +12,8 @@
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
     "dataset": "npm run build && node lib/data/build-dataset.js",
-    "check": "npm run build --silent && node lib/data/check-problem.js"
+    "check": "npm run build --silent && node lib/data/check-problem.js",
+    "eval": "npm run build --silent && node lib/eval/run-eval.js"
   },
   "devDependencies": {
     "typescript": "~5.7.0",

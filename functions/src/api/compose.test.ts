@@ -60,6 +60,16 @@ describe('composeResponse: 推奨打牌', () => {
 
   it('数値が一致していれば警告を出さない', () => {
     expect(response(MODEL).warnings).toEqual([]);
+    expect(response(MODEL).numbersConsistent).toBe(true);
+  });
+
+  it('数値が食い違えば numbersConsistent が false になる', () => {
+    const result = response('【推奨打牌】9m\n【シャンテン数】0シャンテン\n【理由】\n理由。');
+    expect(result.numbersConsistent).toBe(false);
+  });
+
+  it('数値の申告が無ければ一致とみなす', () => {
+    expect(response('【推奨打牌】9m\n【理由】\n理由。').numbersConsistent).toBe(true);
   });
 });
 

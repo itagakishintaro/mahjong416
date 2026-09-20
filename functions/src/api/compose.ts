@@ -43,6 +43,11 @@ export type NanikiruResponse = {
   };
   /** モデル出力を補正した箇所。空なら補正なし */
   readonly warnings: readonly string[];
+  /**
+   * モデルが申告したシャンテン数・受入枚数がソルバーと一致していたか。
+   * 申告が無い場合は true。評価の「数値整合率」に使う（design doc §7.2）。
+   */
+  readonly numbersConsistent: boolean;
 };
 
 /**
@@ -56,6 +61,10 @@ export function composeResponse(
 ): NanikiruResponse {
   const warnings: string[] = [];
   const recommended = resolveRecommended(candidates, model, warnings);
+  const numbersConsistent =
+    (model.shanten === undefined || model.shanten === recommended.shanten) &&
+    (model.ukeireTotal === undefined ||
+      model.ukeireTotal === recommended.ukeireTotal);
 
   return {
     recommended: {
@@ -73,6 +82,7 @@ export function composeResponse(
       })),
     },
     warnings,
+    numbersConsistent,
   };
 }
 
