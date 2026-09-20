@@ -1,0 +1,18 @@
+{
+  "id": "0004",
+  "situation": {
+    "round": "東1局",
+    "seat": "東家",
+    "turn": 6,
+    "dora": ["西"],
+    "hand": ["2m","3m","8m","8m","4p","5p","5p","6p","7p","9p","5s","5s","6s"],
+    "draw": "1m",
+    "melds": []
+  },
+  "answer": {
+    "discard": "5s",
+    "reason": "筒子の4p5p5p6p7p9pは3p6p8p待ちのリャンメンカンチャン。ピンフになりやすい形に構えるため、索子から5sを払う。"
+  },
+  "rejected": [],
+  "meta": {"split": "train", "createdAt": "2026-09-20", "reviewed": true}
+}

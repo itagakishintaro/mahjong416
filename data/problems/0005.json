@@ -1,0 +1,18 @@
+{
+  "id": "0005",
+  "situation": {
+    "round": "東1局",
+    "seat": "東家",
+    "turn": 6,
+    "dora": ["西"],
+    "hand": ["2m","3m","8m","8m","4p","5p","5p","6p","7p","9p","5s","5s","6s"],
+    "draw": "4m",
+    "melds": []
+  },
+  "answer": {
+    "discard": "9p",
+    "reason": "筒子は3p6p8p待ちのリャンメンカンチャンだが、ピンフよりタンヤオのほうが打点が高い。9pを払ってピンフではなくタンヤオを確定させる。赤5sのポンなど、鳴きにも対応できる。"
+  },
+  "rejected": [],
+  "meta": {"split": "train", "createdAt": "2026-09-20", "reviewed": true}
+}
