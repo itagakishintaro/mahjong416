@@ -71,3 +71,30 @@ describe('buildProblemReport', () => {
     expect(situation).toContain('【手牌】');
   });
 });
+
+describe('buildProblemReport: 受入が同数の打牌が複数ある場合', () => {
+  it('並び順で先頭でなくても最良手と同等とみなす', () => {
+    // 1s切りと2s切りはシャンテン数・受入枚数が同じ
+    const result = buildProblemReport(
+      parseProblem({
+        id: '0002',
+        situation: {
+          round: '東1局',
+          seat: '西家',
+          turn: 7,
+          dora: ['南'],
+          hand: ['6p', '7p', '7p', '8p', '1s', '1s', '2s', '2s', '3s', '4s', '5s', '中', '中'],
+          draw: '赤5p',
+          melds: [],
+        },
+        answer: {discard: '2s', reason: '理由'},
+        rejected: [],
+        meta: {split: 'train', createdAt: '2026-09-20', reviewed: false},
+      }),
+    );
+    expect(result.best.discard).toBe('1s');
+    expect(result.answer.discard).toBe('2s');
+    expect(result.answer.ukeireTotal).toBe(result.best.ukeireTotal);
+    expect(result.answerIsBest).toBe(true);
+  });
+});

@@ -42,11 +42,23 @@ async function main(): Promise<void> {
   console.log('## 検証');
   console.log(`正解: ${line(report.answer)}`);
   console.log(`最良: ${line(report.best)}`);
-  console.log(
-    report.answerIsBest
-      ? '正解はソルバー上の最良手と一致します'
-      : '正解はソルバー上の最良手ではありません（打点や場況の判断が理由として必要です）',
-  );
+  if (report.answerIsBest) {
+    const tied = report.candidates.filter(
+      (candidate) =>
+        candidate.discard !== report.answer.discard &&
+        candidate.shanten === report.answer.shanten &&
+        candidate.ukeireTotal === report.answer.ukeireTotal,
+    );
+    console.log(
+      tied.length === 0
+        ? '正解はソルバー上の最良手と一致します'
+        : `正解は最良手と同等です（同じ受入の打牌: ${tied.map(({discard}) => discard).join(' ')}）`,
+    );
+  } else {
+    console.log(
+      '正解はソルバー上の最良手ではありません（打点や場況の判断が理由として必要です）',
+    );
+  }
 
   if (report.suggestedRejected.length > 0) {
     console.log();

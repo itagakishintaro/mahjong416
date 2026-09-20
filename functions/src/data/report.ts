@@ -29,7 +29,11 @@ export type ProblemReport = {
   readonly situation: string;
   readonly answer: CandidateReport;
   readonly best: CandidateReport;
-  /** 正解がソルバー上の最良手と一致するか */
+  /**
+   * 正解がソルバー上の最良手と同等か。
+   * 受入が同数の打牌が複数ある場合、並び順で先頭かどうかは意味を持たない
+   * ため、シャンテン数と受入枚数の一致で判定する。
+   */
   readonly answerIsBest: boolean;
   readonly candidates: readonly CandidateReport[];
   /** rejected が未記入のときの悪手候補 */
@@ -54,7 +58,9 @@ export function buildProblemReport(problem: Problem): ProblemReport {
     situation: buildUserPrompt(problem.situation, candidates),
     answer: toReport(answer),
     best: toReport(best),
-    answerIsBest: answer === best,
+    answerIsBest:
+      answer.shanten === best.shanten &&
+      answer.ukeireTotal === best.ukeireTotal,
     candidates: candidates.map(toReport),
     suggestedRejected:
       problem.rejected.length > 0 ? [] : suggest(problem, candidates),
