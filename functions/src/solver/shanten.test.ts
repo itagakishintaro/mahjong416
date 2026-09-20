@@ -151,3 +151,22 @@ describe('shanten: 3つの形の最小値', () => {
     expect(shanten(tiles('123m456m東東12p'), 1)).toBe(0);
   });
 });
+
+describe('regularShanten: ブロック数の上限（面子側）', () => {
+  // 面子を取るときにブロック上限を見ていないと、6ブロック目を数えて
+  // シャンテン数を実際より小さく見積もる
+  const base = '33m455m66p345s667s';
+
+  it('5ブロックを超えて数えない', () => {
+    expect(regularShanten(tiles(base))).toBe(1);
+  });
+
+  it('ブロックが足りている手に浮き牌を足してもシャンテン数は減らない', () => {
+    expect(regularShanten(tiles(`${base}1s`))).toBe(1);
+    expect(regularShanten(tiles(`${base}4s`))).toBe(1);
+  });
+
+  it('面子を完成させる牌でだけシャンテン数が減る', () => {
+    expect(regularShanten(tiles(`${base}4m`))).toBe(0);
+  });
+});

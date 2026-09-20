@@ -99,3 +99,18 @@ describe('ukeire: 和了形', () => {
     expect(result.total).toBe(0);
   });
 });
+
+describe('ukeire: ブロック数の上限が効いているか', () => {
+  it('すでに5ブロックある手では、浮き牌を増やす牌を受入に数えない', () => {
+    const result = ukeire(tiles('33m455m66p345s667s'), []);
+    expect(summarize(result)).toEqual([
+      '4m:3',
+      '6p:2',
+      '2s:4',
+      '5s:3',
+      '6s:2',
+      '8s:4',
+    ]);
+    expect(result.total).toBe(18);
+  });
+});

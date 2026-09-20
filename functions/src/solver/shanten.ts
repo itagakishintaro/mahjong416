@@ -74,25 +74,33 @@ function search(
   }
 
   let best = MAX_REGULAR_SHANTEN;
+  // 面子も搭子も「ブロック」であり、合わせて5つ（4面子+雀頭）を超えては
+  // ならない。面子側の判定が抜けていると、6ブロック目を数えてシャンテン数を
+  // 実際より小さく見積もってしまう。
   const canAddBlock = melds + partials < MAX_BLOCKS;
 
   // 暗刻
-  if (count >= 3) {
+  if (canAddBlock && count >= 3) {
     counts[index] = count - 3;
     best = Math.min(best, search(counts, index, melds + 1, partials, pairs));
     counts[index] = count;
   }
 
   // 順子
-  if (canReach(index, 2) && (counts[index + 1] ?? 0) > 0 && (counts[index + 2] ?? 0) > 0) {
+  if (
+    canAddBlock &&
+    canReach(index, 2) &&
+    (counts[index + 1] ?? 0) > 0 &&
+    (counts[index + 2] ?? 0) > 0
+  ) {
     consume(counts, [index, index + 1, index + 2], -1);
     best = Math.min(best, search(counts, index, melds + 1, partials, pairs));
     consume(counts, [index, index + 1, index + 2], 1);
   }
 
-  if (canAddBlock) {
+  {
     // 対子
-    if (count >= 2) {
+    if (canAddBlock && count >= 2) {
       counts[index] = count - 2;
       best = Math.min(
         best,
@@ -102,14 +110,14 @@ function search(
     }
 
     // 両面・辺張
-    if (canReach(index, 1) && (counts[index + 1] ?? 0) > 0) {
+    if (canAddBlock && canReach(index, 1) && (counts[index + 1] ?? 0) > 0) {
       consume(counts, [index, index + 1], -1);
       best = Math.min(best, search(counts, index, melds, partials + 1, pairs));
       consume(counts, [index, index + 1], 1);
     }
 
     // 嵌張
-    if (canReach(index, 2) && (counts[index + 2] ?? 0) > 0) {
+    if (canAddBlock && canReach(index, 2) && (counts[index + 2] ?? 0) > 0) {
       consume(counts, [index, index + 2], -1);
       best = Math.min(best, search(counts, index, melds, partials + 1, pairs));
       consume(counts, [index, index + 2], 1);
