@@ -6,6 +6,7 @@
  *   contents はユーザーのターンで終わること
  */
 
+import {autoRejected} from './auto-rejected.js';
 import {buildSystemInstruction, buildUserPrompt, formatAnswer} from '../prompt/build.js';
 import {evaluateCandidates, type Candidate} from '../solver/candidates.js';
 import {formatTile, type Tile} from '../solver/tile.js';
@@ -43,15 +44,15 @@ export type PreferenceExample = {
 export function buildPreferenceExamples(
   problem: Problem,
 ): PreferenceExample[] {
-  if (problem.rejected.length === 0) {
-    throw new Error(`問題 ${problem.id} に悪手（rejected）がありません`);
-  }
-
   const candidates = evaluateCandidates(problem.situation.hand);
+  const rejected = resolveRejected(problem, candidates);
+  if (rejected.length === 0) {
+    throw new Error(`問題 ${problem.id} の悪手を作れません（打牌候補が正解のみ）`);
+  }
   const userPrompt = buildUserPrompt(problem.situation, candidates);
   const preferred = renderAnswer(problem, candidates, problem.answer);
 
-  return problem.rejected.map((rejected) => ({
+  return rejected.map((entry) => ({
     system_instruction: {parts: [{text: buildSystemInstruction()}]},
     contents: [{role: 'user' as const, parts: [{text: userPrompt}]}],
     completions: [
@@ -63,11 +64,26 @@ export function buildPreferenceExamples(
         score: SCORE_DISPREFERRED,
         completion: {
           role: 'model' as const,
-          parts: [{text: renderAnswer(problem, candidates, rejected)}],
+          parts: [{text: renderAnswer(problem, candidates, entry)}],
         },
       },
     ],
   }));
+}
+
+/**
+ * 悪手を決める。問題に書かれていればそれを使い、無ければソルバーの
+ * 答えから自動生成する（design doc §6.5）。
+ */
+function resolveRejected(
+  problem: Problem,
+  candidates: readonly Candidate[],
+): readonly Discard[] {
+  if (problem.rejected.length > 0) {
+    return problem.rejected;
+  }
+  const generated = autoRejected(problem.answer.discard, candidates);
+  return generated === undefined ? [] : [generated];
 }
 
 /**

@@ -12,13 +12,6 @@ import path from 'node:path';
 import {parseProblem} from './problem.js';
 import {buildProblemReport, type CandidateReport} from './report.js';
 
-const KIND_LABEL = {
-  'shanten-back': 'シャンテン戻し',
-  'ukeire-loss': '受入大幅減',
-  'value-loss': '打点放棄',
-  'honor-misuse': '字牌の誤処理',
-} as const;
-
 function line(report: CandidateReport): string {
   const breakdown = report.ukeire === '' ? '' : `（${report.ukeire}）`;
   return `${report.discard}: ${report.shanten}シャンテン 受入${report.ukeireTotal}枚${breakdown}`;
@@ -60,12 +53,13 @@ async function main(): Promise<void> {
     );
   }
 
-  if (report.suggestedRejected.length > 0) {
-    console.log();
-    console.log('## 悪手の候補（rejected 未記入のため提案）');
-    for (const suggestion of report.suggestedRejected) {
-      console.log(`- [${KIND_LABEL[suggestion.kind]}] ${line(suggestion)}`);
-    }
+  console.log();
+  console.log('## 学習データで使われる悪手');
+  if (report.rejected === undefined) {
+    console.log('打牌候補が正解しか無いため、悪手を作れません（学習データから除外されます）');
+  } else {
+    console.log(`打牌: ${report.rejected.discard}`);
+    console.log(`理由: ${report.rejected.reason}`);
   }
 }
 

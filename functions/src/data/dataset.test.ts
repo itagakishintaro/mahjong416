@@ -49,10 +49,10 @@ describe('buildDataset', () => {
     expect(result.stats.skippedUnreviewed).toBe(1);
   });
 
-  it('悪手が無い問題は除外する', () => {
+  it('悪手が書かれていなければソルバーから自動生成する', () => {
     const result = buildDataset([problem({rejected: []})]);
-    expect(result.train).toEqual([]);
-    expect(result.stats.skippedNoRejected).toBe(1);
+    expect(result.train).toHaveLength(1);
+    expect(result.stats.skippedNoRejected).toBe(0);
   });
 
   it('悪手の数だけペアが増える', () => {

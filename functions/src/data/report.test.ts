@@ -44,18 +44,18 @@ describe('buildProblemReport', () => {
     expect(result.best.discard).toBe('5s');
   });
 
-  it('悪手の候補を提案する', () => {
-    const suggestions = report().suggestedRejected;
-    expect(suggestions.length).toBeGreaterThan(0);
-    expect(suggestions[0]).toHaveProperty('kind');
-    expect(suggestions[0]).toHaveProperty('discard');
+  it('悪手をソルバーの答えから作る', () => {
+    const rejected = report().rejected;
+    expect(rejected).toBeDefined();
+    expect(rejected!.discard).not.toBe('5s');
+    expect(rejected!.reason).not.toBe('');
   });
 
-  it('既に悪手が書かれていれば提案しない', () => {
+  it('既に悪手が書かれていればそれを使う', () => {
     const result = buildProblemReport(
-      parseProblem({...RAW, rejected: [{discard: '東', reason: '理由'}]}),
+      parseProblem({...RAW, rejected: [{discard: '東', reason: '書かれた理由'}]}),
     );
-    expect(result.suggestedRejected).toEqual([]);
+    expect(result.rejected).toEqual({discard: '東', reason: '書かれた理由'});
   });
 
   it('全打牌候補を返す', () => {

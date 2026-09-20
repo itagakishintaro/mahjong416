@@ -6,7 +6,7 @@
  * （nanikiru-ai-design-doc.md §6.3）。
  */
 
-import {extractRejected, type RejectedKind} from './rejected.js';
+import {autoRejected} from './auto-rejected.js';
 import {buildUserPrompt} from '../prompt/build.js';
 import {evaluateCandidates, type Candidate} from '../solver/candidates.js';
 import {formatTile} from '../solver/tile.js';
@@ -17,10 +17,6 @@ export type CandidateReport = {
   readonly shanten: number;
   readonly ukeireTotal: number;
   readonly ukeire: string;
-};
-
-export type SuggestedRejected = CandidateReport & {
-  readonly kind: RejectedKind;
 };
 
 export type ProblemReport = {
@@ -36,8 +32,8 @@ export type ProblemReport = {
    */
   readonly answerIsBest: boolean;
   readonly candidates: readonly CandidateReport[];
-  /** rejected が未記入のときの悪手候補 */
-  readonly suggestedRejected: readonly SuggestedRejected[];
+  /** 学習データで悪手として使われる打牌と理由 */
+  readonly rejected: {readonly discard: string; readonly reason: string} | undefined;
 };
 
 /** 問題を検証し、ソルバーの計算結果を添えて返す */
@@ -62,20 +58,23 @@ export function buildProblemReport(problem: Problem): ProblemReport {
       answer.shanten === best.shanten &&
       answer.ukeireTotal === best.ukeireTotal,
     candidates: candidates.map(toReport),
-    suggestedRejected:
-      problem.rejected.length > 0 ? [] : suggest(problem, candidates),
+    rejected: resolveRejected(problem, candidates),
   };
 }
 
-function suggest(
+/** 問題に悪手が書かれていればそれを、無ければソルバーの答えを返す */
+function resolveRejected(
   problem: Problem,
   candidates: readonly Candidate[],
-): SuggestedRejected[] {
-  return extractRejected({
-    candidates,
-    answer: problem.answer.discard,
-    dora: problem.situation.dora,
-  }).map(({candidate, kind}) => ({...toReport(candidate), kind}));
+): {discard: string; reason: string} | undefined {
+  const written = problem.rejected[0];
+  if (written !== undefined) {
+    return {discard: formatTile(written.discard), reason: written.reason};
+  }
+  const generated = autoRejected(problem.answer.discard, candidates);
+  return generated === undefined
+    ? undefined
+    : {discard: formatTile(generated.discard), reason: generated.reason};
 }
 
 function toReport(candidate: Candidate): CandidateReport {

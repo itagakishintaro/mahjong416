@@ -78,9 +78,16 @@ describe('buildPreferenceExamples', () => {
     expect(first!.contents[0]!.parts[0]!.text).toBe(second!.contents[0]!.parts[0]!.text);
   });
 
-  it('悪手が無ければ失敗する', () => {
+  it('悪手が書かれていなければソルバーの答えを悪手にする', () => {
     const problem = parseProblem({...RAW, rejected: []});
-    expect(() => buildPreferenceExamples(problem)).toThrow(/0001/);
+    const examples = buildPreferenceExamples(problem);
+    expect(examples).toHaveLength(1);
+
+    const dispreferred = examples[0]!.completions[1]!.completion.parts[0]!.text;
+    // 正解は5s（テンパイ）。ソルバーの最良手も5sなので、次の候補が悪手になる
+    expect(dispreferred).not.toContain('【推奨打牌】5s');
+    expect(dispreferred).toMatch(/【推奨打牌】(1p|2p)/);
+    expect(dispreferred).toContain('受け入れ');
   });
 });
 

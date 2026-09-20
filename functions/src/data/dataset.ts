@@ -15,6 +15,7 @@ export type DatasetStats = {
   /** テスト用に確保されている問題数 */
   readonly test: number;
   readonly skippedUnreviewed: number;
+  /** 悪手を作れずに除外した問題数 */
   readonly skippedNoRejected: number;
   readonly trainPairs: number;
   readonly validationPairs: number;
@@ -49,12 +50,14 @@ export function buildDataset(problems: readonly Problem[]): Dataset {
       skippedUnreviewed += 1;
       continue;
     }
-    if (problem.rejected.length === 0) {
+    let examples;
+    try {
+      examples = buildPreferenceExamples(problem);
+    } catch {
+      // 打牌候補が正解しか無く、悪手を作れない問題
       skippedNoRejected += 1;
       continue;
     }
-
-    const examples = buildPreferenceExamples(problem);
     if (problem.meta.split === 'validation') {
       validation.push(...examples);
     } else {
