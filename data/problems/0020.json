@@ -36,7 +36,7 @@
     }
   ],
   "meta": {
-    "split": "train",
+    "split": "test",
     "createdAt": "2026-09-24",
     "reviewed": true
   }

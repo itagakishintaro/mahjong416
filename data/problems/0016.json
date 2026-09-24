@@ -10,5 +10,5 @@
     "reason": "4s・6s引きでタンヤオ・ピンフ（三色も視野）に移行できる形を優先する。裏目の2mツモでは面子完成を逃すが、それでも手は半歩進むので損が小さい。"
   },
   "rejected": [],
-  "meta": {"split": "train", "createdAt": "2026-09-24", "reviewed": true}
+  "meta": {"split": "test", "createdAt": "2026-09-24", "reviewed": true}
 }

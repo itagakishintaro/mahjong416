@@ -14,5 +14,5 @@
     "reason": "筒子は3p6p8p待ちのリャンメンカンチャンだが、ピンフよりタンヤオのほうが打点が高い。9pを払ってピンフではなくタンヤオを確定させる。赤5sのポンなど、鳴きにも対応できる。"
   },
   "rejected": [],
-  "meta": {"split": "train", "createdAt": "2026-09-20", "reviewed": true}
+  "meta": {"split": "test", "createdAt": "2026-09-20", "reviewed": true}
 }

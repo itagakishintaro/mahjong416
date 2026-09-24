@@ -10,5 +10,5 @@
     "reason": "面子候補が足りていないので浮き牌を残したいが、その中で最も弱いのが8p。周りとつながる可能性が乏しいので、ここから切る。"
   },
   "rejected": [],
-  "meta": {"split": "train", "createdAt": "2026-09-24", "reviewed": true}
+  "meta": {"split": "test", "createdAt": "2026-09-24", "reviewed": true}
 }
