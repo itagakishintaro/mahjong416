@@ -1,0 +1,14 @@
+{
+  "id": "0022",
+  "situation": {
+    "round": "東1局", "seat": "東家", "turn": 3, "dora": ["2m"],
+    "hand": ["1m","2m","3m","7m","2p","2p","8p","3s","3s","4s","5s","7s","9s"],
+    "draw": "9s", "melds": []
+  },
+  "answer": {
+    "discard": "8p",
+    "reason": "面子候補が足りていないので浮き牌を残したいが、その中で最も弱いのが8p。周りとつながる可能性が乏しいので、ここから切る。"
+  },
+  "rejected": [],
+  "meta": {"split": "train", "createdAt": "2026-09-24", "reviewed": true}
+}
