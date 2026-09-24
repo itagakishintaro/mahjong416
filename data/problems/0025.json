@@ -1,0 +1,14 @@
+{
+  "id": "0025",
+  "situation": {
+    "round": "東1局", "seat": "北家", "turn": 7, "dora": ["3p"],
+    "hand": ["2m","3m","4m","1p","1p","3p","3p","3p","4p","4p","5p","7s","7s"],
+    "draw": "8s", "melds": []
+  },
+  "answer": {
+    "discard": "7s",
+    "reason": "ピンズの複合形をそのまま残して広く構え、ソーズは両面に固定する。2p・5pツモがドラ切りになるが、すでに打点は十分ある。タンヤオを見て打1pとするのは形を狭めるだけで損。"
+  },
+  "rejected": [],
+  "meta": {"split": "train", "createdAt": "2026-09-24", "reviewed": true}
+}
