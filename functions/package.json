@@ -14,7 +14,9 @@
     "dataset": "npm run build && node lib/data/build-dataset.js",
     "check": "npm run build --silent && node lib/data/check-problem.js",
     "eval": "npm run build --silent && node lib/eval/run-eval.js",
-    "pick-test": "npm run build --silent && node lib/data/pick-test.js"
+    "pick-test": "npm run build --silent && node lib/data/pick-test.js",
+    "tune": "npm run build --silent && node lib/vertex/start-tuning.js",
+    "tune:status": "npm run build --silent && node lib/vertex/tuning-status.js"
   },
   "devDependencies": {
     "typescript": "~5.7.0",
