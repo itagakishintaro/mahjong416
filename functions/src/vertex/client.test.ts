@@ -1,8 +1,10 @@
 import {describe, expect, it, vi} from 'vitest';
 import {
   createModelClient,
+  DEFAULT_TIMEOUT_MS,
   MODEL_FALLBACK,
   resolveModelConfig,
+  resolveTimeoutMs,
   type GenerateContentSdk,
 } from './client.js';
 
@@ -171,5 +173,23 @@ describe('createModelClient: タイムアウト', () => {
     const client = createModelClient(config, sdk, {delayMs: 0, timeoutMs: 20});
     expect(await client.generate('s', 'u')).toBe('【推奨打牌】9m');
     expect(sdk.models.generateContent).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('呼び出しの制限時間', () => {
+  it('既定値は1問あたりの実測（約4分）を上回る', () => {
+    expect(DEFAULT_TIMEOUT_MS).toBeGreaterThanOrEqual(300_000);
+  });
+
+  it('環境変数で上書きできる', () => {
+    expect(resolveTimeoutMs({NANIKIRU_TIMEOUT_MS: '90000'})).toBe(90_000);
+  });
+
+  it('指定が無ければ既定値を使う', () => {
+    expect(resolveTimeoutMs({})).toBe(DEFAULT_TIMEOUT_MS);
+  });
+
+  it('数値でない指定は無視して既定値を使う', () => {
+    expect(resolveTimeoutMs({NANIKIRU_TIMEOUT_MS: 'abc'})).toBe(DEFAULT_TIMEOUT_MS);
   });
 });

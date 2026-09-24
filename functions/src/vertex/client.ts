@@ -17,8 +17,22 @@ const DEFAULT_RETRY_DELAY_MS = 1000;
  *
  * fetch には既定のタイムアウトが無く、接続が死んでも例外が飛ばずに
  * 永久に待ち続けることがある（実際にベースライン測定が43分ハングした）。
+ *
+ * 一方で短すぎると正常な推論を打ち切ってしまう。1問あたり約4分かかる
+ * 実測があり、180秒にしていたときはテスト8問中3問が時間切れで失敗した。
+ * ハングの検出という目的を保ちつつ、正常な推論は通す値にする。
  */
-const DEFAULT_TIMEOUT_MS = 180_000;
+export const DEFAULT_TIMEOUT_MS = 600_000;
+
+/** 制限時間を環境変数で上書きできるようにする（NANIKIRU_TIMEOUT_MS）。 */
+export function resolveTimeoutMs(
+  env: Record<string, string | undefined>,
+): number {
+  const raw = env['NANIKIRU_TIMEOUT_MS'];
+  if (raw === undefined) return DEFAULT_TIMEOUT_MS;
+  const value = Number(raw);
+  return Number.isFinite(value) && value > 0 ? value : DEFAULT_TIMEOUT_MS;
+}
 
 /** チューニング済みモデルが未指定のときに使う素のモデル */
 export const MODEL_FALLBACK = 'gemini-2.5-flash';
@@ -83,7 +97,7 @@ export function createModelClient(
 ): ModelClient {
   const attempts = retry.attempts ?? DEFAULT_ATTEMPTS;
   const delayMs = retry.delayMs ?? DEFAULT_RETRY_DELAY_MS;
-  const timeoutMs = retry.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+  const timeoutMs = retry.timeoutMs ?? resolveTimeoutMs(process.env);
 
   return {
     async generate(systemInstruction, userPrompt) {
