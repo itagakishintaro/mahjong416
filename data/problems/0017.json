@@ -1,0 +1,14 @@
+{
+  "id": "0017",
+  "situation": {
+    "round": "東1局", "seat": "西家", "turn": 7, "dora": ["1p"],
+    "hand": ["1m","3m","5m","7m","8m","8m","9m","赤5p","6p","7p","5s","5s","6s"],
+    "draw": "2m", "melds": []
+  },
+  "answer": {
+    "discard": "8m",
+    "reason": "一通と三色の選択。打8mなら4m・6mツモでピンフ一通、5m・5s・7sツモでピンフ赤1となり、どちらに転んでも裏目がない。打9mや打5sとは受け入れの広さが段違い。"
+  },
+  "rejected": [],
+  "meta": {"split": "train", "createdAt": "2026-09-24", "reviewed": true}
+}
