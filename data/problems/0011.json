@@ -1,14 +1,43 @@
 {
   "id": "0011",
   "situation": {
-    "round": "東1局", "seat": "西家", "turn": 7, "dora": ["9s"],
-    "hand": ["1m","2m","3m","4m","5p","6p","7p","8p","1s","2s","2s","2s","3s"],
-    "draw": "3s", "melds": []
+    "round": "東1局",
+    "seat": "西家",
+    "turn": 7,
+    "dora": [
+      "9s"
+    ],
+    "hand": [
+      "1m",
+      "2m",
+      "3m",
+      "4m",
+      "5p",
+      "6p",
+      "7p",
+      "8p",
+      "1s",
+      "2s",
+      "2s",
+      "2s",
+      "3s"
+    ],
+    "draw": "3s",
+    "melds": []
   },
   "answer": {
     "discard": "1m",
     "reason": "受け入れ枚数だけなら打1sが広いが、最終形と打点を含めると打1mが優る。1s2s2s2s3s3sは1面子＋雀頭にも一盃口にも変化できる好形で、ピンフ・一盃口の目を残せる。"
   },
-  "rejected": [],
-  "meta": {"split": "train", "createdAt": "2026-09-24", "reviewed": true}
+  "rejected": [
+    {
+      "discard": "1s",
+      "reason": "ツモ3sで2sの刻子と3sの対子ができ、1sが孤立牌となった。手牌はすでに2メンツ1雀頭が完成しており、残りの1s2s2s2s3s3sの形から、2sの刻子と3sの対子を活かしつつ、1sを切り出すことで効率よくテンパイを目指す。"
+    }
+  ],
+  "meta": {
+    "split": "train",
+    "createdAt": "2026-09-24",
+    "reviewed": true
+  }
 }
