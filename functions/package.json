@@ -16,7 +16,8 @@
     "eval": "npm run build --silent && sh scripts/eval.sh",
     "pick-test": "npm run build --silent && node lib/data/pick-test.js",
     "tune": "npm run build --silent && node lib/vertex/start-tuning.js",
-    "tune:status": "npm run build --silent && node lib/vertex/tuning-status.js"
+    "tune:status": "npm run build --silent && node lib/vertex/tuning-status.js",
+    "gen-rejected": "npm run build --silent && sh scripts/gen-rejected.sh"
   },
   "devDependencies": {
     "typescript": "~5.7.0",

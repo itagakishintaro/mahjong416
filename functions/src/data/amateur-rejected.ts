@@ -44,10 +44,16 @@ export function validateAmateurAnswer(answer: AmateurAnswer): string[] {
   } else if (reason.length < REASON_MIN_LENGTH) {
     problems.push(`理由文が短い（${reason.length}文字）`);
   }
-  if (/\d+\s*枚/.test(reason) || /シャンテン/.test(reason)) {
-    // 計算結果を持たないモデルの数字は誤っている。悪手側にだけ誤った数字が
-    // 入ると、両者の差が「判断」ではなく「数字の正しさ」になってしまう
-    problems.push('理由文に数字（枚数・シャンテン数）が含まれる');
+  if (/\d+\s*枚/.test(reason)) {
+    // 計算結果を持たないモデルの枚数は誤っている。悪手側にだけ誤った枚数が
+    // 入ると、両者の差が「判断」ではなく「数字の正しさ」になってしまう。
+    // シャンテン数への言及は正解側にも多いため禁止しない
+    problems.push('理由文に受け入れ枚数が含まれる');
+  }
+  if (/(です|ます|ません|でした)[。、]/.test(reason)) {
+    // 正解側の理由文は30件すべてが常体。文体が違うと、それ自体が
+    // preferred と dispreferred を見分ける手がかりになってしまう
+    problems.push('理由文が常体でない');
   }
   return problems;
 }

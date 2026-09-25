@@ -38,15 +38,25 @@ describe('validateAmateurAnswer', () => {
       ...context,
       reason: `受け入れが36枚と最も広い。${GOOD_REASON}`,
     });
-    expect(result.join()).toMatch(/数字/);
+    expect(result.join()).toMatch(/枚数/);
   });
 
-  it('シャンテン数に言及していたら弾く', () => {
-    const result = validateAmateurAnswer({
-      ...context,
-      reason: `1シャンテンを維持できる。${GOOD_REASON}`,
-    });
-    expect(result.join()).toMatch(/数字/);
+  it('シャンテン数への言及は許す（正解側の理由文にも多い）', () => {
+    expect(
+      validateAmateurAnswer({
+        ...context,
+        reason: `1シャンテンを維持できる。${GOOD_REASON}`,
+      }),
+    ).toEqual([]);
+  });
+
+  it('です・ます調は弾く（正解側は全件が常体）', () => {
+    expect(
+      validateAmateurAnswer({
+        ...context,
+        reason: '東は自風の役牌で、鳴ければ一気に加速します。ピンズの伸びは薄いです。',
+      }).join(),
+    ).toMatch(/常体/);
   });
 
   it('長すぎる理由文は弾く', () => {
@@ -86,7 +96,7 @@ describe('generateAmateurRejected', () => {
     expect(client.generate.mock.calls[1]?.[1]).toContain('選ばない');
   });
 
-  it('数字を書いてきたら聞き直す', async () => {
+  it('枚数を書いてきたら聞き直す', async () => {
     const client = {
       generate: vi
         .fn()
