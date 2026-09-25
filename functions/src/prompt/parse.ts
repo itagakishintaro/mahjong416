@@ -52,8 +52,20 @@ export function parseModelResponse(text: string): ModelResponse {
     discard: toTile(discardSection.inline),
     shanten: parseShanten(sections.find((s) => s.name === 'シャンテン数')),
     ukeireTotal: parseUkeireTotal(sections.find((s) => s.name === '受入')),
-    reason: sections.find((s) => s.name === '理由')?.body ?? '',
+    reason: joinReason(sections.find((s) => s.name === '理由')),
   };
+}
+
+/**
+ * 理由は「【理由】」の次の行から書かれるとは限らない。見出しと同じ行に
+ * 続けて書かれることがあり、本文だけを見ていると丸ごと取りこぼす。
+ */
+function joinReason(section: Section | undefined): string {
+  if (section === undefined) return '';
+  return [section.inline, section.body]
+    .filter((part) => part !== '')
+    .join('\n')
+    .trim();
 }
 
 function splitSections(text: string): Section[] {

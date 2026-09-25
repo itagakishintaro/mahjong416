@@ -21,8 +21,8 @@
 import {type Situation} from '../situation.js';
 import {buildUserPrompt} from './build.js';
 
-/** 理由文の上限。正解側の理由文は中央値100文字前後に収まっている */
-export const REASON_MAX_LENGTH = 150;
+/** 理由文の上限。正解側の理由文は中央値101文字・最長161文字 */
+export const REASON_MAX_LENGTH = 170;
 
 export function buildAmateurSystemInstruction(): string {
   return [

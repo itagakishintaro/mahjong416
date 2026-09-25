@@ -93,3 +93,17 @@ describe('parseModelResponse: 失敗', () => {
     expect(() => parseModelResponse('')).toThrow(ResponseParseError);
   });
 });
+
+describe('理由の書かれ方', () => {
+  it('見出しと同じ行に書かれた理由も読む', () => {
+    const response = parseModelResponse('【推奨打牌】1p\n【理由】1pは孤立牌なので切る。');
+    expect(response.reason).toBe('1pは孤立牌なので切る。');
+  });
+
+  it('見出しと同じ行と次の行の両方に書かれていたら繋ぐ', () => {
+    const response = parseModelResponse(
+      '【推奨打牌】1p\n【理由】1pは孤立牌。\n手はまだ遠い。',
+    );
+    expect(response.reason).toBe('1pは孤立牌。\n手はまだ遠い。');
+  });
+});
